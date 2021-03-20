@@ -1,20 +1,14 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {StatusBar} from 'react-native';
+import Routes from './routes';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-});
+const App: React.FC = () => (
+  <NavigationContainer>
+    <StatusBar barStyle="light-content" />
 
-const App: React.FC = () => {
-  return (
-    <View style={styles.container}>
-      <Text>Hello, Tinsports!</Text>
-    </View>
-  );
-};
+    <Routes />
+  </NavigationContainer>
+);
 
 export default App;
