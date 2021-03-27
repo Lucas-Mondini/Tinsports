@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
 import { Text } from 'react-native';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
@@ -7,6 +8,13 @@ import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} fro
 //const [password, setPassword] = useState('');
 
 const Login: React.FC = () => {
+
+  const navigation = useNavigation();
+
+  const handleSignIn = useCallback(() =>{
+    navigation.navigate('Main');
+  },[navigation]);
+
   return (
 
     <Container>
@@ -17,7 +25,7 @@ const Login: React.FC = () => {
       <Input placeholder="Digite sua senha" />{/* value={password} onChangeText={setPassword}/> */}
       
       <ButtonView>
-        <SignInButton>
+        <SignInButton onPress={handleSignIn}>
           <SignInButtonText>Entrar</SignInButtonText>
         </SignInButton>
       </ButtonView>

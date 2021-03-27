@@ -4,6 +4,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import Home from '../screens/Home';
 import Login from '../screens/Login';
 import Register from '../screens/Register';
+import Main from '../screens/Main';
+import GameInfo from '../screens/GameInfo';
 
 const App = createStackNavigator();
 
@@ -26,6 +28,16 @@ const AppRoutes: React.FC = () => {
         name="Register"
         component={Register}
         options={{headerTitle: 'Registrar'}}
+      />
+      <App.Screen 
+        name="Main"
+        component={Main}
+        options={{headerShown: false}}
+      />
+      <App.Screen 
+        name="GameInfo"
+        component={GameInfo}
+        options={{headerShown: false}}
       />
     </App.Navigator>
   );
