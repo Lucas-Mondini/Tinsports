@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import GameCard from "../../Components/GameCard";
@@ -16,6 +17,8 @@ const user = require('../../../assets/images/user.png');
 const AddButton = require('../../../assets/images/RoundButton.png');
 
 const Main: React.FC = () =>{
+
+  const navigation = useNavigation();
 
   return (
     <Container>
@@ -60,7 +63,9 @@ const Main: React.FC = () =>{
           </TouchableOpacity>
         </View>
         <View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() =>{
+            navigation.navigate('CreateEvent');
+          }}>
             <Image source={AddButton}/>
           </TouchableOpacity>
         </View>
@@ -70,7 +75,9 @@ const Main: React.FC = () =>{
           </TouchableOpacity>
         </View>
         <View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() =>{
+            navigation.navigate('Profile');
+          }}>
             <Image source={user}/>
           </TouchableOpacity>
         </View>
