@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 import { ConfirmationText, User, UserInfo, UserName, UserPhoto, ReputationText, ReputationView} from './styles';
@@ -17,8 +18,15 @@ interface UserCardProps{
 }
 
 const UserCard: React.FC<UserCardProps> = ({name, photo, confirmation})=>{
+
+  const navigation = useNavigation();
+
+  function accessProfile(){
+    navigation.navigate("Profile");
+  }
+
   return (
-    <User >
+    <User onPress={accessProfile}>
       <UserPhoto source={photo} />
       <UserInfo>
         <View>

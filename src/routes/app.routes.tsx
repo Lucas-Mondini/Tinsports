@@ -6,6 +6,8 @@ import Login from '../screens/Login';
 import Register from '../screens/Register';
 import Main from '../screens/Main';
 import GameInfo from '../screens/GameInfo';
+import CreateEvent from '../screens/CreateEvent';
+import Profile from '../screens/Profile';
 
 const App = createStackNavigator();
 
@@ -37,6 +39,16 @@ const AppRoutes: React.FC = () => {
       <App.Screen 
         name="GameInfo"
         component={GameInfo}
+        options={{headerShown: false}}
+      />
+      <App.Screen 
+        name="CreateEvent"
+        component={CreateEvent}
+        options={{headerShown: false}}
+      />
+      <App.Screen 
+        name="Profile"
+        component={Profile}
         options={{headerShown: false}}
       />
     </App.Navigator>
