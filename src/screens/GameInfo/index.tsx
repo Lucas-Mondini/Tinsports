@@ -1,10 +1,12 @@
-import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
 import { Text, View } from "react-native";
 import Badge from "../../Components/Badge";
 import UserCard from "../../Components/UserCard";
 import {
   BadgeContainer,
-  Container, Description, GameInfoView, Title, UsersTitle
+  ButtonText,
+  Container, Description, EmptyView, EventFinishedButton, EventFinishedView, GameInfoView, Title, UsersTitle
 } from './styles';
 
 const photo = require('../../../assets/photos/photo.jpg');
@@ -15,6 +17,15 @@ const calendarIcon = require('../../../assets/images/calendar.png');
 const mapIcon = require('../../../assets/images/map-marker.png');
 
 export default function GameInfo(){
+
+  const [eventFinished, setEventFinished] = useState(true);
+
+  const navigation = useNavigation();
+
+  function handleGameEvaluation(){
+    navigation.navigate("Evaluation");
+  }
+
   return(
     <Container>
       <GameInfoView>
@@ -35,6 +46,18 @@ export default function GameInfo(){
         </BadgeContainer>
 
         <Description>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus luctus lacus eu justo condimentum porttitor. Aliquam vel lectus nec lorem blandit auctor. In tincidunt arcu et arcu pharetra lobortis. Suspendisse quis egestas nibh. Cras volutpat sapien non lacinia consectetur. Donec quis orci lectus. Cras sit amet arcu nec velit luctus porta</Description>
+
+        {
+          (eventFinished)
+          ?
+          <EventFinishedView>
+            <EventFinishedButton onPress={handleGameEvaluation}>
+              <ButtonText>Avaliar participantes</ButtonText>
+            </EventFinishedButton>
+          </EventFinishedView>
+          :
+          <EmptyView></EmptyView>
+        }
 
         <UsersTitle>Lista de participantes</UsersTitle>
         <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado"/>

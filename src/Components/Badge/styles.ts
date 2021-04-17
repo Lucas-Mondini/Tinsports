@@ -10,4 +10,6 @@ export const BadgeText = styled.Text`
   color: #686868;
   font-size: 20px;
   margin-left: 10px;
+  font-family: "Poppins-Regular";
+  line-height: 24px;
 `;

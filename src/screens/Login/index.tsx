@@ -19,10 +19,10 @@ const Login: React.FC = () => {
 
     <Container>
       <Label>Email</Label>
-      <Input placeholder="Digite seu email" />{/* value={email} onChangeText={setEmail}/> */}
+      <Input placeholder="Digite seu email" value="jao@gamail.com"/>{/* value={email} onChangeText={setEmail}/> */}
 
       <Label>Senha</Label>
-      <Input placeholder="Digite sua senha" />{/* value={password} onChangeText={setPassword}/> */}
+      <Input placeholder="Digite sua senha" value="123456789" secureTextEntry={true}/>{/* value={password} onChangeText={setPassword}/> */}
       
       <ButtonView>
         <SignInButton onPress={handleSignIn}>

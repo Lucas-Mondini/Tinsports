@@ -27,6 +27,8 @@ export const GameTitleContainer = styled.View`
 export const GameTitle = styled.Text`
   font-size: 25px;
   color: #686868;
+  font-family: "Poppins-Regular";
+  line-height: 30px;
 `;
 
 export const TopImage = styled.View`

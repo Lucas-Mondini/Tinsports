@@ -12,10 +12,6 @@ export const GameInfo = styled.ScrollView`
   padding: 0 3% 0 3%;
 `;
 
-export const TimeInputs = styled.View`
-
-`;
-
 export const CheckboxView = styled.TouchableOpacity`
   flex-direction: row;
   justify-content: center;
@@ -27,6 +23,8 @@ export const CheckboxLabel = styled.Text`
   font-size: 20px;
   color: #686868;
   margin-left: 10px;
+  font-family: "Poppins-Regular";
+  line-height: 30px;
 `;  
 
 export const Checkbox = styled.View`
@@ -57,10 +55,12 @@ export const SubmitButton = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   background-color: #007E33;
-  border-radius: 10px;
+  border-radius: 100px;
 `;
 
 export const SubmitButtonText = styled.Text`
   color: #fff;
   font-size: 20px;
+  font-family: "Poppins-Regular";
+  line-height: 24px;
 `;
