@@ -4,6 +4,8 @@ export const Label = styled.Text`
   color: #686868;
   font-size: 25px;
   padding-top: 25px;
+  font-family: "Poppins-Regular";
+  line-height: 30px;
 `;
 
 export const InputText = styled.TextInput`
@@ -12,6 +14,10 @@ export const InputText = styled.TextInput`
   height: 35px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+  font-size: 15px;
+  padding: 0 10px;
+  font-family: "Poppins-Regular";
+  line-height: 18px;
 `;
 
 export const InputTextNoImage = styled.TextInput`
@@ -19,6 +25,11 @@ export const InputTextNoImage = styled.TextInput`
   width: 100%;
   height: 35px;
   border-radius: 5px;
+  font-size: 15px;
+  padding-left: 10px;
+  padding: 0 10px;
+  font-family: "Poppins-Regular";
+  line-height: 18px;
 `;
 
 export const InputContainer = styled.View`

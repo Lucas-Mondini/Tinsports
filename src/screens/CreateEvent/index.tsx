@@ -27,11 +27,11 @@ const CreateEvent: React.FC = ()=>{
       <GameInfo>
         <Input label="Nome"/>
         <Input label="Tipo de partida" image={gameIcon}/>
-        <Input label="Tipo de partida" image={mapIcon}/>
+        <Input label="Local" image={mapIcon}/>
 
         <View>
-          <Input label="Nome" image={calendarIcon}/>
-          <Input label="Tipo de partida" image={clockIcon}/>
+          <Input label="Data" image={calendarIcon}/>
+          <Input label="Hora" image={clockIcon}/>
         </View>
 
           {(paid == false)
