@@ -1,13 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { Text } from 'react-native';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
 
-//const [email, setEmail] = useState('');
-//const [password, setPassword] = useState('');
-
 const Login: React.FC = () => {
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const navigation = useNavigation();
 
@@ -19,10 +18,17 @@ const Login: React.FC = () => {
 
     <Container>
       <Label>Email</Label>
-      <Input placeholder="Digite seu email" value="jao@gamail.com"/>{/* value={email} onChangeText={setEmail}/> */}
+      <Input 
+        placeholder="Digite seu email"
+        value={email} 
+        onChangeText={setEmail}/>
 
       <Label>Senha</Label>
-      <Input placeholder="Digite sua senha" value="123456789" secureTextEntry={true}/>{/* value={password} onChangeText={setPassword}/> */}
+      <Input 
+        placeholder="Digite sua senha" 
+        secureTextEntry={true} 
+        value={password} 
+        onChangeText={setPassword}/>
       
       <ButtonView>
         <SignInButton onPress={handleSignIn}>

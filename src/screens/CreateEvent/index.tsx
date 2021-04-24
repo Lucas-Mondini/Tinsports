@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View} from "react-native";
+import { Image, View} from "react-native";
 import Input from '../../Components/Input';
 import { Checkbox, CheckboxChecked, CheckboxLabel, CheckboxView, Container, GameInfo, SubmitButton, SubmitButtonText, SubmitButtonView } from './styles';
 
@@ -13,6 +13,14 @@ const checkIcon = require('../../../assets/images/check.png');
 const CreateEvent: React.FC = ()=>{
 
   const [paid, setPaid] = useState(false);
+  const [name, setName] = useState('');
+  const [type, setType] = useState('');
+  const [location, setLocation] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [cost, setCost] = useState('');
+  const [description, setDescription] = useState('');
+
 
   function handleCheckbox(){
     if(paid == true){
@@ -25,7 +33,10 @@ const CreateEvent: React.FC = ()=>{
   return (
     <Container>
       <GameInfo>
-        <Input label="Nome"/>
+        <Input 
+          label="Nome" 
+          />
+
         <Input label="Tipo de partida" image={gameIcon}/>
         <Input label="Local" image={mapIcon}/>
 
