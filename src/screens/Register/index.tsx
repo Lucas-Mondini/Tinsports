@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
+import api from '../../services/api';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
 
@@ -7,22 +8,21 @@ const Register: React.FC = () => {
 
   const navigation = useNavigation();
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState('jdascgas@gmail.com');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPass, setConfirmPass] = useState('');
-
-  function register(){
-    console.log({
-      name,
-      email, 
-      password,
-      confirmPass
-    })
-  }
+  const [pass, setPass] = useState('');
+  const [confPass, setConfPass] = useState('');
 
   const handleSignIn = useCallback(() =>{
-    navigation.navigate('Main');
+
+    api.post(`/register/user`,{
+      name, email, pass, confPass
+    }).then(response => {
+      console.log(response);
+
+      navigation.navigate('Main');
+    }).catch(err => console.log(err));
+
   },[navigation]);
 
 
@@ -44,16 +44,16 @@ const Register: React.FC = () => {
       <Label>Senha</Label>
       <Input 
         placeholder="Digite sua senha" 
-        value={password} 
+        value={pass} 
         secureTextEntry={true}
-        onChangeText={setPassword}/>
+        onChangeText={setPass}/>
 
       <Label>Confirme sua senha</Label>
       <Input 
         placeholder="Digite sua senha novamente" 
-        value={confirmPass} 
+        value={confPass} 
         secureTextEntry={true}
-        onChangeText={setConfirmPass}/>
+        onChangeText={setConfPass}/>
       
       <ButtonView>
         <SignInButton onPress={handleSignIn}>

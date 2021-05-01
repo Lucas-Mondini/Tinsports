@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, View} from "react-native";
+import { Image, Text, View} from "react-native";
 import Input from '../../Components/Input';
 import { Checkbox, CheckboxChecked, CheckboxLabel, CheckboxView, Container, GameInfo, SubmitButton, SubmitButtonText, SubmitButtonView } from './styles';
 
@@ -35,14 +35,36 @@ const CreateEvent: React.FC = ()=>{
       <GameInfo>
         <Input 
           label="Nome" 
+          value={name}
+          setValue={setName}
           />
 
-        <Input label="Tipo de partida" image={gameIcon}/>
-        <Input label="Local" image={mapIcon}/>
+        <Input 
+          label="Tipo de partida" 
+          image={gameIcon}
+          value={type}
+          setValue={setType}
+          />
+        <Input 
+          label="Local" 
+          image={mapIcon}
+          value={location}
+          setValue={setLocation}
+          />
 
         <View>
-          <Input label="Data" image={calendarIcon}/>
-          <Input label="Hora" image={clockIcon}/>
+          <Input 
+            label="Data" 
+            image={calendarIcon}
+            value={date}
+          setValue={setDate}
+            />
+          <Input 
+            label="Hora" 
+            image={clockIcon}
+            value={time}
+            setValue={setTime}
+            />
         </View>
 
           {(paid == false)
@@ -62,12 +84,22 @@ const CreateEvent: React.FC = ()=>{
 
         {(paid == true)
             ?
-            <Input label="Valor" image={moneyIcon}/>
+            <Input 
+              label="Valor" 
+              image={moneyIcon}
+              value={cost}
+              setValue={setCost}
+              />
             :
             <View />
         }
 
-        <Input label="Descrição" multilineActive={true}/>
+        <Input 
+          label="Descrição" 
+          multilineActive={true}
+          value={description}
+          setValue={setDescription}
+          />
 
         <SubmitButtonView>
           <SubmitButton>
@@ -75,7 +107,7 @@ const CreateEvent: React.FC = ()=>{
           </SubmitButton>
         </SubmitButtonView>
       </GameInfo>
-
+      <Text>{name}, {type}, {location}, {cost}, {date}, {time}, {description}</Text>
     </Container>
   );
 }

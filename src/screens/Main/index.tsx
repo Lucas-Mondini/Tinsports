@@ -1,7 +1,9 @@
+import AsyncStorage from "@react-native-community/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect } from "react";
+import { Image, TouchableOpacity, View } from "react-native";
 import GameCard from "../../Components/GameCard";
+import api from "../../services/api";
 
 import { 
   BottomNavbar,
@@ -17,6 +19,17 @@ const user = require('../../../assets/images/user.png');
 const AddButton = require('../../../assets/images/RoundButton.png');
 
 const Main: React.FC = () =>{
+  useEffect(() => {
+    AsyncStorage.getItem("auth_token").then(token =>{
+      api.get(`/games`,{
+        headers: {
+          auth_token: token
+        }
+      }).then(async response => {
+        console.log(response.data);
+      }).catch(err => console.error(err));
+    }).catch(err => console.log(err));
+  }, []);
 
   const navigation = useNavigation();
 

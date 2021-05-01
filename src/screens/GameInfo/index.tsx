@@ -1,8 +1,10 @@
+import AsyncStorage from "@react-native-community/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import Badge from "../../Components/Badge";
 import UserCard from "../../Components/UserCard";
+import api from "../../services/api";
 import {
   BadgeContainer,
   ButtonText,
@@ -21,6 +23,19 @@ export default function GameInfo(){
   const [eventFinished, setEventFinished] = useState(true);
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    AsyncStorage.getItem("auth_token").then(token =>{
+      api.get(`/games/605643345fe0051d44af7bd2`,{
+        headers: {
+          auth_token: token
+        }
+      }).then(async response => {
+        console.log(response.data);
+      }).catch(err => console.error(err));
+    }).catch(err => console.log(err));
+  }, []);
+
 
   function handleGameEvaluation(){
     navigation.navigate("Evaluation");

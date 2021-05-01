@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Image, ImageSourcePropType } from 'react-native';
 import { View } from 'react-native';
-import { Label, InputText, InputContainer, InputImageBox, InputTextNoImage } from './styles';
+import { Label, InputText, InputContainer, InputImageBox, InputTextNoImage, InputTextDescription } from './styles';
 
 interface InputProps{
   label: string;
   image?: ImageSourcePropType;
   multilineActive?: boolean;
+  value: string;
+  setValue: (value: string) => void;
 }
 
-const Input: React.FC<InputProps> = ({label, image, multilineActive}) => {
+const Input: React.FC<InputProps> = ({label, image, multilineActive, value, setValue}) => {
   return (
     <View>
       <Label>{label}</Label>
@@ -26,11 +28,14 @@ const Input: React.FC<InputProps> = ({label, image, multilineActive}) => {
         
         {(image)
           ?
-          <InputText multiline={multilineActive}/>
+          <InputText multiline={multilineActive} value={value} onChangeText={setValue}/>
           :
-          <InputTextNoImage multiline={multilineActive} numberOfLines={5}/>
+            (multilineActive) 
+            ?
+            <InputTextDescription multiline={true} value={value} onChangeText={setValue} numberOfLines={7}/>
+            :
+            <InputTextNoImage multiline={false} value={value} onChangeText={setValue}/>
         }
-
         
       </InputContainer>
     </View>

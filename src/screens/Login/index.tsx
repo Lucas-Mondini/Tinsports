@@ -1,17 +1,27 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
+import api from '../../services/api';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
 
 const Login: React.FC = () => {
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('jdascga@gmail.com');
+  const [pass, setPass] = useState('123456');
 
   const navigation = useNavigation();
 
   const handleSignIn = useCallback(() =>{
-    navigation.navigate('Main');
+
+    api.post(`/login`,{
+      email, pass
+    }).then(async response => {
+      await AsyncStorage.setItem("auth_token", response.data.auth_token);
+
+      navigation.navigate('Main');
+    }).catch(err => console.log(err));
+
   },[navigation]);
 
   return (
@@ -27,8 +37,8 @@ const Login: React.FC = () => {
       <Input 
         placeholder="Digite sua senha" 
         secureTextEntry={true} 
-        value={password} 
-        onChangeText={setPassword}/>
+        value={pass} 
+        onChangeText={setPass}/>
       
       <ButtonView>
         <SignInButton onPress={handleSignIn}>

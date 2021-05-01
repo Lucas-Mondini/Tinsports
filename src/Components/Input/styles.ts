@@ -45,3 +45,17 @@ export const InputImageBox = styled.View`
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 `;
+
+export const InputTextDescription = styled.TextInput`
+  border: 1px solid #E6E6E6;
+  width: 100%;
+  height: 150px;
+  border-radius: 5px;
+  font-size: 15px;
+  padding-left: 10px;
+  padding: 10px;
+  font-family: "Poppins-Regular";
+  line-height: 18px;
+
+  align-items: flex-start;
+`;
