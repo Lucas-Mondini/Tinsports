@@ -1,6 +1,9 @@
+import AsyncStorage from '@react-native-community/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, Text, View} from "react-native";
 import Input from '../../Components/Input';
+import api from '../../services/api';
 import { Checkbox, CheckboxChecked, CheckboxLabel, CheckboxView, Container, GameInfo, SubmitButton, SubmitButtonText, SubmitButtonView } from './styles';
 
 const gameIcon = require('../../../assets/images/futbol-small.png');
@@ -12,6 +15,8 @@ const checkIcon = require('../../../assets/images/check.png');
 
 const CreateEvent: React.FC = ()=>{
 
+  const navigation = useNavigation();
+
   const [paid, setPaid] = useState(false);
   const [name, setName] = useState('');
   const [type, setType] = useState('');
@@ -20,14 +25,31 @@ const CreateEvent: React.FC = ()=>{
   const [time, setTime] = useState('');
   const [cost, setCost] = useState('');
   const [description, setDescription] = useState('');
+  const [hostId, setHostId] = useState('60840f07fe32c028144a42dd');
+  const [gameListId, setGameListId] = useState('607c3ee31fa9564b7cd93ee5');
 
+  function handleSubmit(){
+
+    const data = {
+      name, type, location, description,
+      "host_ID": hostId,
+      "gameList_ID": gameListId
+    }
+    
+    console.log(data);
+    AsyncStorage.getItem("auth_token").then(token =>{
+      api.post(`/games`, data,{
+        headers: {
+          auth_token: token
+        },
+      }).then(()=>{
+        navigation.navigate('Main');
+      }).catch(err => console.log(err));
+    }).catch(err => console.log(err));
+  }
 
   function handleCheckbox(){
-    if(paid == true){
-      setPaid(false);
-    } else {
-      setPaid(true);
-    }
+    setPaid(!paid);
   }
 
   return (
@@ -102,12 +124,11 @@ const CreateEvent: React.FC = ()=>{
           />
 
         <SubmitButtonView>
-          <SubmitButton>
+          <SubmitButton onPress={handleSubmit}>
             <SubmitButtonText>Cadastrar partida</SubmitButtonText>
           </SubmitButton>
         </SubmitButtonView>
       </GameInfo>
-      <Text>{name}, {type}, {location}, {cost}, {date}, {time}, {description}</Text>
     </Container>
   );
 }

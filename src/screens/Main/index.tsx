@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-community/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, TouchableOpacity, View } from "react-native";
 import GameCard from "../../Components/GameCard";
 import api from "../../services/api";
@@ -18,7 +18,18 @@ const search = require('../../../assets/images/search.png');
 const user = require('../../../assets/images/user.png');
 const AddButton = require('../../../assets/images/RoundButton.png');
 
+type Game = {
+  _id: string;
+  date: string;
+  location: string;
+  name: string;
+  type: string;
+}
+
 const Main: React.FC = () =>{
+
+  const [games, setGames] = useState<Game[]>();
+
   useEffect(() => {
     AsyncStorage.getItem("auth_token").then(token =>{
       api.get(`/games`,{
@@ -26,7 +37,7 @@ const Main: React.FC = () =>{
           auth_token: token
         }
       }).then(async response => {
-        console.log(response.data);
+        setGames(response.data);
       }).catch(err => console.error(err));
     }).catch(err => console.log(err));
   }, []);
@@ -39,7 +50,7 @@ const Main: React.FC = () =>{
         <TopImage>
           <Image source={goal}/>
         </TopImage>
-        <GameContainer>
+        {/* <GameContainer>
           <GameTitleContainer>
             <GameTitle>Jogos marcados por amigos</GameTitle>
           </GameTitleContainer>
@@ -51,16 +62,18 @@ const Main: React.FC = () =>{
             <GameTitle>Seus Jogos</GameTitle>
           </GameTitleContainer>
           <GameCard icon={futbol} title="Arrastão em Copacabana" location="Copacabana" time="20:30"/>
-        </GameContainer>
+        </GameContainer> */}
 
         <GameContainer>
           <GameTitleContainer>
             <GameTitle>Convites de jogos</GameTitle>
           </GameTitleContainer>
-          <GameCard icon={futbol} title="Samba do criolo doido" location="Maraca" time="18:00"/>
-          <GameCard icon={futbol} title="Arrastão em Copacabana" location="Copacabana" time="20:30"/>
-          <GameCard icon={futbol} title="Fervo do Véio zé" location="Rua augusta" time="18:30"/>
-          <GameCard icon={futbol} title="Fervo do Véio zé" location="Rua augusta" time="18:30"/>
+
+          {games?.map(game =>(
+            <View key={game._id}>
+              <GameCard _id={game._id} icon={futbol} title={game.name} location={game.location} time={"18:00"}/>
+            </View>
+          ))}
         </GameContainer>
       </Games>
 
