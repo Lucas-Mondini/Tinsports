@@ -24,7 +24,7 @@ const GameCard: React.FC<GameCardProps> = ({_id, title, location, time, icon}) =
       <Image source={icon}/>
       <GameInfo>
         <View>
-          <GameTitle>{title.length == 18 ? title : title.substr(0, 18) + "..."}</GameTitle>
+          <GameTitle>{title.length >= 18 ? title.substr(0, 18) + "..." : title}</GameTitle>
           <LocationText>Local: {location}</LocationText>
         </View>
         <TimeText>{time}</TimeText>

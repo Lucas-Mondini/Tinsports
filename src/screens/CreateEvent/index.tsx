@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
+import { useCallback } from 'react';
 import { Image, Text, View} from "react-native";
 import Input from '../../Components/Input';
 import api from '../../services/api';
@@ -26,14 +27,15 @@ const CreateEvent: React.FC = ()=>{
   const [cost, setCost] = useState('');
   const [description, setDescription] = useState('');
   const [hostId, setHostId] = useState('60840f07fe32c028144a42dd');
-  const [gameListId, setGameListId] = useState('607c3ee31fa9564b7cd93ee5');
 
-  function handleSubmit(){
+  const handleSubmit = useCallback(()=>{
+    sendData();
+  }, [sendData]);
 
+  function sendData(){
     const data = {
       name, type, location, description,
-      "host_ID": hostId,
-      "gameList_ID": gameListId
+      "host_ID": hostId
     }
     
     console.log(data);

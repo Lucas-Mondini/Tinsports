@@ -18,12 +18,13 @@ const clockIcon = require('../../../assets/images/clock.png');
 const calendarIcon = require('../../../assets/images/calendar.png');
 const mapIcon = require('../../../assets/images/map-marker.png');
 import { useRoute } from '@react-navigation/native';
+import { useCallback } from "react";
 
 type Params = {
   _id: string;
 }
 
-interface Game {
+type Game = {
   name: string;
   location: string;
   date: string;
@@ -47,75 +48,71 @@ const GameInfo: React.FC = () => {
         headers: {
           auth_token: token
         }
-      }).then(response => {
-        setGame(response.data);
-        console.log(response.data);
+      }).then(async response => {
+        await setGame(response.data);
+        console.log(game);
       }).catch(err => console.error(err));
     }).catch(err => console.log(err));
   }, [params]);
 
 
-  function handleGameEvaluation() {
+  const handleGameEvaluation= useCallback(() =>{
     navigation.navigate("Evaluation");
-  }
+  }, [navigation]);
 
+  if(!game) return <Text>Jogo não encontrado</Text>
   return (
     <Container>
+      <GameInfoView>
+        <Title>{game.name}</Title>
 
-      {game ?
-        <GameInfoView>
-          <Title>{game.name}</Title>
+        <BadgeContainer style={{ paddingRight: 38 }}>
+          <Badge text={game.type? game.type : "oi"} image={gameIcon} />
+          <Badge text="R$10,00" image={moneyIcon} />
+        </BadgeContainer>
 
-          <BadgeContainer style={{ paddingRight: 38 }}>
-            <Badge text={game.type} image={gameIcon} />
-            <Badge text="R$10,00" image={moneyIcon} />
-          </BadgeContainer>
+        <BadgeContainer>
+          <Badge text="R$18:00" image={clockIcon} />
+          <Badge text={game.date} image={calendarIcon} />
+        </BadgeContainer>
 
-          <BadgeContainer>
-            <Badge text="R$18:00" image={clockIcon} />
-            <Badge text={game.date} image={calendarIcon} />
-          </BadgeContainer>
+        <BadgeContainer>
+          <Badge text={game.location} image={mapIcon} />
+        </BadgeContainer>
 
-          <BadgeContainer>
-            <Badge text={game.location} image={mapIcon} />
-          </BadgeContainer>
+        <Description>{game.description}</Description>
 
-          <Description>{game.description}</Description>
+        {
+          (eventFinished)
+            ?
+            <EventFinishedView>
+              <EventFinishedButton onPress={handleGameEvaluation}>
+                <ButtonText>Avaliar participantes</ButtonText>
+              </EventFinishedButton>
+            </EventFinishedView>
+            :
+            <EmptyView></EmptyView>
+        }
 
-          {
-            (eventFinished)
-              ?
-              <EventFinishedView>
-                <EventFinishedButton onPress={handleGameEvaluation}>
-                  <ButtonText>Avaliar participantes</ButtonText>
-                </EventFinishedButton>
-              </EventFinishedView>
-              :
-              <EmptyView></EmptyView>
-          }
-
-          <UsersTitle>Lista de participantes</UsersTitle>
-          <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-          <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-          <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-          <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-          <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-          <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-          <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-          <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-          <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-          <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-          <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-          <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-          <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-          <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-          <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-          <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-          <View style={{ paddingBottom: 25 }}></View>
-        </GameInfoView>
-        :
-        <Text>Jogo não encontrado</Text>
-      }
+        <UsersTitle>Lista de participantes</UsersTitle>
+        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
+        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
+        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
+        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
+        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
+        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
+        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
+        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
+        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
+        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
+        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
+        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
+        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
+        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
+        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
+        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
+        <View style={{ paddingBottom: 25 }}></View>
+      </GameInfoView>
     </Container>
   );
 }

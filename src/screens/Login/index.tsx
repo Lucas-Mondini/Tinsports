@@ -13,7 +13,6 @@ const Login: React.FC = () => {
   const navigation = useNavigation();
 
   const handleSignIn = useCallback(() =>{
-
     api.post(`/login`,{
       email, pass
     }).then(async response => {
@@ -21,7 +20,6 @@ const Login: React.FC = () => {
 
       navigation.navigate('Main');
     }).catch(err => console.log(err));
-
   },[navigation]);
 
   return (

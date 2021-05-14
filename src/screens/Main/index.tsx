@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-community/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { Image, TouchableOpacity, View } from "react-native";
 import GameCard from "../../Components/GameCard";
 import api from "../../services/api";
@@ -29,20 +30,24 @@ type Game = {
 const Main: React.FC = () =>{
 
   const [games, setGames] = useState<Game[]>();
+  const isFocused = useIsFocused();
 
+  async function getGames(){
+    const token = await AsyncStorage.getItem("auth_token");
+    const result = await api.get(`/games`,{headers: {auth_token: token}});
+
+    return setGames(result.data);
+  }
+  
   useEffect(() => {
-    AsyncStorage.getItem("auth_token").then(token =>{
-      api.get(`/games`,{
-        headers: {
-          auth_token: token
-        }
-      }).then(async response => {
-        setGames(response.data);
-      }).catch(err => console.error(err));
-    }).catch(err => console.log(err));
-  }, []);
+    getGames();
+  }, [isFocused]);
 
   const navigation = useNavigation();
+
+  const handleNavigateToCreateEvent = useCallback(() =>{
+    navigation.navigate('Profile');
+  }, [navigation]);
 
   return (
     <Container>
@@ -101,9 +106,7 @@ const Main: React.FC = () =>{
           </TouchableOpacity>
         </View>
         <View>
-          <TouchableOpacity onPress={() =>{
-            navigation.navigate('Profile');
-          }}>
+          <TouchableOpacity onPress={handleNavigateToCreateEvent}>
             <Image source={user}/>
           </TouchableOpacity>
         </View>
