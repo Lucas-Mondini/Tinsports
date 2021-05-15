@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import { useCallback } from 'react';
 import { Image, Text, View} from "react-native";
 import Input from '../../Components/Input';
@@ -14,9 +14,17 @@ const calendarIcon = require('../../../assets/images/calendar.png');
 const mapIcon = require('../../../assets/images/map-marker.png');
 const checkIcon = require('../../../assets/images/check.png');
 
+interface User{
+  email: string;
+  _id: string;
+  name: string;
+  auth_token: string;
+}
+
 const CreateEvent: React.FC = ()=>{
 
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
   const [paid, setPaid] = useState(false);
   const [name, setName] = useState('');
@@ -27,28 +35,44 @@ const CreateEvent: React.FC = ()=>{
   const [cost, setCost] = useState('');
   const [description, setDescription] = useState('');
   const [hostId, setHostId] = useState('60840f07fe32c028144a42dd');
+  const [user, setUser] = useState<User>();
+
+  async function getDataFromAsyncStorage(){
+    const data = await AsyncStorage.getItem("user");
+
+    if(!data) {
+      navigation.navigate("Home")
+    } else {
+      setUser(JSON.parse(data));
+    };
+  }
+
+  async function sendData(){
+    const data = {
+      name, type, location, description,
+      "host_ID": hostId
+    }    
+    console.log(data)
+    if(user){
+      await api.post(`/games`, data,{
+        headers: {
+          auth_token: user.auth_token
+        },
+      });
+
+      navigation.navigate('Main');
+    } else {
+      navigation.navigate('Home');
+    }
+  }
 
   const handleSubmit = useCallback(()=>{
     sendData();
   }, [sendData]);
 
-  function sendData(){
-    const data = {
-      name, type, location, description,
-      "host_ID": hostId
-    }
-    
-    console.log(data);
-    AsyncStorage.getItem("auth_token").then(token =>{
-      api.post(`/games`, data,{
-        headers: {
-          auth_token: token
-        },
-      }).then(()=>{
-        navigation.navigate('Main');
-      }).catch(err => console.log(err));
-    }).catch(err => console.log(err));
-  }
+  useEffect(()=>{
+    getDataFromAsyncStorage();
+  }, [isFocused]);
 
   function handleCheckbox(){
     setPaid(!paid);

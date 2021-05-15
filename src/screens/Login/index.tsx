@@ -14,8 +14,11 @@ const Login: React.FC = () => {
   const isFocused = useIsFocused();
 
   async function checkIfIsLoggedIn() {
-    const token = await AsyncStorage.getItem('auth_token');
-    if(token) navigation.navigate('Main');
+    const user = await AsyncStorage.getItem('user');
+    if(user) {
+      const {auth_token} = JSON.parse(user);
+      if(auth_token) navigation.navigate('Main');
+    }
   }
 
   useEffect(() =>{
@@ -27,7 +30,7 @@ const Login: React.FC = () => {
       email, pass
     });
     
-    await AsyncStorage.setItem("auth_token", response.data.auth_token);
+    await AsyncStorage.setItem("user", JSON.stringify(response.data));
 
     navigation.navigate('Main');
   },[navigation]);

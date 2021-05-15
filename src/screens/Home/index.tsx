@@ -24,8 +24,12 @@ const Home: React.FC = () => {
 
   async function checkIfIsLoggedIn() {
     try{
-      const token = await AsyncStorage.getItem('auth_token');
-      if(token) navigation.navigate('Main');
+      const user = await AsyncStorage.getItem('user');
+      if(user) {
+        const {auth_token} = JSON.parse(user);
+        if(auth_token) navigation.navigate('Main');
+      }
+
       setLoading(false);
     } catch(error) {
       console.log(error);

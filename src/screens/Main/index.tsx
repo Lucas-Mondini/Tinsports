@@ -36,14 +36,20 @@ const Main: React.FC = () =>{
   //navigation.reset({index: 0, routes:[{name: 'Main'}]});
 
   async function getGames(){
-    const token = await AsyncStorage.getItem("auth_token");
+    let auth_token = '';
+    const user = await AsyncStorage.getItem('user');
 
-    if(!token){
-      navigation.navigate("Login");
+    if(user) {
+      auth_token = JSON.parse(user).auth_token;
+
+      if(!auth_token){
+        console.log(auth_token);
+        navigation.navigate("Home");
+      }
     }
 
     try{
-      const result = await api.get(`/games`,{headers: {auth_token: token}});
+      const result = await api.get(`/games`,{headers: {auth_token: auth_token}});
   
       if(result.status == 401){
         await AsyncStorage.removeItem("auth_token");

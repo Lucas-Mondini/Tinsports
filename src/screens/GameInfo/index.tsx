@@ -31,6 +31,7 @@ type Game = {
   _id: string;
   type: string;
   description: string;
+  value: number;
 }
 
 const GameInfo: React.FC = () => {
@@ -46,31 +47,33 @@ const GameInfo: React.FC = () => {
   const [game, setGame] = useState<Game>();
 
   async function getGameInfo(){
-    const token = await AsyncStorage.getItem("auth_token");
+    const user = await AsyncStorage.getItem("user");
 
-    if(!token){
+    if(!user){
       navigation.navigate("Home");
-    }
-    try{
-      const result = await api.get(`/games/${params._id}`, {
-        headers: {
-          auth_token: token
+    } else{
+      try{
+        const token = JSON.parse(user).auth_token
+
+        const result = await api.get(`/games/${params._id}`, {
+          headers: {
+            auth_token: token
+          }
+        });
+        
+        if(result.status == 401 || !token){
+          await AsyncStorage.removeItem("user");
+          navigation.navigate("Home");
         }
-      });
-      
-      if(result.status == 401 || !token){
-        await AsyncStorage.removeItem("auth_token");
+
+        if(!mountedRef.current) return null;
+
+        setLoading(false);
+        setGame(result.data[0]);
+      } catch(err){
+        await AsyncStorage.removeItem("user");
         navigation.navigate("Home");
       }
-
-      if(!mountedRef.current) return null;
-
-      setLoading(false);
-      setGame(result.data);
-      console.log(result.data);
-    } catch(err){
-      await AsyncStorage.removeItem("auth_token");
-      navigation.navigate("Home");
     }
   }
 
@@ -98,11 +101,11 @@ const GameInfo: React.FC = () => {
 
         <BadgeContainer style={{ paddingRight: 38 }}>
           <Badge text={game.type} image={gameIcon} />
-          <Badge text="R$10,00" image={moneyIcon} />
+          <Badge text={game.value ? String(game.value.toFixed(2)).replace('.', ',') : '--'} image={moneyIcon} />
         </BadgeContainer>
 
         <BadgeContainer>
-          <Badge text="R$18:00" image={clockIcon} />
+          <Badge text="18:00" image={clockIcon} />
           <Badge text={game.date} image={calendarIcon} />
         </BadgeContainer>
 
