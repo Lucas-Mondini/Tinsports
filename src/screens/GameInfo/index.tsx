@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-community/async-storage";
-import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import React, { useEffect, useRef, useState } from "react";
 import { ImageSourcePropType, Text, View } from "react-native";
 import Badge from "../../Components/Badge";
 import UserCard from "../../Components/UserCard";
@@ -38,36 +38,66 @@ const GameInfo: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const params = route.params as Params;
+  const isFocused = useIsFocused();
+  const mountedRef = useRef(true);
 
+  const [loading, setLoading] = useState(true);
   const [eventFinished, setEventFinished] = useState(false);
   const [game, setGame] = useState<Game>();
 
-  useEffect(() => {
-    AsyncStorage.getItem("auth_token").then(token => {
-      api.get(`/games/${params._id}`, {
+  async function getGameInfo(){
+    const token = await AsyncStorage.getItem("auth_token");
+
+    if(!token){
+      navigation.navigate("Home");
+    }
+    try{
+      const result = await api.get(`/games/${params._id}`, {
         headers: {
           auth_token: token
         }
-      }).then(async response => {
-        await setGame(response.data);
-        console.log(game);
-      }).catch(err => console.error(err));
-    }).catch(err => console.log(err));
-  }, [params]);
+      });
+      
+      if(result.status == 401 || !token){
+        await AsyncStorage.removeItem("auth_token");
+        navigation.navigate("Home");
+      }
 
+      if(!mountedRef.current) return null;
+
+      setLoading(false);
+      setGame(result.data);
+      console.log(result.data);
+    } catch(err){
+      await AsyncStorage.removeItem("auth_token");
+      navigation.navigate("Home");
+    }
+  }
 
   const handleGameEvaluation= useCallback(() =>{
     navigation.navigate("Evaluation");
   }, [navigation]);
 
+  useEffect(() => {
+    getGameInfo();
+  }, [isFocused]);
+
+  useEffect(() =>{
+    return () => { 
+      mountedRef.current = false
+    }
+  },[isFocused]);
+
+  if(loading) return <Text>Carregando...</Text>
   if(!game) return <Text>Jogo não encontrado</Text>
+
   return (
     <Container>
       <GameInfoView>
         <Title>{game.name}</Title>
 
         <BadgeContainer style={{ paddingRight: 38 }}>
-          <Badge text={game.type? game.type : "oi"} image={gameIcon} />
+          <Badge text={game.type} image={gameIcon} />
           <Badge text="R$10,00" image={moneyIcon} />
         </BadgeContainer>
 
@@ -95,7 +125,7 @@ const GameInfo: React.FC = () => {
         }
 
         <UsersTitle>Lista de participantes</UsersTitle>
-        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
+        <UserCard photo={photo} name="João" confirmation="Não confirmado" />
         <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
         <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
         <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />

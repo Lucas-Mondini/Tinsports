@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import api from '../../services/api';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
@@ -11,15 +11,25 @@ const Login: React.FC = () => {
   const [pass, setPass] = useState('123456');
 
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
-  const handleSignIn = useCallback(() =>{
-    api.post(`/login`,{
+  async function checkIfIsLoggedIn() {
+    const token = await AsyncStorage.getItem('auth_token');
+    if(token) navigation.navigate('Main');
+  }
+
+  useEffect(() =>{
+    checkIfIsLoggedIn();
+  }, [isFocused]);
+
+  const handleSignIn = useCallback(async () =>{
+    const response = await api.post(`/login`,{
       email, pass
-    }).then(async response => {
-      await AsyncStorage.setItem("auth_token", response.data.auth_token);
+    });
+    
+    await AsyncStorage.setItem("auth_token", response.data.auth_token);
 
-      navigation.navigate('Main');
-    }).catch(err => console.log(err));
+    navigation.navigate('Main');
   },[navigation]);
 
   return (

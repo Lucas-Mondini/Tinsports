@@ -1,6 +1,9 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import {useNavigation} from '@react-navigation/core';
-import React, {useCallback} from 'react';
-import {Image} from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import React, {useCallback, useState} from 'react';
+import { useEffect } from 'react';
+import {Image, Text} from 'react-native';
 
 import {
   Container,
@@ -16,6 +19,18 @@ const heroImg = require('../../../assets/images/hero.png');
 
 const Home: React.FC = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const [loading,setLoading] = useState(true);
+
+  async function checkIfIsLoggedIn() {
+    try{
+      const token = await AsyncStorage.getItem('auth_token');
+      if(token) navigation.navigate('Main');
+      setLoading(false);
+    } catch(error) {
+      console.log(error);
+    }
+  }
 
   const handleSignIn = useCallback(() => {
     navigation.navigate('Login');
@@ -24,6 +39,13 @@ const Home: React.FC = () => {
   const handleRegister = useCallback(() => {
     navigation.navigate('Register');
   }, [navigation]);
+
+  useEffect(() =>{
+    checkIfIsLoggedIn();
+    setLoading(false);
+  }, [isFocused]);
+
+  if(loading) return <Text>Carregando...</Text>
 
   return (
     <Container>

@@ -1,5 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import api from '../../services/api';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
@@ -7,6 +8,16 @@ import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} fro
 const Register: React.FC = () => {
 
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
+  async function checkIfIsLoggedIn() {
+    const token = await AsyncStorage.getItem('auth_token');
+    if(token) navigation.navigate('Main');
+  }
+
+  useEffect(() =>{
+    checkIfIsLoggedIn();
+  }, [isFocused]);
 
   const [name, setName] = useState('jdascgas@gmail.com');
   const [email, setEmail] = useState('');
