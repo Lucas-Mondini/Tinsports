@@ -43,7 +43,6 @@ const Main: React.FC = () =>{
       auth_token = JSON.parse(user).auth_token;
 
       if(!auth_token){
-        console.log(auth_token);
         navigation.navigate("Home");
       }
     }

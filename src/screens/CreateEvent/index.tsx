@@ -52,7 +52,7 @@ const CreateEvent: React.FC = ()=>{
       name, type, location, description,
       "host_ID": hostId
     }    
-    console.log(data)
+    
     if(user){
       await api.post(`/games`, data,{
         headers: {

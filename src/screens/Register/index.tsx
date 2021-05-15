@@ -25,12 +25,9 @@ const Register: React.FC = () => {
   const [confPass, setConfPass] = useState('');
 
   const handleSignIn = useCallback(() =>{
-
     api.post(`/register/user`,{
       name, email, pass, confPass
     }).then(response => {
-      console.log(response);
-
       navigation.navigate('Main');
     }).catch(err => console.log(err));
 

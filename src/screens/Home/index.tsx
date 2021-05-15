@@ -23,17 +23,13 @@ const Home: React.FC = () => {
   const [loading,setLoading] = useState(true);
 
   async function checkIfIsLoggedIn() {
-    try{
-      const user = await AsyncStorage.getItem('user');
-      if(user) {
-        const {auth_token} = JSON.parse(user);
-        if(auth_token) navigation.navigate('Main');
-      }
-
-      setLoading(false);
-    } catch(error) {
-      console.log(error);
+    const user = await AsyncStorage.getItem('user');
+    if(user) {
+      const {auth_token} = JSON.parse(user);
+      if(auth_token) navigation.navigate('Main');
     }
+
+    setLoading(false);
   }
 
   const handleSignIn = useCallback(() => {
