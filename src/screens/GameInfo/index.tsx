@@ -19,6 +19,7 @@ const calendarIcon = require('../../../assets/images/calendar.png');
 const mapIcon = require('../../../assets/images/map-marker.png');
 import { useRoute } from '@react-navigation/native';
 import { useCallback } from "react";
+import { formatMoney } from "../../utils/functions";
 
 type Params = {
   _id: string;
@@ -101,7 +102,7 @@ const GameInfo: React.FC = () => {
 
         <BadgeContainer style={{ paddingRight: 38 }}>
           <Badge text={game.type} image={gameIcon} />
-          <Badge text={game.value ? String(game.value.toFixed(2)).replace('.', ',') : '--'} image={moneyIcon} />
+          <Badge text={formatMoney(game.value)} image={moneyIcon} />
         </BadgeContainer>
 
         <BadgeContainer>

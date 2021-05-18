@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import api from '../../services/api';
+import { formatName } from '../../utils/functions';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
 
@@ -10,19 +11,19 @@ const Register: React.FC = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
+  const [name, setName] = useState('jdascgas@gmail.com');
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const [confPass, setConfPass] = useState('');
+
   async function checkIfIsLoggedIn() {
     const token = await AsyncStorage.getItem('auth_token');
     if(token) navigation.navigate('Main');
   }
 
-  useEffect(() =>{
-    checkIfIsLoggedIn();
-  }, [isFocused]);
-
-  const [name, setName] = useState('jdascgas@gmail.com');
-  const [email, setEmail] = useState('');
-  const [pass, setPass] = useState('');
-  const [confPass, setConfPass] = useState('');
+  function formatUserName(userName: string){
+    setName(formatName(userName));
+  }
 
   const handleSignIn = useCallback(() =>{
     api.post(`/register/user`,{
@@ -30,9 +31,12 @@ const Register: React.FC = () => {
     }).then(response => {
       navigation.navigate('Main');
     }).catch(err => console.log(err));
-
+    
   },[navigation]);
-
+  
+  useEffect(() =>{
+    checkIfIsLoggedIn();
+  }, [isFocused]);
 
   return (
   
@@ -41,7 +45,7 @@ const Register: React.FC = () => {
       <Input 
         placeholder="Digite seu nome" 
         value={name}
-        onChangeText={setName}/>
+        onChangeText={formatUserName}/>
 
       <Label>Email</Label>
       <Input 
