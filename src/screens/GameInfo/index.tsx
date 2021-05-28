@@ -25,10 +25,22 @@ type Params = {
   _id: string;
 }
 
+type User = {
+  _id: string;
+  name: string;
+  email: string;
+  confirmed: boolean;
+}
+
+type GameList = {
+  invitedUsers: User[];
+}
+
 type Game = {
   name: string;
   location: string;
   date: string;
+  hour: string;
   _id: string;
   type: string;
   description: string;
@@ -42,39 +54,42 @@ const GameInfo: React.FC = () => {
   const params = route.params as Params;
   const isFocused = useIsFocused();
   const mountedRef = useRef(true);
-
   const [loading, setLoading] = useState(true);
+
   const [eventFinished, setEventFinished] = useState(false);
   const [game, setGame] = useState<Game>();
+  const [gameList, setGameList] = useState<GameList>();
 
   async function getGameInfo(){
     const user = await AsyncStorage.getItem("user");
 
     if(!user){
       navigation.navigate("Home");
-    } else{
-      try{
-        const token = JSON.parse(user).auth_token
+      return;
+    } 
+      
+    try{
+      const token = JSON.parse(user).auth_token
 
-        const result = await api.get(`/games/${params._id}`, {
-          headers: {
-            auth_token: token
-          }
-        });
-        
-        if(result.status == 401 || !token){
-          await AsyncStorage.removeItem("user");
-          navigation.navigate("Home");
+      const result = await api.get(`/games/${params._id}`, {
+        headers: {
+          auth_token: token
         }
-
-        if(!mountedRef.current) return null;
-
-        setLoading(false);
-        setGame(result.data[0]);
-      } catch(err){
+      });
+      
+      if(result.status == 401 || !token){
         await AsyncStorage.removeItem("user");
         navigation.navigate("Home");
       }
+
+      if(!mountedRef.current) return null;
+console.log(params._id)
+      setLoading(false);
+      setGame(result.data.gameInfo);
+      setGameList(result.data.gameList);
+    } catch(err){
+      await AsyncStorage.removeItem("user");
+      navigation.navigate("Home");
     }
   }
 
@@ -93,7 +108,7 @@ const GameInfo: React.FC = () => {
   },[isFocused]);
 
   if(loading) return <Text>Carregando...</Text>
-  if(!game) return <Text>Jogo não encontrado</Text>
+  if(!game || !gameList) return <Text>Jogo não encontrado</Text>
 
   return (
     <Container>
@@ -106,7 +121,7 @@ const GameInfo: React.FC = () => {
         </BadgeContainer>
 
         <BadgeContainer>
-          <Badge text="18:00" image={clockIcon} />
+          <Badge text={game.hour} image={clockIcon} />
           <Badge text={game.date} image={calendarIcon} />
         </BadgeContainer>
 
@@ -128,23 +143,18 @@ const GameInfo: React.FC = () => {
             <EmptyView></EmptyView>
         }
 
-        <UsersTitle>Lista de participantes</UsersTitle>
-        <UserCard photo={photo} name="João" confirmation="Não confirmado" />
-        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
-        <UserCard photo={photo} name="João das Candongas" confirmation="Não confirmado" />
-        <UserCard photo={photo} name="Pedrão da Massa" confirmation="Confirmado" />
+        
+        {(gameList.invitedUsers.length > 0) ?
+          <View>
+            <UsersTitle>Lista de participantes</UsersTitle>
+
+            {gameList.invitedUsers.map(user =>{
+              return (<UserCard photo={photo} name={user.name} confirmation={user.confirmed} />)
+            })}
+          </View>
+
+          : <View style={{ paddingBottom: 100 }}></View>
+        }
         <View style={{ paddingBottom: 25 }}></View>
       </GameInfoView>
     </Container>

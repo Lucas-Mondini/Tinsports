@@ -17,21 +17,22 @@ const Register: React.FC = () => {
   const [confPass, setConfPass] = useState('');
 
   async function checkIfIsLoggedIn() {
-    const token = await AsyncStorage.getItem('auth_token');
-    if(token) navigation.navigate('Main');
+    const user = await AsyncStorage.getItem('user');
+    if(user) navigation.navigate('Main');
   }
 
   function formatUserName(userName: string){
     setName(formatName(userName));
   }
 
-  const handleSignIn = useCallback(() =>{
-    api.post(`/register/user`,{
+  const handleSignIn = useCallback(async () =>{
+    const response = await api.post(`/register/user`,{
       name, email, pass, confPass
-    }).then(response => {
-      navigation.navigate('Main');
-    }).catch(err => console.log(err));
+    });
     
+    await AsyncStorage.setItem('user', JSON.stringify(response.data));
+    
+    navigation.reset({index: 0, routes:[{name: 'Main'}]});
   },[navigation]);
   
   useEffect(() =>{

@@ -47,14 +47,16 @@ export const ReputationText = styled.Text`
   line-height: 18px;
 `;
 
-export const ConfirmationText = styled.Text`
+export const ConfirmedText = styled.Text`
   color: #686868;
   font-size: 12px;
   padding-top: 28px;
-  color: ${props => props.theme.main};
+  color: #268E01;
 `;
-ConfirmationText.defaultProps = {
-  theme:{
-    main: "#268E01"
-  }
-}
+
+export const UnconfirmedText = styled.Text`
+  color: #686868;
+  font-size: 12px;
+  padding-top: 28px;
+  color: #C50000;
+`;

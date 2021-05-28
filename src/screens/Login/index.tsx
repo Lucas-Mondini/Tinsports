@@ -31,8 +31,8 @@ const Login: React.FC = () => {
     });
     
     await AsyncStorage.setItem("user", JSON.stringify(response.data));
-
-    navigation.navigate('Main');
+    
+    navigation.reset({index: 0, routes:[{name: 'Main'}]});
   },[navigation]);
 
   return (

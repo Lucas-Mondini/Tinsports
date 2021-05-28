@@ -26,7 +26,7 @@ const Home: React.FC = () => {
     const user = await AsyncStorage.getItem('user');
     if(user) {
       const {auth_token} = JSON.parse(user);
-      if(auth_token) navigation.navigate('Main');
+      if(auth_token) navigation.reset({index: 0, routes:[{name: 'Main'}]});
     }
 
     setLoading(false);

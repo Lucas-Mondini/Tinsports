@@ -31,34 +31,41 @@ const CreateEvent: React.FC = ()=>{
   const [type, setType] = useState('');
   const [location, setLocation] = useState('');
   const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [cost, setCost] = useState('');
+  const [hour, setHour] = useState('');
+  const [value, setValue] = useState('');
   const [description, setDescription] = useState('');
-  const [hostId, setHostId] = useState('60840f07fe32c028144a42dd');
   const [user, setUser] = useState<User>();
 
   async function getDataFromAsyncStorage(){
     const data = await AsyncStorage.getItem("user");
 
     if(!data) {
-      navigation.navigate("Home")
+      navigation.navigate("Home");
+      return;
     } else {
       setUser(JSON.parse(data));
     };
   }
 
   async function sendData(){
-    const data = {
-      name, type, location, description,
-      "host_ID": hostId
-    }    
-    
+
     if(user){
-      await api.post(`/games`, data,{
-        headers: {
-          auth_token: user.auth_token
-        },
-      });
+
+      const data = {
+        name, type, location, description, hour, date, value,
+        "host_ID": user?.auth_token
+      }    
+console.log(data);
+      try{
+        await api.post(`/games`, data,{
+          headers: {
+            auth_token: user.auth_token
+          },
+        });
+      } catch(err){
+        console.log(err);
+        return
+      }
 
       navigation.navigate('Main');
     } else {
@@ -70,13 +77,13 @@ const CreateEvent: React.FC = ()=>{
     sendData();
   }, [sendData]);
 
-  useEffect(()=>{
-    getDataFromAsyncStorage();
-  }, [isFocused]);
-
   function handleCheckbox(){
     setPaid(!paid);
   }
+
+  useEffect(()=>{
+    getDataFromAsyncStorage();
+  }, [isFocused]);
 
   return (
     <Container>
@@ -110,8 +117,8 @@ const CreateEvent: React.FC = ()=>{
           <Input 
             label="Hora" 
             image={clockIcon}
-            value={time}
-            setValue={setTime}
+            value={hour}
+            setValue={setHour}
             />
         </View>
 
@@ -135,8 +142,8 @@ const CreateEvent: React.FC = ()=>{
             <Input 
               label="Valor" 
               image={moneyIcon}
-              value={cost}
-              setValue={setCost}
+              value={value}
+              setValue={setValue}
               />
             :
             <View />

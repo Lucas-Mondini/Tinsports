@@ -54,7 +54,7 @@ const Profile: React.FC = () => {
           </EditProfileButton>
         </UserImageContainer>
 
-        <UserName>{user.email}</UserName>
+        <UserName>{user.name}</UserName>
 
         <MetricText>Reputação</MetricText>
         <MetricBlock>

@@ -1,20 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
-import { ConfirmationText, User, UserInfo, UserName, UserPhoto, ReputationText, ReputationView} from './styles';
+import { UnconfirmedText, User, UserInfo, UserName, UserPhoto, ReputationText, ReputationView, ConfirmedText} from './styles';
 
 
 const metric = require('../../../assets/images/Metric.png');
-
-const themeRed = {
-  main: '#C50000'
-}
 
 interface UserCardProps{
   name: string;
   //reputation: number;
   photo: ImageSourcePropType;
-  confirmation: string;
+  confirmation: boolean;
 }
 
 const UserCard: React.FC<UserCardProps> = ({name, photo, confirmation})=>{
@@ -37,11 +33,11 @@ const UserCard: React.FC<UserCardProps> = ({name, photo, confirmation})=>{
           </ReputationView>
         </View>
 
-        {(confirmation == "Confirmado")
+        {(confirmation)
           ?
-          <ConfirmationText> {confirmation} </ConfirmationText>
+          <ConfirmedText>Confirmado</ConfirmedText>
           :
-          <ConfirmationText theme={themeRed}> {confirmation} </ConfirmationText>
+          <UnconfirmedText>Não confirmado</UnconfirmedText>
         }
       </UserInfo>
     </User>

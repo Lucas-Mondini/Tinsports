@@ -25,6 +25,7 @@ type Game = {
   location: string;
   name: string;
   type: string;
+  hour: string;
 }
 
 const Main: React.FC = () =>{
@@ -33,7 +34,6 @@ const Main: React.FC = () =>{
   const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  //navigation.reset({index: 0, routes:[{name: 'Main'}]});
 
   async function getGames(){
     let auth_token = '';
@@ -99,12 +99,13 @@ const Main: React.FC = () =>{
             <GameTitle>Convites de jogos</GameTitle>
           </GameTitleContainer>
 
-          {games?.map(game =>(
-            <View key={game._id}>
-              <GameCard _id={game._id} icon={futbol} title={game.name} location={game.location} time={"18:00"}/>
-            </View>
-          ))}
-        </GameContainer>
+            {games?.map(game =>(
+              <View key={game._id}>
+                <GameCard _id={game._id} icon={futbol} title={game.name} location={game.location} time={game.hour}/>
+              </View>
+            ))}
+
+          </GameContainer>
       </Games>
 
       <BottomNavbar>
