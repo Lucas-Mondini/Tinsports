@@ -20,6 +20,7 @@ const mapIcon = require('../../../assets/images/map-marker.png');
 import { useRoute } from '@react-navigation/native';
 import { useCallback } from "react";
 import { formatMoney } from "../../utils/functions";
+import { useAuth } from "../../Contexts/Auth";
 
 type Params = {
   _id: string;
@@ -48,7 +49,7 @@ type Game = {
 }
 
 const GameInfo: React.FC = () => {
-  
+
   const navigation = useNavigation();
   const route = useRoute();
   const params = route.params as Params;
@@ -59,37 +60,36 @@ const GameInfo: React.FC = () => {
   const [eventFinished, setEventFinished] = useState(false);
   const [game, setGame] = useState<Game>();
   const [gameList, setGameList] = useState<GameList>();
+  const {user, signOut} = useAuth();
 
   async function getGameInfo(){
-    const user = await AsyncStorage.getItem("user");
 
     if(!user){
-      navigation.navigate("Home");
+      signOut();
       return;
-    } 
-      
+    }
+
     try{
-      const token = JSON.parse(user).auth_token
+      const token = user.auth_token
 
       const result = await api.get(`/games/${params._id}`, {
         headers: {
           auth_token: token
         }
       });
-      
+
       if(result.status == 401 || !token){
         await AsyncStorage.removeItem("user");
-        navigation.navigate("Home");
+
       }
 
       if(!mountedRef.current) return null;
-console.log(params._id)
+
       setLoading(false);
       setGame(result.data.gameInfo);
       setGameList(result.data.gameList);
     } catch(err){
-      await AsyncStorage.removeItem("user");
-      navigation.navigate("Home");
+      signOut();
     }
   }
 
@@ -102,7 +102,7 @@ console.log(params._id)
   }, [isFocused]);
 
   useEffect(() =>{
-    return () => { 
+    return () => {
       mountedRef.current = false
     }
   },[isFocused]);
@@ -143,7 +143,6 @@ console.log(params._id)
             <EmptyView></EmptyView>
         }
 
-        
         {(gameList.invitedUsers.length > 0) ?
           <View>
             <UsersTitle>Lista de participantes</UsersTitle>

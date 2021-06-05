@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useCallback } from "react";
 import { Image, TouchableOpacity, View, Text} from "react-native";
 import GameCard from "../../Components/GameCard";
+import { useAuth } from "../../Contexts/Auth";
 import api from "../../services/api";
 
 import { 
@@ -34,6 +35,7 @@ const Main: React.FC = () =>{
   const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
+  const {signOut} = useAuth();
 
   async function getGames(){
     let auth_token = '';
@@ -49,21 +51,20 @@ const Main: React.FC = () =>{
 
     try{
       const result = await api.get(`/games`,{headers: {auth_token: auth_token}});
-  
+
       if(result.status == 401){
         await AsyncStorage.removeItem("auth_token");
         navigation.navigate("Login");
       }
-      
+
       setLoading(false);
       setGames(result.data);
     } catch(err){
-      await AsyncStorage.removeItem("auth_token");
+      signOut();
       setLoading(false);
-      navigation.navigate("Login");
     }
   }
-  
+
   const handleNavigateToCreateEvent = useCallback(() =>{
     navigation.navigate('Profile');
   }, [navigation]);
@@ -110,7 +111,7 @@ const Main: React.FC = () =>{
 
       <BottomNavbar>
         <View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={signOut}>
             <Image source={gear}/>
           </TouchableOpacity>
         </View>

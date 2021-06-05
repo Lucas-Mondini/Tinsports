@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useCallback } from 'react';
 import { Image, Text, View} from "react-native";
 import Input from '../../Components/Input';
+import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import { Checkbox, CheckboxChecked, CheckboxLabel, CheckboxView, Container, GameInfo, SubmitButton, SubmitButtonText, SubmitButtonView } from './styles';
 
@@ -34,18 +35,8 @@ const CreateEvent: React.FC = ()=>{
   const [hour, setHour] = useState('');
   const [value, setValue] = useState('');
   const [description, setDescription] = useState('');
-  const [user, setUser] = useState<User>();
-
-  async function getDataFromAsyncStorage(){
-    const data = await AsyncStorage.getItem("user");
-
-    if(!data) {
-      navigation.navigate("Home");
-      return;
-    } else {
-      setUser(JSON.parse(data));
-    };
-  }
+  //const [user, setUser] = useState<User>();
+  const {user} = useAuth();
 
   async function sendData(){
 
@@ -54,8 +45,8 @@ const CreateEvent: React.FC = ()=>{
       const data = {
         name, type, location, description, hour, date, value,
         "host_ID": user?.auth_token
-      }    
-console.log(data);
+      }
+
       try{
         await api.post(`/games`, data,{
           headers: {
@@ -82,40 +73,40 @@ console.log(data);
   }
 
   useEffect(()=>{
-    getDataFromAsyncStorage();
+    //getDataFromAsyncStorage();
   }, [isFocused]);
 
   return (
     <Container>
       <GameInfo>
-        <Input 
-          label="Nome" 
+        <Input
+          label="Nome"
           value={name}
           setValue={setName}
           />
 
-        <Input 
-          label="Tipo de partida" 
+        <Input
+          label="Tipo de partida"
           image={gameIcon}
           value={type}
           setValue={setType}
           />
-        <Input 
-          label="Local" 
+        <Input
+          label="Local"
           image={mapIcon}
           value={location}
           setValue={setLocation}
           />
 
         <View>
-          <Input 
-            label="Data" 
+          <Input
+            label="Data"
             image={calendarIcon}
             value={date}
           setValue={setDate}
             />
-          <Input 
-            label="Hora" 
+          <Input
+            label="Hora"
             image={clockIcon}
             value={hour}
             setValue={setHour}
@@ -126,21 +117,21 @@ console.log(data);
             ?
             <CheckboxView onPress={handleCheckbox}>
               <Checkbox/>
-              <CheckboxLabel>Evento pago?</CheckboxLabel>  
+              <CheckboxLabel>Evento pago?</CheckboxLabel>
             </CheckboxView>
             :
             <CheckboxView onPress={handleCheckbox}>
               <CheckboxChecked>
                 <Image source={checkIcon} />
               </CheckboxChecked>
-              <CheckboxLabel>Evento pago!</CheckboxLabel>  
+              <CheckboxLabel>Evento pago!</CheckboxLabel>
             </CheckboxView>
           }
 
         {(paid == true)
             ?
-            <Input 
-              label="Valor" 
+            <Input
+              label="Valor"
               image={moneyIcon}
               value={value}
               setValue={setValue}
@@ -149,8 +140,8 @@ console.log(data);
             <View />
         }
 
-        <Input 
-          label="Descrição" 
+        <Input
+          label="Descrição"
           multilineActive={true}
           value={description}
           setValue={setDescription}

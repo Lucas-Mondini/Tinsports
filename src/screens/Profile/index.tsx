@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Image, Text } from 'react-native';
+import { useAuth } from '../../Contexts/Auth';
 import { 
   Container, EditProfileButton, EditProfileLink, 
   EditProfileText, MetricBlock, MetricText, 
@@ -25,21 +26,12 @@ interface User{
 }
 
 const Profile: React.FC = () => {
-  const navigation = useNavigation();
-  const [user, setUser] = useState<User>();
-  const isFocused = useIsFocused();
 
-  async function getUserData(){
-    const userData = await AsyncStorage.getItem('user');
-    if(userData) {
-      setUser(JSON.parse(userData));
-    } else {
-      navigation.navigate("Home");
-    }
-  }
+  const isFocused = useIsFocused();
+  const {user, checkLogin} = useAuth();
 
   useEffect(() =>{
-    getUserData();
+    checkLogin();
   },[isFocused]);
 
   if(!user) return <Text>Carregando...</Text>
