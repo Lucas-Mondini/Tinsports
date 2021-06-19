@@ -11,31 +11,28 @@ const App = createStackNavigator();
 
 const AppRoutes: React.FC = () => {
   return (
-    <App.Navigator>
+    <App.Navigator
+      screenOptions={{headerShown: false}}
+    >
       <App.Screen
         name="Main"
         component={Main}
-        options={{headerShown: false}}
       />
       <App.Screen
         name="GameInfo"
         component={GameInfo}
-        options={{headerShown: false}}
       />
       <App.Screen
         name="CreateEvent"
         component={CreateEvent}
-        options={{headerShown: false}}
       />
       <App.Screen
         name="Profile"
         component={Profile}
-        options={{headerShown: false}}
       />
       <App.Screen
         name="Evaluation"
         component={Evaluation}
-        options={{headerShown: false}}
       />
     </App.Navigator>
   );

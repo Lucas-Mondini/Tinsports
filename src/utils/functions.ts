@@ -1,4 +1,4 @@
-export function formatName(name: string){
+export function formatName(name: string, setState: (value: string) =>void){
   let nameArray = name.split(" ");
   const formatName: string[] = [];
 
@@ -6,13 +6,50 @@ export function formatName(name: string){
     formatName.push(name.charAt(0).toUpperCase() + name.substr(1));
   });
 
-  return formatName.join(" ");
+  return setState(formatName.join(" "));
 }
 
-export function formatMoney(money: number){
-  if(!money) return '--';
+export function formatHour(hour: string) {
+  let formatHour = ""
 
-  let formatMoney = money.toFixed(2);
-  formatMoney = String(formatMoney).replace('.', ',');
+  switch (hour.length) {
+    case 2:
+      formatHour = hour += ":";
+      break;
+    default:
+      formatHour += hour;
+  }
+
+  return formatHour;
+}
+
+export function formatMoney(money: string) {
+  let formatMoney = ""
+
+  switch (money.length) {
+    case 2:
+      formatMoney = money += ",";
+      break;
+    default:
+      formatMoney += money;
+  }
+
   return formatMoney;
+}
+
+export function formatDate(date: string):string {
+  let formatDate = ""
+
+  switch (date.length) {
+    case 2:
+      formatDate = date += "/";
+      break;
+    case 5:
+      formatDate = date += "/";
+      break;
+    default:
+      formatDate += date;
+  }
+
+  return formatDate;
 }

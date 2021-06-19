@@ -57,6 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
   async function signOut() {
     setUser(null);
     await AsyncStorage.clear();
+    return;
   }
 
   useEffect(() =>{

@@ -7,7 +7,7 @@ import GameCard from "../../Components/GameCard";
 import { useAuth } from "../../Contexts/Auth";
 import api from "../../services/api";
 
-import { 
+import {
   BottomNavbar,
   Container, GameContainer, Games, GameTitle, GameTitleContainer, TopImage
 } from "./styles";
@@ -17,11 +17,12 @@ const futbol = require('../../../assets/images/futbol.png');
 const crown = require('../../../assets/images/crown.png');
 const gear = require('../../../assets/images/gear.png');
 const search = require('../../../assets/images/search.png');
-const user = require('../../../assets/images/user.png');
+const userIcon = require('../../../assets/images/user.png');
 const AddButton = require('../../../assets/images/RoundButton.png');
 
 type Game = {
   _id: string;
+  host_ID: string;
   date: string;
   location: string;
   name: string;
@@ -35,26 +36,20 @@ const Main: React.FC = () =>{
   const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const {signOut} = useAuth();
+  const {signOut, user} = useAuth();
 
   async function getGames(){
-    let auth_token = '';
-    const user = await AsyncStorage.getItem('user');
 
-    if(user) {
-      auth_token = JSON.parse(user).auth_token;
-
-      if(!auth_token){
-        navigation.navigate("Home");
-      }
+    if(!user) {
+      signOut();
+      return;
     }
 
     try{
-      const result = await api.get(`/games`,{headers: {auth_token: auth_token}});
+      const result = await api.get(`/games`,{headers: {auth_token: user.auth_token}});
 
       if(result.status == 401){
-        await AsyncStorage.removeItem("auth_token");
-        navigation.navigate("Login");
+        signOut();
       }
 
       setLoading(false);
@@ -71,7 +66,7 @@ const Main: React.FC = () =>{
 
   useEffect(() => {
     getGames();
-  }, [isFocused]);
+  }, [isFocused, loading]);
 
   if(loading) return <Text>Carregando...</Text>
 
@@ -102,7 +97,9 @@ const Main: React.FC = () =>{
 
             {games?.map(game =>(
               <View key={game._id}>
-                <GameCard _id={game._id} icon={futbol} title={game.name} location={game.location} time={game.hour}/>
+                <GameCard host_ID={game.host_ID} setGames={() => {
+                  setLoading(true);
+                }} _id={game._id} icon={futbol} title={game.name} location={game.location} time={game.hour}/>
               </View>
             ))}
 
@@ -134,7 +131,7 @@ const Main: React.FC = () =>{
         </View>
         <View>
           <TouchableOpacity onPress={handleNavigateToCreateEvent}>
-            <Image source={user}/>
+            <Image source={userIcon}/>
           </TouchableOpacity>
         </View>
       </BottomNavbar>

@@ -7,36 +7,40 @@ interface InputProps{
   label: string;
   image?: ImageSourcePropType;
   multilineActive?: boolean;
+  numeric?: boolean;
   value: string;
+  maxLength?: number;
   setValue: (value: string) => void;
 }
 
-const Input: React.FC<InputProps> = ({label, image, multilineActive, value, setValue}) => {
+const Input: React.FC<InputProps> = ({label, image, multilineActive, value, numeric, setValue, maxLength}) => {
+
+  let input = <InputText value={value} maxLength={maxLength} onChangeText={setValue}/>;
+
+  let inputImage = image ? (
+    <InputImageBox>
+      <Image source={image}/>
+    </InputImageBox>
+  ) : <View />;
+
+  if (!image) {
+    input = <InputTextNoImage value={value} maxLength={maxLength} onChangeText={setValue}/>;
+  }
+
+  if (multilineActive) {
+    input = <InputTextDescription multiline value={value} maxLength={maxLength} onChangeText={setValue} numberOfLines={7}/>;
+  } else if (numeric) {
+    input = <InputText value={value} keyboardType="numeric" maxLength={maxLength} onChangeText={setValue}/>;
+  }
+
   return (
     <View>
       <Label>{label}</Label>
       <InputContainer>
 
-        {(image)
-          ?
-          <InputImageBox>
-            <Image source={image}/>
-          </InputImageBox>
-          :
-          <View />
-        }
-        
-        {(image)
-          ?
-          <InputText multiline={multilineActive} value={value} onChangeText={setValue}/>
-          :
-            (multilineActive) 
-            ?
-            <InputTextDescription multiline={true} value={value} onChangeText={setValue} numberOfLines={7}/>
-            :
-            <InputTextNoImage multiline={false} value={value} onChangeText={setValue}/>
-        }
-        
+        {inputImage}
+        {input}
+
       </InputContainer>
     </View>
   );

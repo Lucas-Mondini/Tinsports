@@ -1,7 +1,6 @@
-import AsyncStorage from "@react-native-community/async-storage";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { ImageSourcePropType, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Badge from "../../Components/Badge";
 import UserCard from "../../Components/UserCard";
 import api from "../../services/api";
@@ -19,7 +18,6 @@ const calendarIcon = require('../../../assets/images/calendar.png');
 const mapIcon = require('../../../assets/images/map-marker.png');
 import { useRoute } from '@react-navigation/native';
 import { useCallback } from "react";
-import { formatMoney } from "../../utils/functions";
 import { useAuth } from "../../Contexts/Auth";
 
 type Params = {
@@ -45,7 +43,7 @@ type Game = {
   _id: string;
   type: string;
   description: string;
-  value: number;
+  value: string;
 }
 
 const GameInfo: React.FC = () => {
@@ -79,14 +77,13 @@ const GameInfo: React.FC = () => {
       });
 
       if(result.status == 401 || !token){
-        await AsyncStorage.removeItem("user");
-
+        signOut();
       }
 
       if(!mountedRef.current) return null;
 
       setLoading(false);
-      setGame(result.data.gameInfo);
+      setGame(result.data);
       setGameList(result.data.gameList);
     } catch(err){
       signOut();
@@ -117,7 +114,7 @@ const GameInfo: React.FC = () => {
 
         <BadgeContainer style={{ paddingRight: 38 }}>
           <Badge text={game.type} image={gameIcon} />
-          <Badge text={formatMoney(game.value)} image={moneyIcon} />
+          <Badge text={game.value ? `R$${game.value}` : "--"} image={moneyIcon} />
         </BadgeContainer>
 
         <BadgeContainer>
@@ -148,7 +145,7 @@ const GameInfo: React.FC = () => {
             <UsersTitle>Lista de participantes</UsersTitle>
 
             {gameList.invitedUsers.map(user =>{
-              return (<UserCard photo={photo} name={user.name} confirmation={user.confirmed} />)
+              return (<UserCard key={user._id} photo={photo} name={user.name} confirmation={user.confirmed} />)
             })}
           </View>
 

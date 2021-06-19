@@ -1,12 +1,17 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import { useCallback } from 'react';
-import { Image, Text, View} from "react-native";
+import { Image, View} from "react-native";
 import Input from '../../Components/Input';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import { Checkbox, CheckboxChecked, CheckboxLabel, CheckboxView, Container, GameInfo, SubmitButton, SubmitButtonText, SubmitButtonView } from './styles';
+
+import {
+  formatDate,
+  formatHour,
+  formatMoney
+} from '../../utils/functions';
 
 const gameIcon = require('../../../assets/images/futbol-small.png');
 const moneyIcon = require('../../../assets/images/money.png');
@@ -15,36 +20,31 @@ const calendarIcon = require('../../../assets/images/calendar.png');
 const mapIcon = require('../../../assets/images/map-marker.png');
 const checkIcon = require('../../../assets/images/check.png');
 
-interface User{
-  email: string;
-  _id: string;
+interface Game {
   name: string;
-  auth_token: string;
+  type: string;
+  location: string
+  date: string;
+  hour: string;
+  value: string;
+  description: string,
 }
 
 const CreateEvent: React.FC = ()=>{
-
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
+
+  const [game, setGame] = useState({} as Game);
 
   const [paid, setPaid] = useState(false);
-  const [name, setName] = useState('');
-  const [type, setType] = useState('');
-  const [location, setLocation] = useState('');
-  const [date, setDate] = useState('');
-  const [hour, setHour] = useState('');
-  const [value, setValue] = useState('');
-  const [description, setDescription] = useState('');
-  //const [user, setUser] = useState<User>();
-  const {user} = useAuth();
+  const {user, signOut} = useAuth();
 
   async function sendData(){
 
     if(user){
-
       const data = {
-        name, type, location, description, hour, date, value,
-        "host_ID": user?.auth_token
+        name: game.name, type: game.type, location: game.location, description: game.description,
+        hour: game.hour, date: game.date, value: game.value,
+        host_ID: user._id
       }
 
       try{
@@ -53,14 +53,13 @@ const CreateEvent: React.FC = ()=>{
             auth_token: user.auth_token
           },
         });
-      } catch(err){
-        console.log(err);
-        return
-      }
 
-      navigation.navigate('Main');
+        navigation.reset({index: 0, routes: [{name: "Main"}]});
+      } catch(err){
+        signOut();
+      }
     } else {
-      navigation.navigate('Home');
+      signOut();
     }
   }
 
@@ -72,44 +71,44 @@ const CreateEvent: React.FC = ()=>{
     setPaid(!paid);
   }
 
-  useEffect(()=>{
-    //getDataFromAsyncStorage();
-  }, [isFocused]);
-
   return (
     <Container>
       <GameInfo>
         <Input
           label="Nome"
-          value={name}
-          setValue={setName}
+          value={game.name}
+          setValue={name => setGame({...game, name})}
           />
 
         <Input
           label="Tipo de partida"
           image={gameIcon}
-          value={type}
-          setValue={setType}
+          value={game.type}
+          setValue={type => setGame({...game, type})}
           />
         <Input
           label="Local"
           image={mapIcon}
-          value={location}
-          setValue={setLocation}
+          value={game.location}
+          setValue={location => setGame({...game, location})}
           />
 
         <View>
           <Input
             label="Data"
             image={calendarIcon}
-            value={date}
-          setValue={setDate}
+            value={game.date}
+            numeric
+            maxLength={10}
+            setValue={date => setGame({...game, date: formatDate(date)})}
             />
           <Input
             label="Hora"
             image={clockIcon}
-            value={hour}
-            setValue={setHour}
+            value={game.hour}
+            numeric
+            maxLength={5}
+            setValue={hour => setGame({...game, hour: formatHour(hour)})}
             />
         </View>
 
@@ -133,8 +132,10 @@ const CreateEvent: React.FC = ()=>{
             <Input
               label="Valor"
               image={moneyIcon}
-              value={value}
-              setValue={setValue}
+              value={game.value}
+              numeric
+              maxLength={5}
+              setValue={value => setGame({...game, value: formatMoney(value)})}
               />
             :
             <View />
@@ -143,8 +144,8 @@ const CreateEvent: React.FC = ()=>{
         <Input
           label="Descrição"
           multilineActive={true}
-          value={description}
-          setValue={setDescription}
+          value={game.description}
+          setValue={description => setGame({...game, description})}
           />
 
         <SubmitButtonView>
