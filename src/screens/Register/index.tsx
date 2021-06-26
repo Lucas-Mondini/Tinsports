@@ -16,7 +16,7 @@ const Register: React.FC = () => {
   const {register} = useAuth();
 
   function formatUserName(userName: string){
-    setName(formatName(userName));
+    formatName(userName, setName);
   }
 
   const handleRegister = useCallback(async () =>{

@@ -61,8 +61,16 @@ const Main: React.FC = () =>{
   }
 
   const handleNavigateToCreateEvent = useCallback(() =>{
+    navigation.navigate('CreateEvent');
+  }, [navigation]);
+
+  const handleNavigateToProfile = useCallback(() =>{
     navigation.navigate('Profile');
   }, [navigation]);
+
+  const navigateToSearchFriends = useCallback(()=>{
+    navigation.navigate('SearchFriend');
+  },[navigation]);
 
   useEffect(() => {
     getGames();
@@ -118,19 +126,17 @@ const Main: React.FC = () =>{
           </TouchableOpacity>
         </View>
         <View>
-          <TouchableOpacity onPress={() =>{
-            navigation.navigate('CreateEvent');
-          }}>
+          <TouchableOpacity onPress={handleNavigateToCreateEvent}>
             <Image source={AddButton}/>
           </TouchableOpacity>
         </View>
         <View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={navigateToSearchFriends}>
             <Image source={search}/>
           </TouchableOpacity>
         </View>
         <View>
-          <TouchableOpacity onPress={handleNavigateToCreateEvent}>
+          <TouchableOpacity onPress={handleNavigateToProfile}>
             <Image source={userIcon}/>
           </TouchableOpacity>
         </View>

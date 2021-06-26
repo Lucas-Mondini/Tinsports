@@ -145,7 +145,7 @@ const GameInfo: React.FC = () => {
             <UsersTitle>Lista de participantes</UsersTitle>
 
             {gameList.invitedUsers.map(user =>{
-              return (<UserCard key={user._id} photo={photo} name={user.name} confirmation={user.confirmed} />)
+              return (<UserCard key={user._id} id={user._id} photo={photo} name={user.name} confirmation={user.confirmed} />)
             })}
           </View>
 

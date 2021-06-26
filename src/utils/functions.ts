@@ -2,9 +2,10 @@ export function formatName(name: string, setState: (value: string) =>void){
   let nameArray = name.split(" ");
   const formatName: string[] = [];
 
-  nameArray.forEach(name =>{
-    formatName.push(name.charAt(0).toUpperCase() + name.substr(1));
-  });
+  for (name in nameArray) {
+    const formattedName = nameArray[name].charAt(0).toUpperCase() + nameArray[name].substr(1);
+    formatName.push(formattedName);
+  }
 
   return setState(formatName.join(" "));
 }
@@ -24,7 +25,7 @@ export function formatHour(hour: string) {
 }
 
 export function formatMoney(money: string) {
-  let formatMoney = ""
+  let formatMoney = "";
 
   switch (money.length) {
     case 2:

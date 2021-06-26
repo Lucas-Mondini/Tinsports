@@ -1,13 +1,13 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, Text } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
-import { 
-  Container, EditProfileButton, EditProfileLink, 
-  EditProfileText, MetricBlock, MetricText, 
-  UserImage, UserImageContainer, UserInfo, 
-  UserName 
+import api from '../../services/api';
+import {
+  Container, EditProfileButton, EditProfileLink,
+  EditProfileText, MetricBlock, MetricText,
+  UserImage, UserImageContainer, UserInfo,
+  UserName
 } from './styles';
 
 const photo = require('../../../assets/photos/photo.jpg');
@@ -19,22 +19,53 @@ const medal = require('../../../assets/images/medal.png');
 const halfMedal = require('../../../assets/images/Half-medal.png');
 const emptyMedal = require('../../../assets/images/empty-medal.png');
 
-interface User{
+type User = {
   email: string;
   _id: string;
   name: string;
 }
 
+type Params = {
+  id: string | null;
+}
+
 const Profile: React.FC = () => {
 
+  const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const {user, checkLogin} = useAuth();
+  const {user, signOut} = useAuth();
+  const route = useRoute();
+  const params = route.params as Params;
+  const [ friend, setFriend ] = useState<User>();
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() =>{
-    checkLogin();
-  },[isFocused]);
+  const handleGoToFriendsList = useCallback(() => {
+    navigation.navigate('FriendsList');
+  }, [])
 
-  if(!user) return <Text>Carregando...</Text>
+  async function getUser() {
+    setLoading(true);
+    try {
+      if (!user) return signOut();
+
+      const response = await api.get(`/user/${params.id}`, {headers: {auth_token: user.auth_token}});
+
+      setFriend(response.data);
+      setLoading(false);
+    } catch (err) {
+      signOut();
+    }
+  }
+
+  if (params) {
+    useEffect(() =>{
+      getUser();
+    },[isFocused]);
+  }
+
+
+  if(!user) return null;
+  if(loading) return <Text>Carregando...</Text>;
 
   return (
     <Container>
@@ -46,7 +77,7 @@ const Profile: React.FC = () => {
           </EditProfileButton>
         </UserImageContainer>
 
-        <UserName>{user.name}</UserName>
+        <UserName>{friend ? friend.name : user.name}</UserName>
 
         <MetricText>Reputação</MetricText>
         <MetricBlock>
@@ -66,11 +97,21 @@ const Profile: React.FC = () => {
           <Image source={emptyMedal}/>
         </MetricBlock>
 
-        <EditProfileLink>
-          <EditProfileText>
-            Editar perfil
-          </EditProfileText>
-        </EditProfileLink>
+        {!friend &&
+          <EditProfileLink onPress={handleGoToFriendsList}>
+            <EditProfileText>
+              Lista de amigos
+            </EditProfileText>
+          </EditProfileLink>
+        }
+
+        {!friend &&
+          <EditProfileLink>
+            <EditProfileText>
+              Editar perfil
+            </EditProfileText>
+          </EditProfileLink>
+        }
 
       </UserInfo>
     </Container>

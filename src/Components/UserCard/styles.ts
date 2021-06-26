@@ -60,3 +60,18 @@ export const UnconfirmedText = styled.Text`
   padding-top: 28px;
   color: #C50000;
 `;
+
+export const AddFriendButton = styled.TouchableOpacity`
+  background-color: #268E01;
+  height: 25px;
+  width: 75px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+`;
+
+export const AddFriendButtonText = styled.Text`
+  color: #fff;
+  font-family: "Poppins-Regular";
+
+`;
