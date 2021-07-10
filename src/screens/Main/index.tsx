@@ -1,6 +1,5 @@
-import AsyncStorage from "@react-native-community/async-storage";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCallback } from "react";
 import { Image, TouchableOpacity, View, Text} from "react-native";
 import GameCard from "../../Components/GameCard";
@@ -32,7 +31,9 @@ type Game = {
 
 const Main: React.FC = () =>{
 
-  const [games, setGames] = useState<Game[]>();
+  const [userGames, setUserGames] = useState<Game[]>();
+  const [friendsGames, setFriendsGames] = useState<Game[]>();
+  const [invitedGames, setInvitedGames] = useState<Game[]>();
   const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
@@ -46,14 +47,18 @@ const Main: React.FC = () =>{
     }
 
     try{
-      const result = await api.get(`/games`,{headers: {auth_token: user.auth_token}});
+      const result = await api.get(`/games/home/${user._id}`, {
+        headers: {auth_token: user.auth_token}
+      });
 
       if(result.status == 401){
         signOut();
       }
 
       setLoading(false);
-      setGames(result.data);
+      setUserGames(result.data.userGames);
+      setInvitedGames(result.data.invitedGames);
+      setFriendsGames(result.data.friendsGames);
     } catch(err){
       signOut();
       setLoading(false);
@@ -76,6 +81,20 @@ const Main: React.FC = () =>{
     getGames();
   }, [isFocused, loading]);
 
+  function mapGames(games: Game[]) {
+    return (<>
+      {
+        games.map(game => (
+          <View key={game._id}>
+            <GameCard host_ID={game.host_ID} setGames={() => {
+              setLoading(true);
+            }} _id={game._id} icon={futbol} title={game.name} location={game.location} time={game.hour}/>
+          </View>
+        ))
+      }
+    </>)
+  }
+
   if(loading) return <Text>Carregando...</Text>
 
   return (
@@ -84,32 +103,29 @@ const Main: React.FC = () =>{
         <TopImage>
           <Image source={goal}/>
         </TopImage>
-        {/* <GameContainer>
+        <GameContainer>
           <GameTitleContainer>
             <GameTitle>Jogos marcados por amigos</GameTitle>
           </GameTitleContainer>
-          <GameCard icon={futbol} title="Fervo do Véio zé" location="Rua augusta" time="18:30"/>
+
+          {friendsGames && mapGames(friendsGames)}
+
         </GameContainer>
 
         <GameContainer>
           <GameTitleContainer>
             <GameTitle>Seus Jogos</GameTitle>
           </GameTitleContainer>
-          <GameCard icon={futbol} title="Arrastão em Copacabana" location="Copacabana" time="20:30"/>
-        </GameContainer> */}
+
+          {userGames && mapGames(userGames)}
+        </GameContainer>
 
         <GameContainer>
           <GameTitleContainer>
             <GameTitle>Convites de jogos</GameTitle>
           </GameTitleContainer>
 
-            {games?.map(game =>(
-              <View key={game._id}>
-                <GameCard host_ID={game.host_ID} setGames={() => {
-                  setLoading(true);
-                }} _id={game._id} icon={futbol} title={game.name} location={game.location} time={game.hour}/>
-              </View>
-            ))}
+            {invitedGames && mapGames(invitedGames)}
 
           </GameContainer>
       </Games>

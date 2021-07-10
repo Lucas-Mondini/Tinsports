@@ -4,6 +4,7 @@ export const Container = styled.View`
   align-items: center;
   padding-top: 20px;
   background-color: #fff;
+  flex: 1;
 `;
 
 export const FriendsView = styled.ScrollView`
@@ -19,4 +20,7 @@ export const Title = styled.Text`
   padding-top: 20%;
   font-family: "Poppins-Regular";
   line-height: 35px;
+  width: 100%;
+  border-bottom-width: 1px;
+  border-bottom-color: #E6E6E6;
 `;

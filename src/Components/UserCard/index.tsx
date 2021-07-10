@@ -11,13 +11,15 @@ const metric = require('../../../assets/images/Metric.png');
 interface UserCardProps{
   name: string;
   id: string;
+  invitationId: string;
   //reputation: number;
   photo: ImageSourcePropType;
   confirmation?: boolean;
   addFriend?: boolean;
+  handleLongPress?: (id: string) => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({name, id, photo, confirmation, addFriend})=>{
+const UserCard: React.FC<UserCardProps> = ({name, id, photo, invitationId, confirmation, addFriend, handleLongPress})=>{
 
   const navigation = useNavigation();
   const { user, signOut } = useAuth();
@@ -46,7 +48,7 @@ const UserCard: React.FC<UserCardProps> = ({name, id, photo, confirmation, addFr
   if (!confirmation) confirmed = <UnconfirmedText>Não confirmado</UnconfirmedText>
 
   return (
-    <User onPress={accessProfile}>
+    <User onPress={accessProfile} onLongPress={handleLongPress ? () => handleLongPress(invitationId) : () =>{}}>
       <UserPhoto source={photo} />
       <UserInfo>
         <View>

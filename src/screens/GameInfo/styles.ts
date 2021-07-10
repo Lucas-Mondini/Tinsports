@@ -4,6 +4,7 @@ export const Container = styled.View`
   align-items: center;
   padding-top: 20px;
   background-color: #fff;
+  flex: 1;
 `;
 
 export const GameInfoView = styled.ScrollView`
@@ -41,6 +42,7 @@ export const UsersTitle = styled.Text`
   color: #686868;
   text-align: center;
   padding-bottom: 10px;
+  padding-top: 20px;
   font-family: "Poppins-Regular";
   line-height: 35px;
 `;
@@ -67,7 +69,20 @@ export const ButtonText = styled.Text`
   line-height: 24px;
 `;
 
-export const EmptyView = styled.View`
+export const EmptyText = styled.Text`
   height:30px;
+  font-family: "Poppins-Regular";
+  font-size: 20px;
+  text-align: center;
+  color: #d9d9d9;
 `;
 
+export const InviteButton = styled.TouchableOpacity`
+  height: 40px;
+  width:60%;
+  background-color: #2FB400;
+  border-radius: 20px;
+  justify-content: center;
+  align-items: center;
+  margin: 25px auto;
+`;

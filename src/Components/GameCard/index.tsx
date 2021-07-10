@@ -52,7 +52,7 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
 
             setGames();
           } catch (error) {
-            console.log(error);
+            signOut();
           }
         }
       },
