@@ -9,18 +9,13 @@ import {
   ButtonText,
   Container, Description, EmptyText, EventFinishedButton, EventFinishedView, GameInfoView, InviteButton, Title, UsersTitle
 } from './styles';
-
-const photo = require('../../../assets/photos/photo.jpg');
-const gameIcon = require('../../../assets/images/futbol-small.png');
-const moneyIcon = require('../../../assets/images/money.png');
-const clockIcon = require('../../../assets/images/clock.png');
-const calendarIcon = require('../../../assets/images/calendar.png');
-const mapIcon = require('../../../assets/images/map-marker.png');
 import { useRoute } from '@react-navigation/native';
 import { useCallback } from "react";
+
 import { useAuth } from "../../Contexts/Auth";
 import InviteUsersModal from "../../Components/InviteUsersModal";
-import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/types";
+
+const photo = require('../../../assets/photos/photo.jpg');
 
 type Params = {
   _id: string;
@@ -32,6 +27,7 @@ type GameList = {
   name: string;
   email: string;
   confirmed: boolean;
+  reputation: number;
 }
 
 type Game = {
@@ -81,7 +77,9 @@ const GameInfo: React.FC = () => {
         signOut();
       }
 
+      let date = new Date(result.data.date);
       if(!mountedRef.current) return null;
+      (Number(date) >= Number(new Date())) && setEventFinished(true);
 
       setLoading(false);
       setGame(result.data);
@@ -104,8 +102,7 @@ const GameInfo: React.FC = () => {
             await api.delete(`/game-list/${inviteId}/delete`, {headers: {auth_token: user.auth_token}});
             getGameInfo();
           } catch(err) {
-            console.log(err);
-            //signOut();
+            signOut();
           }
         }
       },
@@ -145,17 +142,17 @@ const GameInfo: React.FC = () => {
         <Title>{game.name}</Title>
 
         <BadgeContainer style={{ paddingRight: 38 }}>
-          <Badge text={game.type} image={gameIcon} />
-          <Badge text={game.value ? `R$${game.value}` : "--"} image={moneyIcon} />
+          <Badge text={game.type} icon="soccer-ball-o" size={29}/>
+          <Badge text={game.value ? game.value : "--"} icon="money" size={32}/>
         </BadgeContainer>
 
         <BadgeContainer>
-          <Badge text={game.hour} image={clockIcon} />
-          <Badge text={game.date} image={calendarIcon} />
+          <Badge text={game.hour} icon="clock-o" size={32}/>
+          <Badge text={game.date} icon="calendar-check-o" size={29}/>
         </BadgeContainer>
 
         <BadgeContainer>
-          <Badge text={game.location} image={mapIcon} />
+          <Badge text={game.location} icon="map-marker" size={32}/>
         </BadgeContainer>
 
         <Description>{game.description}</Description>
@@ -172,8 +169,12 @@ const GameInfo: React.FC = () => {
             </EventFinishedView>
             :
             <>
-              <EmptyText>Ainda não há convidados</EmptyText>
-              {user && game.host_ID === user._id && <InviteButton onPress={handleModal}><ButtonText>Convide amigos</ButtonText></InviteButton>}
+              {user && game.host_ID === user._id && (
+                <>
+                  {gameList.length > 0 ? null : <EmptyText>Ainda não há convidados</EmptyText>}
+                  <InviteButton onPress={handleModal}><ButtonText>Convide amigos</ButtonText></InviteButton>
+                </>
+              )}
             </>
         }
 
@@ -181,7 +182,16 @@ const GameInfo: React.FC = () => {
           <View>
 
             {gameList.map(user =>{
-              return (<UserCard key={user._id} invitationId={user._id} id={user.user_ID} photo={photo} name={user.name} confirmation={user.confirmed} handleLongPress={deleteInvitation} />)
+              return (<UserCard
+                        key={user._id}
+                        invitationId={user._id}
+                        id={user.user_ID}
+                        photo={photo}
+                        name={user.name}
+                        reputation={user.reputation}
+                        confirmation={user.confirmed}
+                        handleLongPress={deleteInvitation}
+                      />)
             })}
           </View>
 

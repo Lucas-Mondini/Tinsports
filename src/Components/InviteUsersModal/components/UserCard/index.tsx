@@ -5,10 +5,11 @@ import { useAuth } from '../../../../Contexts/Auth';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { User, UserInfo, UserName, UserPhoto, ReputationText, ReputationView, InviteButton} from './styles';
+import Metric from '../../../Metric';
 
 interface UserCardProps{
   name: string;
-  //reputation: number;
+  reputation: number;
   photo: ImageSourcePropType;
   confirmation?: boolean;
   addFriend?: boolean;
@@ -17,7 +18,7 @@ interface UserCardProps{
   setInviteList: (value: string[]) => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({name, user_ID, inviteList, setInviteList, photo})=>{
+const UserCard: React.FC<UserCardProps> = ({name, user_ID, inviteList, reputation, setInviteList, photo})=>{
   const [invite, setInvite] = useState(false);
 
   function handleInviteList() {
@@ -28,7 +29,7 @@ const UserCard: React.FC<UserCardProps> = ({name, user_ID, inviteList, setInvite
     } else {
       usersList = usersList.filter(userId => userId !== user_ID);
     }
-    
+
     setInviteList(usersList)
     setInvite(!invite);
   }
@@ -41,11 +42,7 @@ const UserCard: React.FC<UserCardProps> = ({name, user_ID, inviteList, setInvite
           <UserName>{name}</UserName>
           <ReputationView>
             <ReputationText>Reputação: </ReputationText>
-            <Icon name="star" color="yellow" size={15}/>
-            <Icon name="star" color="yellow" size={15}/>
-            <Icon name="star" color="yellow" size={15}/>
-            <Icon name="star-half-empty" color="yellow" size={15}/>
-            <Icon name="star-o" color="yellow" size={15}/>
+            <Metric reputation={reputation} size={15}/>
           </ReputationView>
         </View>
 

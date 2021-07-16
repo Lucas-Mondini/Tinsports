@@ -20,7 +20,7 @@ export const InputText = styled.TextInput`
   line-height: 18px;
 `;
 
-export const InputTextNoImage = styled.TextInput`
+export const InputTextNoIcon = styled.TextInput`
   border: 1px solid #E6E6E6;
   width: 100%;
   height: 35px;

@@ -5,7 +5,7 @@ import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} fro
 
 const Login: React.FC = () => {
 
-  const [email, setEmail] = useState('jdascga@gmail.com');
+  const [email, setEmail] = useState('jeangames15@gmail.com');
   const [pass, setPass] = useState('123456');
   const {signIn} = useAuth();
 

@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { Alert, Image, ImageSourcePropType, View } from 'react-native';
+import { Alert, ImageSourcePropType, View } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import{Game, GameInfo, GameTitle, LocationText, TimeText} from './styles';
@@ -9,7 +10,6 @@ interface GameCardProps{
   title: string;
   location: string;
   time: string;
-  icon: ImageSourcePropType;
   _id: string;
   host_ID: string;
   setGames: ()=>void;
@@ -24,7 +24,7 @@ interface Game {
   hour: string;
 }
 
-const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, icon, setGames}) =>{
+const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, setGames}) =>{
 
   const navigation = useNavigation();
   const {signOut, user} = useAuth();
@@ -64,7 +64,7 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
 
   return (
     <Game onPress={handleGame} onLongPress={host_ID === user._id ? handleDelete : () => {}} key={_id}>
-      <Image source={icon}/>
+      <Icon name="soccer-ball-o" size={51} color="#686868"/>
       <GameInfo>
         <View>
           <GameTitle>{title.length >= 18 ? title.substr(0, 18) + "..." : title}</GameTitle>

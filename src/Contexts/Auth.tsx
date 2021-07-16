@@ -12,11 +12,12 @@ type AuthData = {
   checkLogin(): void;
 }
 
-type User = {
+export type User = {
   name: string;
   email: string;
   _id: string;
   auth_token: string;
+  reputation: number;
 }
 
 type AuthProviderProps = {

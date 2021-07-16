@@ -2,7 +2,10 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { useCallback } from "react";
 import { Image, TouchableOpacity, View, Text} from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import Icon2 from "react-native-vector-icons/FontAwesome5";
 import GameCard from "../../Components/GameCard";
+import NoGame from "../../Components/NoGame";
 import { useAuth } from "../../Contexts/Auth";
 import api from "../../services/api";
 
@@ -12,11 +15,6 @@ import {
 } from "./styles";
 
 const goal = require('../../../assets/images/goal.png');
-const futbol = require('../../../assets/images/futbol.png');
-const crown = require('../../../assets/images/crown.png');
-const gear = require('../../../assets/images/gear.png');
-const search = require('../../../assets/images/search.png');
-const userIcon = require('../../../assets/images/user.png');
 const AddButton = require('../../../assets/images/RoundButton.png');
 
 type Game = {
@@ -88,7 +86,7 @@ const Main: React.FC = () =>{
           <View key={game._id}>
             <GameCard host_ID={game.host_ID} setGames={() => {
               setLoading(true);
-            }} _id={game._id} icon={futbol} title={game.name} location={game.location} time={game.hour}/>
+            }} _id={game._id} title={game.name} location={game.location} time={game.hour}/>
           </View>
         ))
       }
@@ -108,7 +106,7 @@ const Main: React.FC = () =>{
             <GameTitle>Jogos marcados por amigos</GameTitle>
           </GameTitleContainer>
 
-          {friendsGames && mapGames(friendsGames)}
+          {friendsGames && friendsGames.length > 0 ? mapGames(friendsGames) : <NoGame text="Seus amigos anda não criaram nenhum jogo" />}
 
         </GameContainer>
 
@@ -117,7 +115,7 @@ const Main: React.FC = () =>{
             <GameTitle>Seus Jogos</GameTitle>
           </GameTitleContainer>
 
-          {userGames && mapGames(userGames)}
+          {userGames && userGames.length > 0 ? mapGames(userGames) : <NoGame text="Você ainda não criou nenhum jogo" />}
         </GameContainer>
 
         <GameContainer>
@@ -125,7 +123,7 @@ const Main: React.FC = () =>{
             <GameTitle>Convites de jogos</GameTitle>
           </GameTitleContainer>
 
-            {invitedGames && mapGames(invitedGames)}
+            {invitedGames && invitedGames.length > 0 ? mapGames(invitedGames) : <NoGame text="Você ainda não foi convidado para nenhum jogo" />}
 
           </GameContainer>
       </Games>
@@ -133,27 +131,27 @@ const Main: React.FC = () =>{
       <BottomNavbar>
         <View>
           <TouchableOpacity onPress={signOut}>
-            <Image source={gear}/>
+            <Icon name="gear" size={35} color="#686868"/>
           </TouchableOpacity>
         </View>
         <View>
           <TouchableOpacity>
-            <Image source={crown}/>
+            <Icon2 name="crown" size={43} color="#686868"/>
           </TouchableOpacity>
         </View>
         <View>
           <TouchableOpacity onPress={handleNavigateToCreateEvent}>
-            <Image source={AddButton}/>
+            <Image source={AddButton} />
           </TouchableOpacity>
         </View>
         <View>
           <TouchableOpacity onPress={navigateToSearchFriends}>
-            <Image source={search}/>
+            <Icon name="search" size={43} color="#686868"/>
           </TouchableOpacity>
         </View>
         <View>
           <TouchableOpacity onPress={handleNavigateToProfile}>
-            <Image source={userIcon}/>
+            <Icon name="user" size={35} color="#686868"/>
           </TouchableOpacity>
         </View>
       </BottomNavbar>

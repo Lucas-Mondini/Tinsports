@@ -1,7 +1,14 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import EvaluationCard from '../../Components/EvaluationCard';
-import { ButtonText, ButtonView, Container, EvaluationFinishButton, ParticipantsView, Title } from './styles';
+import {
+  ButtonText,
+  ButtonView,
+  Container,
+  EvaluationFinishButton,
+  ParticipantsView,
+  Title
+} from './styles';
 
 const photo = require('../../../assets/photos/photo.jpg');
 
@@ -20,18 +27,14 @@ const Evaluation: React.FC = () => {
         </ButtonView>
 
         <View>
-          <EvaluationCard photo={photo} name="Nein" participated={true} paid={false}/>
-          <EvaluationCard photo={photo} name="Nein" participated={false} paid={false}/>
-          <EvaluationCard photo={photo} name="Nein" participated={true} paid={true}/>
-          <EvaluationCard photo={photo} name="Nein" participated={true} paid={false}/>
-          <EvaluationCard photo={photo} name="Nein" participated={false} paid={false}/>
-          <EvaluationCard photo={photo} name="Nein" participated={true} paid={true}/>
-          <EvaluationCard photo={photo} name="Nein" participated={true} paid={false}/>
-          <EvaluationCard photo={photo} name="Nein" participated={false} paid={false}/>
-          <EvaluationCard photo={photo} name="Nein" participated={true} paid={true}/>
-          <EvaluationCard photo={photo} name="Nein" participated={true} paid={false}/>
-          <EvaluationCard photo={photo} name="Nein" participated={false} paid={false}/>
-          <EvaluationCard photo={photo} name="Nein" participated={true} paid={true}/>
+          <EvaluationCard reputation={45} photo={photo} name="Nein" participated={true} paid={false}/>
+          <EvaluationCard reputation={45} photo={photo} name="Nein" participated={true} paid={false}/>
+          <EvaluationCard reputation={45} photo={photo} name="Nein" participated={true} paid={false}/>
+          <EvaluationCard reputation={45} photo={photo} name="Nein" participated={true} paid={false}/>
+          <EvaluationCard reputation={45} photo={photo} name="Nein" participated={true} paid={false}/>
+          <EvaluationCard reputation={45} photo={photo} name="Nein" participated={true} paid={false}/>
+          <EvaluationCard reputation={45} photo={photo} name="Nein" participated={true} paid={false}/>
+          <EvaluationCard reputation={45} photo={photo} name="Nein" participated={true} paid={false}/>
         </View>
 
       </ParticipantsView>

@@ -1,5 +1,3 @@
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack/lib/typescript/src/types';
 import React, { useEffect, useState } from 'react';
 import { Modal, Text } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
@@ -19,6 +17,7 @@ type ModalProps = {
 type Friend = {
   _id: string;
   name: string;
+  reputation: number;
 }
 
 const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, reloadFunction}) => {
@@ -28,19 +27,17 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
   const [inviteList, setInviteList] = useState([] as string[]);
 
   async function sendInvites() {
-    const invites = new Array();
     try {
-
       if (!user) return signOut();
 
       for (const invite of inviteList) {
-        await api.post('/games/invite', {
+        await api.post('/game-list/invite', {
           user_ID: invite,
           game_ID: gameId
         }, {headers: {auth_token: user.auth_token}});
       }
 
-      setFriends(invites);
+      setFriends([]);
       setModal();
       reloadFunction();
     } catch (err) {
@@ -81,6 +78,7 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
                                         key={friend._id}
                                         name={friend.name}
                                         photo={photo}
+                                        reputation={friend.reputation}
                                         user_ID={friend._id}/>)
               : <Text>Você ainda não possui amigos</Text>
             }

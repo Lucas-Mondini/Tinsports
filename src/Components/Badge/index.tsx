@@ -1,16 +1,17 @@
 import React from "react";
-import { Image, ImageSourcePropType, Text } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
 import { BadgeText, BadgeView } from "./styles";
 
 interface BadgeProps {
   text: string;
-  image: ImageSourcePropType;
+  icon: string;
+  size: number;
 }
 
-const Badge: React.FC<BadgeProps> = ({text, image}) => {
+const Badge: React.FC<BadgeProps> = ({text, icon, size}) => {
   return (
     <BadgeView>
-      <Image source={image} />
+      <Icon name={icon} size={size} color="#686868"/>
       <BadgeText>{text}</BadgeText>
     </BadgeView>
   );

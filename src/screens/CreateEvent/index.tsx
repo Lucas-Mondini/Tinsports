@@ -1,24 +1,27 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { useCallback } from 'react';
-import { Image, View} from "react-native";
+import { View} from "react-native";
 import Input from '../../Components/Input';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
-import { Checkbox, CheckboxChecked, CheckboxLabel, CheckboxView, Container, GameInfo, SubmitButton, SubmitButtonText, SubmitButtonView } from './styles';
+import { Checkbox,
+  CheckboxChecked,
+  CheckboxLabel,
+  CheckboxView,
+  Container,
+  GameInfo,
+  SubmitButton,
+  SubmitButtonText,
+  SubmitButtonView
+} from './styles';
 
 import {
   formatDate,
   formatHour,
   formatMoney
 } from '../../utils/functions';
-
-const gameIcon = require('../../../assets/images/futbol-small.png');
-const moneyIcon = require('../../../assets/images/money.png');
-const clockIcon = require('../../../assets/images/clock.png');
-const calendarIcon = require('../../../assets/images/calendar.png');
-const mapIcon = require('../../../assets/images/map-marker.png');
-const checkIcon = require('../../../assets/images/check.png');
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface Game {
   name: string;
@@ -82,13 +85,15 @@ const CreateEvent: React.FC = ()=>{
 
         <Input
           label="Tipo de partida"
-          image={gameIcon}
+          icon="soccer-ball-o"
+          size={25}
           value={game.type}
           setValue={type => setGame({...game, type})}
           />
         <Input
           label="Local"
-          image={mapIcon}
+          icon="map-marker"
+          size={28}
           value={game.location}
           setValue={location => setGame({...game, location})}
           />
@@ -96,7 +101,8 @@ const CreateEvent: React.FC = ()=>{
         <View>
           <Input
             label="Data"
-            image={calendarIcon}
+            icon="calendar-o"
+            size={25}
             value={game.date}
             numeric
             maxLength={10}
@@ -104,7 +110,8 @@ const CreateEvent: React.FC = ()=>{
             />
           <Input
             label="Hora"
-            image={clockIcon}
+            icon="clock-o"
+            size={28}
             value={game.hour}
             numeric
             maxLength={5}
@@ -115,13 +122,15 @@ const CreateEvent: React.FC = ()=>{
           {(paid == false)
             ?
             <CheckboxView onPress={handleCheckbox}>
-              <Checkbox/>
+              <Checkbox>
+                <Icon name="check" size={20} color="#686868"/>
+              </Checkbox>
               <CheckboxLabel>Evento pago?</CheckboxLabel>
             </CheckboxView>
             :
             <CheckboxView onPress={handleCheckbox}>
               <CheckboxChecked>
-                <Image source={checkIcon} />
+                <Icon name="check" size={20} color="#fff"/>
               </CheckboxChecked>
               <CheckboxLabel>Evento pago!</CheckboxLabel>
             </CheckboxView>
@@ -131,7 +140,8 @@ const CreateEvent: React.FC = ()=>{
             ?
             <Input
               label="Valor"
-              image={moneyIcon}
+              icon="money"
+              size={25}
               value={game.value}
               numeric
               maxLength={5}

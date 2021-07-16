@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Image, ImageSourcePropType } from 'react-native';
 import { View } from 'react-native';
-import { Label, InputText, InputContainer, InputImageBox, InputTextNoImage, InputTextDescription } from './styles';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { Label, InputText, InputContainer, InputImageBox, InputTextNoIcon, InputTextDescription } from './styles';
 
 interface InputProps{
   label: string;
-  image?: ImageSourcePropType;
+  icon?: string;
+  size?: number;
   multilineActive?: boolean;
   numeric?: boolean;
   value: string;
@@ -13,18 +15,18 @@ interface InputProps{
   setValue: (value: string) => void;
 }
 
-const Input: React.FC<InputProps> = ({label, image, multilineActive, value, numeric, setValue, maxLength}) => {
+const Input: React.FC<InputProps> = ({label, icon, size, multilineActive, value, numeric, setValue, maxLength}) => {
 
   let input = <InputText value={value} maxLength={maxLength} onChangeText={setValue}/>;
 
-  let inputImage = image ? (
+  let inputIcon = icon ? (
     <InputImageBox>
-      <Image source={image}/>
+      <Icon name={icon} size={size} color="#686868"/>
     </InputImageBox>
   ) : <View />;
 
-  if (!image) {
-    input = <InputTextNoImage value={value} maxLength={maxLength} onChangeText={setValue}/>;
+  if (!icon) {
+    input = <InputTextNoIcon value={value} maxLength={maxLength} onChangeText={setValue}/>;
   }
 
   if (multilineActive) {
@@ -38,7 +40,7 @@ const Input: React.FC<InputProps> = ({label, image, multilineActive, value, nume
       <Label>{label}</Label>
       <InputContainer>
 
-        {inputImage}
+        {inputIcon}
         {input}
 
       </InputContainer>

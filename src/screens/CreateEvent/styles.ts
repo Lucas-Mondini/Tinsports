@@ -25,13 +25,15 @@ export const CheckboxLabel = styled.Text`
   margin-left: 10px;
   font-family: "Poppins-Regular";
   line-height: 30px;
-`;  
+`;
 
 export const Checkbox = styled.View`
   width: 25px;
   height: 25px;
   border: 1px solid #E6E6E6;
   border-radius:5px;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const CheckboxChecked = styled.View`
@@ -46,6 +48,7 @@ export const CheckboxChecked = styled.View`
 
 export const SubmitButtonView = styled.View`
   margin-top: 25px;
+  margin-bottom: 25px;
   align-items: center;
 `;
 

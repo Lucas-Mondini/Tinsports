@@ -1,11 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Image, ImageSourcePropType, View } from 'react-native';
-import { ButtonsView, ButtonText, ConfirmationButton, ReputationText, ReputationView, User, UserInfo, UserName, UserPhoto } from './styles';
-
-
-
-const metric = require('../../../assets/images/Metric.png');
+import { ImageSourcePropType, View } from 'react-native';
+import Metric from '../Metric';
+import { ButtonsView,
+  ButtonText,
+  ConfirmationButton,
+  ReputationText,
+  ReputationView,
+  User,
+  UserInfo,
+  UserName,
+  UserPhoto } from './styles';
 
 const themeRed = {
   main: '#C50000'
@@ -13,13 +18,13 @@ const themeRed = {
 
 interface UserCardProps{
   name: string;
-  //reputation: number;
+  reputation: number;
   photo: ImageSourcePropType;
   participated: boolean;
   paid: boolean;
 }
 
-const EvaluationCard: React.FC<UserCardProps> = ({name, photo, participated, paid})=>{
+const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, participated, paid})=>{
 
   const navigation = useNavigation();
 
@@ -35,7 +40,7 @@ const EvaluationCard: React.FC<UserCardProps> = ({name, photo, participated, pai
           <UserName>{name}</UserName>
           <ReputationView>
             <ReputationText>Reputação: </ReputationText>
-            <Image source={metric} />
+            <Metric reputation={reputation} size={15}/>
           </ReputationView>
         </View>
 

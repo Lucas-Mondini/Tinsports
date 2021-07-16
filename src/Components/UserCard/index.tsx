@@ -1,25 +1,34 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Image, ImageSourcePropType, Text, View } from 'react-native';
+import { ImageSourcePropType, View } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
-import { UnconfirmedText, User, UserInfo, UserName, UserPhoto, ReputationText, ReputationView, ConfirmedText, AddFriendButton, AddFriendButtonText} from './styles';
-
-
-const metric = require('../../../assets/images/Metric.png');
+import Metric from '../Metric';
+import {
+  UnconfirmedText,
+  User,
+  UserInfo,
+  UserName,
+  UserPhoto,
+  ReputationText,
+  ReputationView,
+  ConfirmedText,
+  AddFriendButton,
+  AddFriendButtonText
+} from './styles';
 
 interface UserCardProps{
   name: string;
   id: string;
-  invitationId: string;
-  //reputation: number;
+  invitationId?: string;
+  reputation: number;
   photo: ImageSourcePropType;
   confirmation?: boolean;
   addFriend?: boolean;
   handleLongPress?: (id: string) => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({name, id, photo, invitationId, confirmation, addFriend, handleLongPress})=>{
+const UserCard: React.FC<UserCardProps> = ({name, id, photo, invitationId, reputation, confirmation, addFriend, handleLongPress})=>{
 
   const navigation = useNavigation();
   const { user, signOut } = useAuth();
@@ -48,14 +57,14 @@ const UserCard: React.FC<UserCardProps> = ({name, id, photo, invitationId, confi
   if (!confirmation) confirmed = <UnconfirmedText>Não confirmado</UnconfirmedText>
 
   return (
-    <User onPress={accessProfile} onLongPress={handleLongPress ? () => handleLongPress(invitationId) : () =>{}}>
+    <User onPress={accessProfile} onLongPress={handleLongPress && invitationId ? () => handleLongPress(invitationId) : () =>{}}>
       <UserPhoto source={photo} />
       <UserInfo>
         <View>
           <UserName>{name}</UserName>
           <ReputationView>
             <ReputationText>Reputação: </ReputationText>
-            <Image source={metric} />
+            <Metric reputation={reputation} size={15}/>
           </ReputationView>
         </View>
 

@@ -14,6 +14,7 @@ type User = {
   _id: string;
   name: string;
   email: string;
+  reputation: number;
 }
 
 const SearchFriend: React.FC = () => {
@@ -46,13 +47,13 @@ const SearchFriend: React.FC = () => {
   return (
     <MainView>
       <SearchArea>
-        <Input label="Buscar por um amigo" value={name} image={searchIcon} setValue={text => formatName(text, setName)}/>
+        <Input label="Buscar por um amigo" value={name} icon="search" size={25} setValue={text => formatName(text, setName)}/>
       </SearchArea>
       <FriendsArea>
         {loading ? <Text>Busque por um amigo</Text> :
         users?.map(user => {
           return (
-            <UserCard key={user._id} id={user._id} name={user.name} photo={photo} addFriend />
+            <UserCard reputation={user.reputation} key={user._id} id={user._id} name={user.name} photo={photo} addFriend />
           )
         })}
 
