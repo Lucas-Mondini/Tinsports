@@ -2,6 +2,7 @@ import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useCallback, useEffect, useState } from 'react';
 import { Image, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import Loading from '../../Components/Loading';
 import Metric from '../../Components/Metric';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
@@ -61,19 +62,19 @@ const Profile: React.FC = () => {
 
 
   if(!user) return null;
-  if(loading) return <Text>Carregando...</Text>;
+  if(loading) return <Loading />;
 
   return (
     <Container>
       <UserInfo>
         <UserImageContainer>
           <UserImage source={photo}/>
-          <EditProfileButton>
+          {!friend && <EditProfileButton>
             <Icon name="pen" size={23} color="#686868"/>
-          </EditProfileButton>
+          </EditProfileButton>}
         </UserImageContainer>
 
-        <UserName>{friend ? friend.name : user.name}</UserName>
+        <UserName style={!friend ? {} : {marginTop: 20}}>{friend ? friend.name : user.name}</UserName>
 
         <MetricText>Reputação</MetricText>
         <Metric reputation={params && friend ? friend.reputation : user.reputation} size={70}/>

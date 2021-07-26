@@ -2,8 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Text } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import NoContent from '../NoContent';
 import UserCard from './components/UserCard';
-import { ButtonText, CancelButton, CancelText, ConfirmButton, Footer, FriendsView, ModalBackground, ModalContent } from './styles';
+import {
+  ButtonText,
+  CancelButton,
+  CancelText,
+  ConfirmButton,
+  Footer,
+  FriendsView,
+  ModalBackground,
+  ModalContent,
+  NoFriendsText,
+  NoFriendsView
+} from './styles';
 
 const photo = require('../../../assets/photos/photo.jpg');
 
@@ -12,17 +24,18 @@ type ModalProps = {
   gameId: string;
   setModal: () => void;
   reloadFunction: () => void;
+  invitedUsers: Friend[];
 }
 
 type Friend = {
   _id: string;
   name: string;
   reputation: number;
+  user_ID: string;
 }
 
-const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, reloadFunction}) => {
+const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, reloadFunction, invitedUsers}) => {
   const [friends, setFriends] = useState<Friend[]>([]);
-  const [loading, setLoading] = useState(true);
   const { user, signOut} = useAuth();
   const [inviteList, setInviteList] = useState([] as string[]);
 
@@ -46,15 +59,22 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
   }
 
   async function getFriends() {
-    setLoading(true);
-
     if (!user) return signOut();
 
     try {
       const response = await api.get(`/friend/${user._id}`, {headers: {auth_token: user.auth_token}});
 
-      setFriends(response.data.friends);
-      setLoading(false);
+      let filterUsers = new Array();
+
+      if (invitedUsers.length > 0) {
+        for (const invited of invitedUsers) {
+          filterUsers = response.data.friends.filter((friend: Friend) => friend._id !== invited.user_ID);
+        }
+
+        setFriends(filterUsers);
+      } else {
+        setFriends(response.data.friends);
+      }
     } catch(err) {
       console.log(err);
     }
@@ -64,23 +84,25 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
     getFriends();
   }, [visible]);
 
-  if (loading) return <Text>Carregando...</Text>
-
   return (
-    <Modal transparent visible={visible} animationType="fade">
+    <Modal transparent onRequestClose={setModal} visible={visible} animationType="fade">
       <ModalBackground>
         <ModalContent>
           <FriendsView>
-            { friends
-              ? friends.map(friend => <UserCard
-                                        inviteList={inviteList}
-                                        setInviteList={setInviteList}
-                                        key={friend._id}
-                                        name={friend.name}
-                                        photo={photo}
-                                        reputation={friend.reputation}
-                                        user_ID={friend._id}/>)
-              : <Text>Você ainda não possui amigos</Text>
+            {
+              friends.map(friend =>
+                !friend
+                ? <NoFriendsView key={1}>
+                    <NoContent text="Não há amigos para convidar"/>
+                  </NoFriendsView>
+                : <UserCard
+                    inviteList={inviteList}
+                    setInviteList={setInviteList}
+                    key={friend._id}
+                    name={friend.name}
+                    photo={photo}
+                    reputation={friend.reputation}
+                    user_ID={friend._id}/>)
             }
           </FriendsView>
 
@@ -99,4 +121,4 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
   );
 }
 
-export default InviteUsersModal
+export default InviteUsersModal;

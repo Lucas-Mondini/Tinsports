@@ -54,3 +54,17 @@ export const CancelText = styled.Text`
   color: #686868;
   text-decoration: underline;
 `;
+
+export const NoFriendsView = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const NoFriendsText = styled.Text`
+  font-family: 'Poppins-regular';
+  font-size: 16px;
+  color: #686868;
+  text-align: center;
+  margin-top: 20px;
+`;

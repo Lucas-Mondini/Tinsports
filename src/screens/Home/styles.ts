@@ -7,6 +7,11 @@ export const Container = styled.View`
   background-color: #dbd9ff;
 `;
 
+export const ButtonContainer = styled.View`
+  width: 100%;
+  align-items: center;
+`;
+
 export const SignInButton = styled.TouchableOpacity`
   align-items: center;
   background-color: #007e33;

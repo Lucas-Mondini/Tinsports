@@ -1,6 +1,6 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Text, View } from "react-native";
+import { Alert, View } from "react-native";
 import Badge from "../../Components/Badge";
 import UserCard from "../../Components/UserCard";
 import api from "../../services/api";
@@ -14,6 +14,7 @@ import { useCallback } from "react";
 
 import { useAuth } from "../../Contexts/Auth";
 import InviteUsersModal from "../../Components/InviteUsersModal";
+import Loading from "../../Components/Loading";
 
 const photo = require('../../../assets/photos/photo.jpg');
 
@@ -85,7 +86,10 @@ const GameInfo: React.FC = () => {
       setGame(result.data);
       setGameList(result.data.gameList);
     } catch(err){
-      signOut();
+      return navigation.reset({
+        index: 0,
+        routes: [{name: "Main"}]
+      });
     }
   }
 
@@ -130,13 +134,21 @@ const GameInfo: React.FC = () => {
     }
   },[isFocused]);
 
-  if(loading) return <Text>Carregando...</Text>
-  if(!game || !gameList) return <Text>Jogo não encontrado</Text>
+  if(loading) return <Loading />;
+  if(!game || !gameList) return null;
 
   return (
     <Container>
 
-      {user && game.host_ID === user._id && <InviteUsersModal gameId={game._id} setModal={handleModal} visible={modalOpened} reloadFunction={getGameInfo} />}
+      {user && game.host_ID === user._id &&
+        <InviteUsersModal
+          invitedUsers={gameList}
+          gameId={game._id}
+          setModal={handleModal}
+          visible={modalOpened}
+          reloadFunction={getGameInfo}
+        />
+      }
 
       <GameInfoView>
         <Title>{game.name}</Title>
@@ -179,7 +191,7 @@ const GameInfo: React.FC = () => {
         }
 
         {(gameList.length > 0) ?
-          <View>
+          <>
 
             {gameList.map(user =>{
               return (<UserCard
@@ -193,7 +205,7 @@ const GameInfo: React.FC = () => {
                         handleLongPress={deleteInvitation}
                       />)
             })}
-          </View>
+          </>
 
           : <View style={{ paddingBottom: 100 }}></View>
         }

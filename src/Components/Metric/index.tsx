@@ -37,18 +37,22 @@ const Metric: React.FC<NoGameProps> = ({reputation, size}) => {
     fullStars = [1, 1, 1, 1, 1];
   }
 
+  let i = 0;
+
   for (let star of fullStars) {
     switch (star) {
       case 1:
-        starArray.push(<Icon name="star-o" size={size} color="#FAFE50"/>)
+        starArray.push(<Icon key={i} name="star-o" size={size} color="#FAFE50"/>)
         break;
       case 2:
-        starArray.push(<Icon name="star-half-full" size={size} color="#FAFE50"/>)
+        starArray.push(<Icon key={i} name="star-half-full" size={size} color="#FAFE50"/>)
         break;
       case 3:
-        starArray.push(<Icon name="star" size={size} color="#FAFE50"/>)
+        starArray.push(<Icon key={i} name="star" size={size} color="#FAFE50"/>)
         break;
     }
+
+    i++
   }
 
   return (

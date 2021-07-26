@@ -1,11 +1,12 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { useCallback } from "react";
-import { Image, TouchableOpacity, View, Text} from "react-native";
+import { Image, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/FontAwesome5";
 import GameCard from "../../Components/GameCard";
-import NoGame from "../../Components/NoGame";
+import Loading from "../../Components/Loading";
+import NoContent from "../../Components/NoContent";
 import { useAuth } from "../../Contexts/Auth";
 import api from "../../services/api";
 
@@ -27,7 +28,7 @@ type Game = {
   hour: string;
 }
 
-const Main: React.FC = () =>{
+const Main: React.FC = () => {
 
   const [userGames, setUserGames] = useState<Game[]>();
   const [friendsGames, setFriendsGames] = useState<Game[]>();
@@ -93,8 +94,6 @@ const Main: React.FC = () =>{
     </>)
   }
 
-  if(loading) return <Text>Carregando...</Text>
-
   return (
     <Container>
       <Games>
@@ -106,7 +105,10 @@ const Main: React.FC = () =>{
             <GameTitle>Jogos marcados por amigos</GameTitle>
           </GameTitleContainer>
 
-          {friendsGames && friendsGames.length > 0 ? mapGames(friendsGames) : <NoGame text="Seus amigos anda não criaram nenhum jogo" />}
+          {
+            loading ? <Loading /> :
+            friendsGames && friendsGames.length > 0 ? mapGames(friendsGames) : <NoContent text="Seus amigos anda não criaram nenhum jogo" />
+          }
 
         </GameContainer>
 
@@ -115,7 +117,10 @@ const Main: React.FC = () =>{
             <GameTitle>Seus Jogos</GameTitle>
           </GameTitleContainer>
 
-          {userGames && userGames.length > 0 ? mapGames(userGames) : <NoGame text="Você ainda não criou nenhum jogo" />}
+          {
+            loading ? <Loading /> :
+            userGames && userGames.length > 0 ? mapGames(userGames) : <NoContent text="Você ainda não criou nenhum jogo" />
+          }
         </GameContainer>
 
         <GameContainer>
@@ -123,7 +128,10 @@ const Main: React.FC = () =>{
             <GameTitle>Convites de jogos</GameTitle>
           </GameTitleContainer>
 
-            {invitedGames && invitedGames.length > 0 ? mapGames(invitedGames) : <NoGame text="Você ainda não foi convidado para nenhum jogo" />}
+            {
+              loading ? <Loading /> :
+              invitedGames && invitedGames.length > 0 ? mapGames(invitedGames) : <NoContent text="Você ainda não foi convidado para nenhum jogo" />
+            }
 
           </GameContainer>
       </Games>
@@ -135,7 +143,7 @@ const Main: React.FC = () =>{
           </TouchableOpacity>
         </View>
         <View>
-          <TouchableOpacity>
+          <TouchableOpacity disabled>
             <Icon2 name="crown" size={43} color="#686868"/>
           </TouchableOpacity>
         </View>

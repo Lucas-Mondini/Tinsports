@@ -10,7 +10,7 @@ export const Label = styled.Text`
 
 export const InputText = styled.TextInput`
   border: 1px solid #E6E6E6;
-  width: 90%;
+  flex: 1;
   height: 35px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -37,6 +37,7 @@ export const InputContainer = styled.View`
 `;
 
 export const InputImageBox = styled.View`
+  width: 100%;
   width: 35px;
   height: 35px;
   background-color: #E5E5E5;
@@ -49,13 +50,12 @@ export const InputImageBox = styled.View`
 export const InputTextDescription = styled.TextInput`
   border: 1px solid #E6E6E6;
   width: 100%;
-  height: 150px;
+  max-height: 200px;
   border-radius: 5px;
   font-size: 15px;
   padding-left: 10px;
-  padding: 10px;
   font-family: "Poppins-Regular";
   line-height: 18px;
-
   align-items: flex-start;
+  justify-content: flex-start;
 `;

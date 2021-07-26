@@ -1,9 +1,10 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import {useNavigation} from '@react-navigation/core';
 import { useIsFocused } from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import { useEffect } from 'react';
-import {Image, Text} from 'react-native';
+import {Image} from 'react-native';
+import Loading from '../../Components/Loading';
+import { useAuth } from '../../Contexts/Auth';
 
 import {
   Container,
@@ -11,25 +12,14 @@ import {
   SignInButtonText,
   RegisterText,
   RegisterButton,
-  RegisterButtonText,
+  RegisterButtonText
 } from './styles';
 
-// TODO: turn into a ES6 import
 const heroImg = require('../../../assets/images/hero.png');
 
 const Home: React.FC = () => {
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
-  const [loading,setLoading] = useState(true);
-
-  async function checkIfIsLoggedIn() {
-    const user = await AsyncStorage.getItem('user');
-    if(user) {
-      const {auth_token} = JSON.parse(user);
-    }
-
-    setLoading(false);
-  }
+  const {loading} = useAuth();
 
   const handleSignIn = useCallback(() => {
     navigation.navigate('Login');
@@ -39,12 +29,7 @@ const Home: React.FC = () => {
     navigation.navigate('Register');
   }, [navigation]);
 
-  useEffect(() =>{
-    checkIfIsLoggedIn();
-    setLoading(false);
-  }, [isFocused]);
-
-  if(loading) return <Text>Carregando...</Text>
+  if (loading) return <Loading background="#dbd9ff" />;
 
   return (
     <Container>
@@ -52,7 +37,6 @@ const Home: React.FC = () => {
       <SignInButton activeOpacity={0.8} onPress={handleSignIn}>
         <SignInButtonText>Entrar</SignInButtonText>
       </SignInButton>
-
       <RegisterText>Não tem conta?</RegisterText>
       <RegisterButton activeOpacity={0.6} onPress={handleRegister}>
         <RegisterButtonText>Inscreva-se</RegisterButtonText>
