@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 
 export const User = styled.View`
-  height:80px;
+  height: 80px;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -52,7 +52,6 @@ export const ButtonsView = styled.View`
 `;
 
 export const ConfirmationButton = styled.TouchableOpacity`
-  background-color: ${props => props.theme.main};
   height: 20px;
   margin-top: 5px;
   width: 100px;
@@ -60,11 +59,6 @@ export const ConfirmationButton = styled.TouchableOpacity`
   align-items: center;
   border-radius: 10px;
 `;
-ConfirmationButton.defaultProps = {
-  theme:{
-    main: "#268E01"
-  }
-}
 
 export const ButtonText = styled.Text`
   color: #fff;

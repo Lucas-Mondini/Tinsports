@@ -30,7 +30,7 @@ const Profile: React.FC = () => {
 
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const {user, signOut} = useAuth();
+  const {user, signOut, checkLogin} = useAuth();
   const route = useRoute();
   const params = route.params as Params;
   const [ friend, setFriend ] = useState<User>();
@@ -38,28 +38,28 @@ const Profile: React.FC = () => {
 
   const handleGoToFriendsList = useCallback(() => {
     navigation.navigate('FriendsList');
-  }, [])
+  }, []);
 
   async function getUser() {
     setLoading(true);
     try {
       if (!user) return signOut();
 
-      const response = await api.get(`/user/${params.id}`, {headers: {auth_token: user.auth_token}});
+      if (params) {
+        const response = await api.get(`/user/${params.id}`, {headers: {auth_token: user.auth_token}});
 
-      setFriend(response.data);
+        setFriend(response.data);
+      } else checkLogin();
+
       setLoading(false);
     } catch (err) {
       signOut();
     }
   }
 
-  if (params) {
-    useEffect(() =>{
-      getUser();
-    },[isFocused]);
-  }
-
+  useEffect(() => {
+    getUser();
+  }, [isFocused]);
 
   if(!user) return null;
   if(loading) return <Loading />;

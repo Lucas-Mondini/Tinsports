@@ -15,6 +15,7 @@ import { useCallback } from "react";
 import { useAuth } from "../../Contexts/Auth";
 import InviteUsersModal from "../../Components/InviteUsersModal";
 import Loading from "../../Components/Loading";
+import EvaluationModal from "../../Components/EvaluationModal";
 
 const photo = require('../../../assets/photos/photo.jpg');
 
@@ -41,6 +42,7 @@ type Game = {
   description: string;
   host_ID: string;
   value: string;
+  finished: boolean;
 }
 
 const GameInfo: React.FC = () => {
@@ -53,7 +55,6 @@ const GameInfo: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [modalOpened, setModalOpened] = useState(false);
-  const [eventFinished, setEventFinished] = useState(false);
   const [game, setGame] = useState<Game>();
   const [gameList, setGameList] = useState<GameList[]>();
   const {user, signOut} = useAuth();
@@ -77,10 +78,6 @@ const GameInfo: React.FC = () => {
       if(result.status == 401 || !token){
         signOut();
       }
-
-      let date = new Date(result.data.date);
-      if(!mountedRef.current) return null;
-      (Number(date) >= Number(new Date())) && setEventFinished(true);
 
       setLoading(false);
       setGame(result.data);
@@ -140,14 +137,23 @@ const GameInfo: React.FC = () => {
   return (
     <Container>
 
-      {user && game.host_ID === user._id &&
-        <InviteUsersModal
-          invitedUsers={gameList}
-          gameId={game._id}
-          setModal={handleModal}
-          visible={modalOpened}
-          reloadFunction={getGameInfo}
-        />
+      {user && game.host_ID === user._id ?
+        game.finished ?
+          <EvaluationModal
+            visible={modalOpened}
+            gameId={game._id}
+            invitedUsers={gameList}
+            setModal={handleModal}
+            reloadFunction={getGameInfo}
+          /> :
+          <InviteUsersModal
+            invitedUsers={gameList}
+            gameId={game._id}
+            setModal={handleModal}
+            visible={modalOpened}
+            reloadFunction={getGameInfo}
+          />
+        : null
       }
 
       <GameInfoView>
@@ -172,16 +178,16 @@ const GameInfo: React.FC = () => {
         <UsersTitle>Lista de participantes</UsersTitle>
 
         {
-          (eventFinished)
+          (game.finished && game.host_ID === user?._id)
             ?
             <EventFinishedView>
-              <EventFinishedButton onPress={handleGameEvaluation}>
+              <EventFinishedButton onPress={handleModal}>
                 <ButtonText>Avaliar participantes</ButtonText>
               </EventFinishedButton>
             </EventFinishedView>
             :
             <>
-              {user && game.host_ID === user._id && (
+              {user && game.host_ID === user._id && !game.finished && (
                 <>
                   {gameList.length > 0 ? null : <EmptyText>Ainda não há convidados</EmptyText>}
                   <InviteButton onPress={handleModal}><ButtonText>Convide amigos</ButtonText></InviteButton>

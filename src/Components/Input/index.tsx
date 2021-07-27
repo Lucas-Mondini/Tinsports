@@ -12,9 +12,10 @@ interface InputProps{
   value: string;
   maxLength?: number;
   setValue: (value: string) => void;
+  style?: object;
 }
 
-const Input: React.FC<InputProps> = ({label, icon, size, multilineActive, value, numeric, setValue, maxLength}) => {
+const Input: React.FC<InputProps> = ({label, icon, size, multilineActive, value, numeric, setValue, maxLength, style}) => {
 
   let input = <InputText
                 value={value}
@@ -55,7 +56,7 @@ const Input: React.FC<InputProps> = ({label, icon, size, multilineActive, value,
   }
 
   return (
-    <View style={{width: "100%"}}>
+    <View style={style}>
       <Label>{label}</Label>
       <InputContainer>
 

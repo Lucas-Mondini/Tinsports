@@ -98,13 +98,14 @@ const CreateEvent: React.FC = ()=>{
           setValue={location => setGame({...game, location})}
           />
 
-        <View>
+        <View style={{flexDirection: 'row', flex: 1}}>
           <Input
             label="Data"
             icon="calendar-o"
             size={25}
             value={game.date}
             numeric
+            style={{flex:1, marginRight: 15}}
             maxLength={10}
             setValue={date => setGame({...game, date: formatDate(date)})}
             />
@@ -114,6 +115,7 @@ const CreateEvent: React.FC = ()=>{
             size={28}
             value={game.hour}
             numeric
+            style={{flex:1}}
             maxLength={5}
             setValue={hour => setGame({...game, hour: formatHour(hour)})}
             />

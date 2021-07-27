@@ -33,7 +33,6 @@ export const LocationText = styled.Text`
 `;
 
 export const TimeText = styled.Text`
-  color: #686868;
   font-size: 12px;
   font-family: "Poppins-Regular";
   line-height: 15px;

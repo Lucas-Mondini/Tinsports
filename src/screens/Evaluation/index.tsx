@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import EvaluationCard from '../../Components/EvaluationCard';
+import EvaluationCard from '../../Components/EvaluationModal/components/UserCard';
 import {
   ButtonText,
   ButtonView,

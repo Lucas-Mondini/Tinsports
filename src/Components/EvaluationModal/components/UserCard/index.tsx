@@ -1,8 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { ImageSourcePropType, View } from 'react-native';
-import Metric from '../Metric';
-import { ButtonsView,
+import Metric from '../../../Metric';
+import {
+  ButtonsView,
   ButtonText,
   ConfirmationButton,
   ReputationText,
@@ -10,24 +11,21 @@ import { ButtonsView,
   User,
   UserInfo,
   UserName,
-  UserPhoto } from './styles';
+  UserPhoto
+} from './styles';
 
-const themeRed = {
-  main: '#C50000'
-}
-
-interface UserCardProps{
+interface UserCardProps {
   name: string;
   reputation: number;
   photo: ImageSourcePropType;
   participated: boolean;
   paid: boolean;
+  user_ID: string;
 }
 
-const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, participated, paid})=>{
+const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, participated, paid, user_ID})=>{
 
   const navigation = useNavigation();
-
   function accessProfile(){
     navigation.navigate("Profile");
   }
@@ -46,27 +44,13 @@ const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, parti
 
         <ButtonsView>
 
-          {(participated == true)
-            ?
-            <ConfirmationButton>
-              <ButtonText>Participou</ButtonText>
-            </ConfirmationButton>
-            :
-            <ConfirmationButton theme={themeRed}>
-              <ButtonText>Furou</ButtonText>
-            </ConfirmationButton>
-          }
+          <ConfirmationButton style={{backgroundColor: participated ? "#268E01": "#C50000"}}>
+            <ButtonText>Participou</ButtonText>
+          </ConfirmationButton>
 
-          {(paid == true)
-            ?
-            <ConfirmationButton>
-              <ButtonText>Pagou</ButtonText>
-            </ConfirmationButton>
-            :
-            <ConfirmationButton theme={themeRed}>
-              <ButtonText>Caloteou</ButtonText>
-            </ConfirmationButton>
-          }
+          <ConfirmationButton style={{backgroundColor: paid ? "#268E01": "#C50000"}}>
+            <ButtonText>Pagou</ButtonText>
+          </ConfirmationButton>
 
         </ButtonsView>
       </UserInfo>

@@ -26,6 +26,7 @@ type Game = {
   name: string;
   type: string;
   hour: string;
+  finished: boolean;
 }
 
 const Main: React.FC = () => {
@@ -33,12 +34,13 @@ const Main: React.FC = () => {
   const [userGames, setUserGames] = useState<Game[]>();
   const [friendsGames, setFriendsGames] = useState<Game[]>();
   const [invitedGames, setInvitedGames] = useState<Game[]>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const {signOut, user} = useAuth();
 
-  async function getGames(){
+  async function getGames() {
+    setLoading(true);
 
     if(!user) {
       signOut();
@@ -50,44 +52,48 @@ const Main: React.FC = () => {
         headers: {auth_token: user.auth_token}
       });
 
-      if(result.status == 401){
-        signOut();
-      }
-
-      setLoading(false);
       setUserGames(result.data.userGames);
       setInvitedGames(result.data.invitedGames);
       setFriendsGames(result.data.friendsGames);
+      setLoading(false);
     } catch(err){
       signOut();
       setLoading(false);
     }
   }
 
-  const handleNavigateToCreateEvent = useCallback(() =>{
+  const handleNavigateToCreateEvent = useCallback(() => {
     navigation.navigate('CreateEvent');
   }, [navigation]);
 
-  const handleNavigateToProfile = useCallback(() =>{
+  const handleNavigateToProfile = useCallback(() => {
     navigation.navigate('Profile');
   }, [navigation]);
 
-  const navigateToSearchFriends = useCallback(()=>{
+  const navigateToSearchFriends = useCallback(() => {
     navigation.navigate('SearchFriend');
-  },[navigation]);
+  }, [navigation]);
 
   useEffect(() => {
     getGames();
-  }, [isFocused, loading]);
+  }, [isFocused]);
 
   function mapGames(games: Game[]) {
     return (<>
       {
         games.map(game => (
           <View key={game._id}>
-            <GameCard host_ID={game.host_ID} setGames={() => {
-              setLoading(true);
-            }} _id={game._id} title={game.name} location={game.location} time={game.hour}/>
+            <GameCard
+              host_ID={game.host_ID}
+              setGames={() => {
+                setLoading(true);
+              }}
+              _id={game._id}
+              title={game.name}
+              location={game.location}
+              time={game.hour}
+              finished={game.finished}
+            />
           </View>
         ))
       }

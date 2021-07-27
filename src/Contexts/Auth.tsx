@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import api from '../services/api';
 
 type AuthData = {
@@ -12,7 +12,6 @@ type AuthData = {
   register: (name: string, email: string, pass: string, confPass: string) => void;
   signOut: () => void;
   checkLogin: () => void;
-  getUserInfo: () => void;
 }
 
 export type User = {
@@ -35,14 +34,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
   const [user, setUser] = useState<User | null>(null);
 
   async function checkLogin() {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const userData = await AsyncStorage.getItem('user');
-    if(userData) {
-      setUser(JSON.parse(userData));
+      const userData = await AsyncStorage.getItem('user');
+      if(userData) {
+        const userJson = JSON.parse(userData);
+
+        let response = await api.get(`/user/${userJson._id}`, {headers: {auth_token: userJson.auth_token}});
+
+        setUser({...response.data, auth_token: userJson.auth_token});
     }
 
-    setLoading(false);
+      setLoading(false);
+    } catch(err) {
+      console.log(err.result.data);
+    }
   }
 
   async function signIn(email: string, pass: string) {
@@ -77,18 +84,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
     return;
   }
 
-  async function getUserInfo() {
-    try {
-      if (!user) return signOut();
-
-      let response = await api.get(`/user/${user._id}`, {headers: {auth_token: user.auth_token}});
-
-      setUser(response.data);
-    } catch(err) {
-      return signOut();
-    }
-  }
-
   useEffect(() =>{
     checkLogin();
   },[]);
@@ -102,8 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
       signIn,
       signOut,
       checkLogin,
-      register,
-      getUserInfo
+      register
     }}>
       {children}
     </AuthContext.Provider>

@@ -1,7 +1,7 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import EvaluationCard from '../../Components/EvaluationCard';
+import EvaluationCard from '../../Components/EvaluationModal/components/UserCard';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import { Container, FriendsView, Title } from './styles';

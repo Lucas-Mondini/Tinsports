@@ -12,7 +12,8 @@ interface GameCardProps{
   time: string;
   _id: string;
   host_ID: string;
-  setGames: ()=>void;
+  setGames: () => void;
+  finished: boolean;
 }
 
 interface Game {
@@ -24,7 +25,7 @@ interface Game {
   hour: string;
 }
 
-const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, setGames}) =>{
+const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, setGames, finished}) =>{
 
   const navigation = useNavigation();
   const {signOut, user} = useAuth();
@@ -68,9 +69,9 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
       <GameInfo>
         <View>
           <GameTitle>{title.length >= 18 ? title.substr(0, 18) + "..." : title}</GameTitle>
-          <LocationText>Local: {location}</LocationText>
+          {finished ? <LocationText>Avalie os jogadores</LocationText> : <LocationText>Local: {location}</LocationText>}
         </View>
-        <TimeText>{time}</TimeText>
+        <TimeText style={{color: finished ? "#C50000": "#686868"}}>{finished ? 'Finalizado' : time}</TimeText>
       </GameInfo>
     </Game>
   );
