@@ -7,10 +7,17 @@ import api from "../../services/api";
 import {
   BadgeContainer,
   ButtonText,
-  Container, Description, EmptyText, EventFinishedButton, EventFinishedView, GameInfoView, InviteButton, Title, UsersTitle
+  Container,
+  Description,
+  EmptyText,
+  EventFinishedButton,
+  EventFinishedView,
+  GameInfoView,
+  InviteButton,
+  Title,
+  UsersTitle
 } from './styles';
 import { useRoute } from '@react-navigation/native';
-import { useCallback } from "react";
 
 import { useAuth } from "../../Contexts/Auth";
 import InviteUsersModal from "../../Components/InviteUsersModal";
@@ -53,13 +60,15 @@ const GameInfo: React.FC = () => {
   const isFocused = useIsFocused();
   const mountedRef = useRef(true);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [modalOpened, setModalOpened] = useState(false);
   const [game, setGame] = useState<Game>();
   const [gameList, setGameList] = useState<GameList[]>();
   const {user, signOut} = useAuth();
 
   async function getGameInfo() {
+
+    setLoading(true);
 
     if(!user){
       signOut();
@@ -82,6 +91,7 @@ const GameInfo: React.FC = () => {
       setLoading(false);
       setGame(result.data);
       setGameList(result.data.gameList);
+      setLoading(false);
     } catch(err){
       return navigation.reset({
         index: 0,
@@ -113,17 +123,13 @@ const GameInfo: React.FC = () => {
     ]);
   }
 
-  const handleGameEvaluation= useCallback(() =>{
-    navigation.navigate("Evaluation");
-  }, [navigation]);
-
   function handleModal() {
     setModalOpened(!modalOpened);
   }
 
   useEffect(() => {
     getGameInfo();
-  }, [isFocused, game]);
+  }, [isFocused]);
 
   useEffect(() =>{
     return () => {
@@ -147,7 +153,7 @@ const GameInfo: React.FC = () => {
             reloadFunction={getGameInfo}
           /> :
           <InviteUsersModal
-            invitedUsers={gameList}
+            setLoading={setLoading}
             gameId={game._id}
             setModal={handleModal}
             visible={modalOpened}
@@ -161,7 +167,7 @@ const GameInfo: React.FC = () => {
 
         <BadgeContainer style={{ paddingRight: 38 }}>
           <Badge text={game.type} icon="soccer-ball-o" size={29}/>
-          <Badge text={game.value ? game.value : "--"} icon="money" size={32}/>
+          <Badge text={game.value ? game.value : "       --   "} icon="money" size={32}/>
         </BadgeContainer>
 
         <BadgeContainer>

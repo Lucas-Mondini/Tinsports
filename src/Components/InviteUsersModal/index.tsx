@@ -24,7 +24,7 @@ type ModalProps = {
   gameId: string;
   setModal: () => void;
   reloadFunction: () => void;
-  invitedUsers: Friend[];
+  setLoading: (value: boolean) => void;
 }
 
 type Friend = {
@@ -34,12 +34,13 @@ type Friend = {
   user_ID: string;
 }
 
-const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, reloadFunction, invitedUsers}) => {
+const InviteUsersModal: React.FC<ModalProps> = ({setLoading, visible, gameId, setModal, reloadFunction}) => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const { user, signOut} = useAuth();
   const [inviteList, setInviteList] = useState([] as string[]);
 
   async function sendInvites() {
+    setModal();
     try {
       if (!user) return signOut();
 
@@ -51,7 +52,6 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
       }
 
       setFriends([]);
-      setModal();
       reloadFunction();
     } catch (err) {
       signOut();
@@ -64,17 +64,7 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
     try {
       const response = await api.get(`/friend/${user._id}`, {headers: {auth_token: user.auth_token}});
 
-      let filterUsers = new Array();
-
-      if (invitedUsers.length > 0) {
-        for (const invited of invitedUsers) {
-          filterUsers = response.data.friends.filter((friend: Friend) => friend._id !== invited.user_ID);
-        }
-
-        setFriends(filterUsers);
-      } else {
-        setFriends(response.data.friends);
-      }
+      setFriends(response.data.friends);
     } catch(err) {
       console.log(err);
     }
@@ -90,19 +80,20 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
         <ModalContent>
           <FriendsView>
             {
+              friends.length === 0 ?
+              <NoFriendsView key={1}>
+                <NoContent text="Não há amigos para convidar"/>
+              </NoFriendsView> :
               friends.map(friend =>
-                !friend
-                ? <NoFriendsView key={1}>
-                    <NoContent text="Não há amigos para convidar"/>
-                  </NoFriendsView>
-                : <UserCard
-                    inviteList={inviteList}
-                    setInviteList={setInviteList}
-                    key={friend._id}
-                    name={friend.name}
-                    photo={photo}
-                    reputation={friend.reputation}
-                    user_ID={friend._id}/>)
+                <UserCard
+                  inviteList={inviteList}
+                  setInviteList={setInviteList}
+                  key={friend._id}
+                  name={friend.name}
+                  photo={photo}
+                  reputation={friend.reputation}
+                  user_ID={friend._id}
+                />)
             }
           </FriendsView>
 

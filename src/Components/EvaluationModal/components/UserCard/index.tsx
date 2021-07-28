@@ -1,5 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, { useState } from 'react';
 import { ImageSourcePropType, View } from 'react-native';
 import Metric from '../../../Metric';
 import {
@@ -18,16 +17,48 @@ interface UserCardProps {
   name: string;
   reputation: number;
   photo: ImageSourcePropType;
-  participated: boolean;
-  paid: boolean;
   user_ID: string;
+  evaluationList: Evaluation[];
+  setEvaluationList: (value: Evaluation[]) => void;
 }
 
-const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, participated, paid, user_ID})=>{
+type Evaluation = {
+  id: string;
+  data: {
+    user_ID: string;
+    paid: boolean;
+    participated: boolean;
+  }
+}
 
-  const navigation = useNavigation();
-  function accessProfile(){
-    navigation.navigate("Profile");
+const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, user_ID, evaluationList, setEvaluationList}) => {
+
+  const [paid, setPaid] = useState(false);
+  const [participated, setParticipated] = useState(false);
+
+  function handleEvaluation() {
+    const userEvaluation = evaluationList.filter(evaluation => evaluation.id !== user_ID);
+    const user = {
+      id: user_ID,
+      data: {
+        user_ID,
+        paid,
+        participated
+      }};
+
+    userEvaluation.push(user);
+
+    setEvaluationList(userEvaluation);
+  }
+
+  function handleParticipated() {
+    setParticipated(!participated);
+    handleEvaluation();
+  }
+
+  function handlePaid() {
+    setPaid(!paid);
+    handleEvaluation();
   }
 
   return (
@@ -44,12 +75,18 @@ const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, parti
 
         <ButtonsView>
 
-          <ConfirmationButton style={{backgroundColor: participated ? "#268E01": "#C50000"}}>
-            <ButtonText>Participou</ButtonText>
+          <ConfirmationButton
+            style={{backgroundColor: participated ? "#268E01": "#C50000"}}
+            onPress={handleParticipated}
+          >
+            <ButtonText>{participated ? "Participou" : "Furou"}</ButtonText>
           </ConfirmationButton>
 
-          <ConfirmationButton style={{backgroundColor: paid ? "#268E01": "#C50000"}}>
-            <ButtonText>Pagou</ButtonText>
+          <ConfirmationButton
+            style={{backgroundColor: paid ? "#268E01": "#C50000"}}
+            onPress={handlePaid}
+          >
+            <ButtonText>{paid ? "Pagou": "Caloteou"}</ButtonText>
           </ConfirmationButton>
 
         </ButtonsView>

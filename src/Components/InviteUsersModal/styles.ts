@@ -17,7 +17,7 @@ export const ModalContent = styled.View`
   border-radius: 8px;
 `;
 
-export const FriendsView = styled.View`
+export const FriendsView = styled.ScrollView`
   flex: 1;
 `;
 
