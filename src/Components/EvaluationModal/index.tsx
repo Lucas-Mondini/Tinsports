@@ -1,7 +1,9 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-native';
+import { Modal, View } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import Loading from '../Loading';
 import NoContent from '../NoContent';
 import UserCard from './components/UserCard';
 import {
@@ -35,50 +37,50 @@ type Friend = {
 }
 
 type Evaluation = {
-  id: string;
-  data: {
-    user_ID: string;
-    paid: boolean;
-    participated: boolean;
-  }
+  user_ID: string;
+  paid: boolean;
+  participated: boolean;
 }
 
-const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, reloadFunction, invitedUsers}) => {
-  const { user, signOut} = useAuth();
+const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, invitedUsers}) => {
+  const {user, signOut} = useAuth();
+  const navigation = useNavigation();
   const [evaluationList, setEvaluationList] = useState<Evaluation[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  async function sendInvites() {
-    console.log(evaluationList[0].id, evaluationList[0].data.participated, evaluationList[0].data.paid);
-    console.log(evaluationList[1].id, evaluationList[1].data.participated, evaluationList[1].data.paid);
-    /* try {
+  async function sendEvaluations() {
+    try {
+      setLoading(true);
       if (!user) return signOut();
 
-      for (const invite of evaluationList) {
-        await api.post('/game-list/invite', {
-          user_ID: invite,
-          game_ID: gameId
+      for (const evaluation of evaluationList) {
+        await api.post('/register/user/update-reputation', {
+          user_ID: evaluation.user_ID,
+          paid: evaluation.paid,
+          participated: evaluation.participated
         }, {headers: {auth_token: user.auth_token}});
       }
 
+      await api.post(`/games/${gameId}/delete`, {
+        host_ID: user._id
+      }, {headers: {auth_token: user.auth_token}});
+
+      setLoading(false);
       setModal();
-      reloadFunction();
+
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
     } catch (err) {
       signOut();
-    } */
+    }
   }
 
   function fillEvaluationArray() {
     const evaluations = [];
     for (const invited in invitedUsers) {
-      const id = invitedUsers[invited].user_ID;
-
       const user = {
-        id,
-        data: {
-          user_ID: invitedUsers[invited].user_ID,
-          paid: false,
-          participated: false
-        }
+        user_ID: invitedUsers[invited].user_ID,
+        paid: false,
+        participated: false
       }
 
       evaluations.push(user);
@@ -90,13 +92,14 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
   }
 
   useEffect(() => {
-    sendInvites();
-  }, [evaluationList]);
+    if (visible) fillEvaluationArray();
+  }, [visible])
 
   return (
     <Modal transparent onRequestClose={setModal} visible={visible} animationType="fade">
       <ModalBackground>
         <ModalContent>
+          {loading ? <Loading background="#f6f6f6"/> :
           <FriendsView>
             {
               invitedUsers.length === 0 ?
@@ -114,10 +117,10 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
                   user_ID={friend.user_ID}
                 />)
             }
-          </FriendsView>
+          </FriendsView>}
 
           <Footer>
-            <ConfirmButton onPress={sendInvites}>
+            <ConfirmButton onPress={sendEvaluations}>
               <ButtonText>Confirmar</ButtonText>
             </ConfirmButton>
 

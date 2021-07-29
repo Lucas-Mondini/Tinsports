@@ -51,6 +51,7 @@ export const CancelButton = styled.TouchableOpacity``;
 export const CancelText = styled.Text`
   font-family: 'Poppins-regular';
   font-size: 20px;
+  line-height: 24px;
   color: #686868;
   text-decoration: underline;
 `;

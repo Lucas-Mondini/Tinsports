@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import Loading from '../Loading';
 import NoContent from '../NoContent';
 import UserCard from './components/UserCard';
 import {
@@ -24,7 +25,7 @@ type ModalProps = {
   gameId: string;
   setModal: () => void;
   reloadFunction: () => void;
-  setLoading: (value: boolean) => void;
+  gameList: GameList[];
 }
 
 type Friend = {
@@ -34,13 +35,27 @@ type Friend = {
   user_ID: string;
 }
 
-const InviteUsersModal: React.FC<ModalProps> = ({setLoading, visible, gameId, setModal, reloadFunction}) => {
+type GameList = {
+  _id: string;
+  user_ID: string;
+  name: string;
+  email: string;
+  confirmed: boolean;
+  reputation: number;
+}
+
+const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setModal, reloadFunction}) => {
+  const [loading, setLoading] = useState(false);
+
   const [friends, setFriends] = useState<Friend[]>([]);
   const { user, signOut} = useAuth();
+
   const [inviteList, setInviteList] = useState([] as string[]);
+  const [totalUsers, setTotalUsers] = useState(gameList.length);
 
   async function sendInvites() {
-    setModal();
+    setLoading(true);
+
     try {
       if (!user) return signOut();
 
@@ -52,6 +67,8 @@ const InviteUsersModal: React.FC<ModalProps> = ({setLoading, visible, gameId, se
       }
 
       setFriends([]);
+      setLoading(false);
+      setModal();
       reloadFunction();
     } catch (err) {
       signOut();
@@ -59,43 +76,51 @@ const InviteUsersModal: React.FC<ModalProps> = ({setLoading, visible, gameId, se
   }
 
   async function getFriends() {
+    setLoading(true);
+
     if (!user) return signOut();
 
     try {
       const response = await api.get(`/friend/${user._id}`, {headers: {auth_token: user.auth_token}});
 
       setFriends(response.data.friends);
+      setLoading(false);
     } catch(err) {
       console.log(err);
     }
   }
 
   useEffect(() => {
-    getFriends();
+    if (visible) getFriends();
   }, [visible]);
 
   return (
     <Modal transparent onRequestClose={setModal} visible={visible} animationType="fade">
       <ModalBackground>
         <ModalContent>
-          <FriendsView>
-            {
-              friends.length === 0 ?
-              <NoFriendsView key={1}>
-                <NoContent text="Não há amigos para convidar"/>
-              </NoFriendsView> :
-              friends.map(friend =>
-                <UserCard
-                  inviteList={inviteList}
-                  setInviteList={setInviteList}
-                  key={friend._id}
-                  name={friend.name}
-                  photo={photo}
-                  reputation={friend.reputation}
-                  user_ID={friend._id}
-                />)
-            }
-          </FriendsView>
+          {loading ? <Loading background="#f6f6f6"/> :
+            totalUsers <= 0 ?
+            <NoFriendsView key={1}>
+              <NoContent text="Não há amigos para convidar"/>
+            </NoFriendsView> :
+            <FriendsView>
+              {
+                friends.map(friend =>
+                  <UserCard
+                    totalUsers={totalUsers}
+                    setTotalUsers={setTotalUsers}
+                    inviteList={inviteList}
+                    setInviteList={setInviteList}
+                    gameLists={gameList}
+                    key={friend._id}
+                    name={friend.name}
+                    photo={photo}
+                    reputation={friend.reputation}
+                    user_ID={friend.user_ID}
+                  />)
+              }
+            </FriendsView>
+          }
 
           <Footer>
             <ConfirmButton onPress={sendInvites}>

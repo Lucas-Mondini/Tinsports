@@ -58,7 +58,7 @@ const Profile: React.FC = () => {
   }
 
   useEffect(() => {
-    getUser();
+    if (isFocused) getUser();
   }, [isFocused]);
 
   if(!user) return null;

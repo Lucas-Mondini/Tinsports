@@ -75,7 +75,7 @@ const Main: React.FC = () => {
   }, [navigation]);
 
   useEffect(() => {
-    getGames();
+    if (isFocused) getGames();
   }, [isFocused]);
 
   function mapGames(games: Game[]) {

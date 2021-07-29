@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ImageSourcePropType, View } from 'react-native';
 import Metric from '../../../Metric';
 import {
@@ -23,12 +23,9 @@ interface UserCardProps {
 }
 
 type Evaluation = {
-  id: string;
-  data: {
-    user_ID: string;
-    paid: boolean;
-    participated: boolean;
-  }
+  user_ID: string;
+  paid: boolean;
+  participated: boolean;
 }
 
 const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, user_ID, evaluationList, setEvaluationList}) => {
@@ -37,14 +34,12 @@ const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, user_
   const [participated, setParticipated] = useState(false);
 
   function handleEvaluation() {
-    const userEvaluation = evaluationList.filter(evaluation => evaluation.id !== user_ID);
+    const userEvaluation = evaluationList.filter(evaluation => evaluation.user_ID !== user_ID);
     const user = {
-      id: user_ID,
-      data: {
-        user_ID,
-        paid,
-        participated
-      }};
+      user_ID,
+      paid,
+      participated
+    };
 
     userEvaluation.push(user);
 
@@ -53,13 +48,15 @@ const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, user_
 
   function handleParticipated() {
     setParticipated(!participated);
-    handleEvaluation();
   }
 
   function handlePaid() {
     setPaid(!paid);
-    handleEvaluation();
   }
+
+  useEffect(() => {
+    handleEvaluation();
+  }, [paid, participated]);
 
   return (
     <User>

@@ -67,7 +67,6 @@ const GameInfo: React.FC = () => {
   const {user, signOut} = useAuth();
 
   async function getGameInfo() {
-
     setLoading(true);
 
     if(!user){
@@ -128,7 +127,7 @@ const GameInfo: React.FC = () => {
   }
 
   useEffect(() => {
-    getGameInfo();
+    if (isFocused) getGameInfo();
   }, [isFocused]);
 
   useEffect(() =>{
@@ -153,7 +152,7 @@ const GameInfo: React.FC = () => {
             reloadFunction={getGameInfo}
           /> :
           <InviteUsersModal
-            setLoading={setLoading}
+            gameList={gameList}
             gameId={game._id}
             setModal={handleModal}
             visible={modalOpened}

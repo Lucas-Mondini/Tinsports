@@ -1,12 +1,18 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ImageSourcePropType, View } from 'react-native';
-import { useAuth } from '../../../../Contexts/Auth';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { User, UserInfo, UserName, UserPhoto, ReputationText, ReputationView, InviteButton} from './styles';
 import Metric from '../../../Metric';
 
+type GameList = {
+  _id: string;
+  user_ID: string;
+  name: string;
+  email: string;
+  confirmed: boolean;
+  reputation: number;
+}
 interface UserCardProps{
   name: string;
   reputation: number;
@@ -15,11 +21,15 @@ interface UserCardProps{
   addFriend?: boolean;
   user_ID: string;
   inviteList: string[];
+  gameLists: GameList[];
   setInviteList: (value: string[]) => void;
+  totalUsers: number;
+  setTotalUsers: (number: number) => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({name, user_ID, inviteList, reputation, setInviteList, photo})=>{
+const UserCard: React.FC<UserCardProps> = ({name, user_ID, gameLists, inviteList, reputation, setInviteList, photo, totalUsers, setTotalUsers})=>{
   const [invite, setInvite] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   function handleInviteList() {
     let usersList = [...inviteList];
@@ -30,9 +40,24 @@ const UserCard: React.FC<UserCardProps> = ({name, user_ID, inviteList, reputatio
       usersList = usersList.filter(userId => userId !== user_ID);
     }
 
-    setInviteList(usersList)
+    setInviteList(usersList);
     setInvite(!invite);
   }
+
+  function setVisibility() {
+    const gameList = gameLists.filter(user => user.user_ID === user_ID);
+
+    if (gameList.length > 0) {
+      setTotalUsers(totalUsers - 1);
+      setVisible(false)
+    };
+  }
+
+  useEffect(() => {
+    setVisibility();
+  }, []);
+
+  if (!visible) return null;
 
   return (
     <User>
