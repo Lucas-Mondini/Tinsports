@@ -1,10 +1,11 @@
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { useCallback } from "react";
-import { Image, TouchableOpacity, View } from "react-native";
+import { Alert, Image, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/FontAwesome5";
 import GameCard from "../../Components/GameCard";
+import Header from "../../Components/Header";
 import Loading from "../../Components/Loading";
 import NoContent from "../../Components/NoContent";
 import { useAuth } from "../../Contexts/Auth";
@@ -29,50 +30,63 @@ type Game = {
   finished: boolean;
 }
 
-const Main: React.FC = () => {
+type Params = {
+  id: string;
+}
 
+const Main: React.FC = () => {
+  const params = useRoute().params as Params;
+  const isFocused = useIsFocused();
+  const navigation = useNavigation();
+
+  const [loading, setLoading] = useState(false);
   const [userGames, setUserGames] = useState<Game[]>();
   const [friendsGames, setFriendsGames] = useState<Game[]>();
   const [invitedGames, setInvitedGames] = useState<Game[]>();
-  const [loading, setLoading] = useState(false);
-  const isFocused = useIsFocused();
-  const navigation = useNavigation();
-  const {signOut, user} = useAuth();
+  const {signOut, user, string} = useAuth();
 
   async function getGames() {
     setLoading(true);
 
-    if(!user) {
-      signOut();
-      return;
-    }
+    if(!user) return signOut();
 
     try{
-      const result = await api.get(`/games/home/${user._id}`, {
+      const result = await api.get(`/games/home/${params && params.id ? params.id + "?friendGames=true" : user._id}`, {
         headers: {auth_token: user.auth_token}
       });
 
+      if (!params) {
+        setInvitedGames(result.data.invitedGames);
+        setFriendsGames(result.data.friendsGames);
+      }
+
       setUserGames(result.data.userGames);
-      setInvitedGames(result.data.invitedGames);
-      setFriendsGames(result.data.friendsGames);
       setLoading(false);
-    } catch(err){
-      signOut();
+    } catch(err) {
       setLoading(false);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
     }
   }
 
-  const handleNavigateToCreateEvent = useCallback(() => {
+  function handleNavigateToCreateEvent() {
     navigation.navigate('CreateEvent');
-  }, [navigation]);
+  }
 
-  const handleNavigateToProfile = useCallback(() => {
+  function handleNavigateToProfile() {
     navigation.navigate('Profile');
-  }, [navigation]);
+  }
 
-  const navigateToSearchFriends = useCallback(() => {
+  function navigateToSearchFriends() {
     navigation.navigate('SearchFriend');
-  }, [navigation]);
+  }
+
+  function handleNavigateToConfiguration() {
+    Alert.alert("Não disponível", "A Função de configurações não está disponível na beta");
+  }
+
+  function handleNavigateToPremium() {
+    Alert.alert("Não disponível", "Assinatura Premium não está disponível na beta");
+  }
 
   useEffect(() => {
     if (isFocused) getGames();
@@ -85,9 +99,7 @@ const Main: React.FC = () => {
           <View key={game._id}>
             <GameCard
               host_ID={game.host_ID}
-              setGames={() => {
-                setLoading(true);
-              }}
+              setGames={getGames}
               _id={game._id}
               title={game.name}
               location={game.location}
@@ -102,73 +114,84 @@ const Main: React.FC = () => {
 
   return (
     <Container>
+      {params && params.id && <Header />}
       <Games>
         <TopImage>
           <Image source={goal}/>
         </TopImage>
-        <GameContainer>
-          <GameTitleContainer>
-            <GameTitle>Jogos marcados por amigos</GameTitle>
-          </GameTitleContainer>
 
-          {
-            loading ? <Loading /> :
-            friendsGames && friendsGames.length > 0 ? mapGames(friendsGames) : <NoContent text="Seus amigos anda não criaram nenhum jogo" />
-          }
-
-        </GameContainer>
-
-        <GameContainer>
-          <GameTitleContainer>
-            <GameTitle>Seus Jogos</GameTitle>
-          </GameTitleContainer>
-
-          {
-            loading ? <Loading /> :
-            userGames && userGames.length > 0 ? mapGames(userGames) : <NoContent text="Você ainda não criou nenhum jogo" />
-          }
-        </GameContainer>
-
-        <GameContainer>
-          <GameTitleContainer>
-            <GameTitle>Convites de jogos</GameTitle>
-          </GameTitleContainer>
+        {!params &&
+          <GameContainer>
+            <GameTitleContainer>
+              <GameTitle>Jogos marcados por amigos</GameTitle>
+            </GameTitleContainer>
 
             {
               loading ? <Loading /> :
-              invitedGames && invitedGames.length > 0 ? mapGames(invitedGames) : <NoContent text="Você ainda não foi convidado para nenhum jogo" />
+              friendsGames && friendsGames.length > 0 ? mapGames(friendsGames) : <NoContent text="Seus amigos anda não criaram nenhum jogo" />
             }
 
           </GameContainer>
+        }
+
+        <GameContainer>
+          <GameTitleContainer>
+            <GameTitle>{!params ? "Seus Jogos" : `Jogos de ${string}`}</GameTitle>
+          </GameTitleContainer>
+
+          {
+            loading ? <Loading /> :
+            userGames && userGames.length > 0 ? mapGames(userGames) : <NoContent text={!params
+                                                                                        ? "Você ainda não criou nenhum jogo"
+                                                                                        : `${string} ainda não criou nenhum jogo`
+                                                                                      } />
+          }
+        </GameContainer>
+
+        {!params &&
+          <GameContainer>
+            <GameTitleContainer>
+              <GameTitle>Convites de jogos</GameTitle>
+            </GameTitleContainer>
+
+              {
+                loading ? <Loading /> :
+                invitedGames && invitedGames.length > 0 ? mapGames(invitedGames) : <NoContent text="Você ainda não tem convites de jogos" />
+              }
+
+          </GameContainer>
+        }
       </Games>
 
-      <BottomNavbar>
-        <View>
-          <TouchableOpacity onPress={signOut}>
-            <Icon name="gear" size={35} color="#686868"/>
-          </TouchableOpacity>
-        </View>
-        <View>
-          <TouchableOpacity disabled>
-            <Icon2 name="crown" size={43} color="#686868"/>
-          </TouchableOpacity>
-        </View>
-        <View>
-          <TouchableOpacity onPress={handleNavigateToCreateEvent}>
-            <Image source={AddButton} />
-          </TouchableOpacity>
-        </View>
-        <View>
-          <TouchableOpacity onPress={navigateToSearchFriends}>
-            <Icon name="search" size={43} color="#686868"/>
-          </TouchableOpacity>
-        </View>
-        <View>
-          <TouchableOpacity onPress={handleNavigateToProfile}>
-            <Icon name="user" size={35} color="#686868"/>
-          </TouchableOpacity>
-        </View>
-      </BottomNavbar>
+      {!params &&
+        <BottomNavbar>
+          <View>
+            <TouchableOpacity onPress={handleNavigateToConfiguration}>
+              <Icon name="gear" size={35} color="#686868"/>
+            </TouchableOpacity>
+          </View>
+          <View>
+            <TouchableOpacity onPress={handleNavigateToPremium}>
+              <Icon2 name="crown" size={43} color="#686868"/>
+            </TouchableOpacity>
+          </View>
+          <View>
+            <TouchableOpacity onPress={handleNavigateToCreateEvent}>
+              <Image source={AddButton} />
+            </TouchableOpacity>
+          </View>
+          <View>
+            <TouchableOpacity onPress={navigateToSearchFriends}>
+              <Icon name="search" size={43} color="#686868"/>
+            </TouchableOpacity>
+          </View>
+          <View>
+            <TouchableOpacity onPress={handleNavigateToProfile}>
+              <Icon name="user" size={35} color="#686868"/>
+            </TouchableOpacity>
+          </View>
+        </BottomNavbar>
+      }
     </Container>
   );
 }

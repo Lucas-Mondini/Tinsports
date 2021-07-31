@@ -30,6 +30,7 @@ interface UserCardProps{
 const UserCard: React.FC<UserCardProps> = ({name, user_ID, gameLists, inviteList, reputation, setInviteList, photo, totalUsers, setTotalUsers})=>{
   const [invite, setInvite] = useState(false);
   const [visible, setVisible] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   function handleInviteList() {
     let usersList = [...inviteList];
@@ -49,15 +50,17 @@ const UserCard: React.FC<UserCardProps> = ({name, user_ID, gameLists, inviteList
 
     if (gameList.length > 0) {
       setTotalUsers(totalUsers - 1);
-      setVisible(false)
+      setVisible(false);
     };
+
+    setLoading(false);
   }
 
   useEffect(() => {
     setVisibility();
   }, []);
 
-  if (!visible) return null;
+  if (!visible || loading) return null;
 
   return (
     <User>

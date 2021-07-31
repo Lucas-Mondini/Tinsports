@@ -1,7 +1,10 @@
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
-import EvaluationCard from '../../Components/EvaluationModal/components/UserCard';
+import { View } from 'react-native';
+import FriendCard from '../../Components/FriendCard';
+import Header from '../../Components/Header';
+import Loading from '../../Components/Loading';
+import NoContent from '../../Components/NoContent';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import { Container, FriendsView, Title } from './styles';
@@ -13,15 +16,22 @@ type Friend = {
   user_ID: string;
   friend_ID: string;
   name: string;
+  reputation: number;
+}
+
+type Params = {
+  id?: string;
 }
 
 const Friends: React.FC = () => {
+  const params = useRoute().params as Params;
+  const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation<any>();
 
   const [friends, setFriends] = useState<Friend[]>([]);
-  const [loading, setLoading] = useState(true);
-  const isFocused = useIsFocused();
-  const { user, signOut} = useAuth();
-
+  const [invites, setInvites] = useState<Friend[]>([]);
+  const { user, signOut, string } = useAuth();
 
   async function getFriends() {
     setLoading(true);
@@ -29,37 +39,76 @@ const Friends: React.FC = () => {
     if (!user) return signOut();
 
     try {
-      const response = await api.get(`/friend/${user._id}`, {headers: {auth_token: user.auth_token}});
+      const response = await api.get(`/friend/${params && params.id ? params.id + "?friendFriends=true" : user._id}`,
+        {headers: {auth_token: user.auth_token}});
 
       setFriends(response.data.friends);
+      setInvites(response.data.friendInvites);
       setLoading(false);
     } catch(err) {
-      console.log(err);
+      navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
     }
   }
 
   useEffect(() => {
-    getFriends();
+    if (isFocused) getFriends();
   }, [isFocused]);
-
-  if (loading) return <Text>Carregando...</Text>
-  if (!friends) return <Text>Você ainda não possui amigos</Text>
 
   return (
     <Container>
-      <FriendsView>
+      <Header />
+      <View style={{marginTop: 35}} />
+      {!params &&
+      <>
+        <Title>Convites de amizade</Title>
+        {loading ? <Loading /> :
+          <FriendsView>
+              {!invites || invites.length === 0 ? <NoContent text="Você ainda não convites de amizade"/> :
+                <>
+                  {invites.map(invite => (
+                    <FriendCard
+                      user_ID={invite.user_ID}
+                      reloadFunction={getFriends}
+                      key={invite._id}
+                      photo={photo}
+                      name={invite.name}
+                      _id={invite._id}
+                      reputation={invite.reputation}
+                      invite
+                    />
+                  ))}
+                </>
+              }
+            </FriendsView>
+          }
+        </>
+      }
 
-        <Title>Lista de amigos</Title>
+      <Title>{params && params.id ? `Amigos de ${string}` : "Lista de amigos"}</Title>
+      {loading ? <Loading /> :
+        <FriendsView>
+            {!friends || friends.length === 0 ? <NoContent text={
+                                                              params && params.id
+                                                              ? `${string} ainda não possui amigos`
+                                                              :"Você ainda não possui amigos"}/> :
+              <>
+                {friends.map(friend => (
+                  <FriendCard
+                    user_ID={friend.user_ID}
+                    reloadFunction={getFriends}
+                    key={friend._id}
+                    photo={photo}
+                    name={friend.name}
+                    _id={friend._id}
+                    reputation={friend.reputation}
+                    disableButtons={!params ? false : true}
+                  />
+                ))}
+              </>
+            }
+          </FriendsView>
+        }
 
-        <View>
-
-          {friends.map(friend => (
-            <EvaluationCard photo={photo} name={friend.name} participated={true} paid={false}/>
-          ))}
-
-        </View>
-
-      </FriendsView>
     </Container>
   );
 

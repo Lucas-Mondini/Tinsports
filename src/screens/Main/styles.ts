@@ -21,7 +21,7 @@ export const GameContainer = styled.View`
 
 export const GameTitleContainer = styled.View`
   width: 100%;
-  border-bottom-width:1px;
+  border-bottom-width: 1px;
   border-bottom-color: #E6E6E6;
 `;
 

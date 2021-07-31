@@ -1,6 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { useCallback } from 'react';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import { View} from "react-native";
 import Input from '../../Components/Input';
 import { useAuth } from '../../Contexts/Auth';
@@ -22,6 +21,7 @@ import {
   formatMoney
 } from '../../utils/functions';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Header from '../../Components/Header';
 
 interface Game {
   name: string;
@@ -35,47 +35,63 @@ interface Game {
 
 const CreateEvent: React.FC = ()=>{
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
   const [game, setGame] = useState({} as Game);
-
   const [paid, setPaid] = useState(false);
+  const [disableButton, setDisableButton] = useState(true);
+
   const {user, signOut} = useAuth();
 
-  async function sendData(){
+  async function sendData() {
 
-    if(user){
-      const data = {
-        name: game.name, type: game.type, location: game.location, description: game.description,
-        hour: game.hour, date: game.date, value: game.value,
-        host_ID: user._id
-      }
+    if (!user) return signOut();
+    const data = {
+      name: game.name, type: game.type, location: game.location, description: game.description,
+      hour: game.hour, date: game.date, value: game.value,
+      host_ID: user._id
+    }
 
-      try{
-        await api.post(`/games`, data,{
-          headers: {
-            auth_token: user.auth_token
-          },
-        });
+    try{
+      await api.post(`/games`, data,{
+        headers: {
+          auth_token: user.auth_token
+        },
+      });
 
-        navigation.reset({index: 0, routes: [{name: "Main"}]});
-      } catch(err){
-        signOut();
-      }
-    } else {
-      signOut();
+      setDisableButton(true);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
+    } catch(err) {
+      setDisableButton(true);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
     }
   }
 
-  const handleSubmit = useCallback(()=>{
-    sendData();
-  }, [sendData]);
-
-  function handleCheckbox(){
+  function handleCheckbox() {
     setPaid(!paid);
   }
 
+  function enableButton() {
+    if ((game.name && game.name.trim() !== '')
+        && (game.type && game.type.trim() !== '')
+        && (game.location && game.location.trim() !== '')
+        && (game.date && game.date.trim() !== '')
+        && (game.hour && game.hour.trim() !== '')
+        && ((paid && game.value && game.value.trim() !== '') || (!paid))
+       )
+        {
+          setDisableButton(false);
+        } else setDisableButton(true);
+  }
+
+  useEffect(() => {
+    if (isFocused) enableButton();
+  }, [game, paid, isFocused]);
+
   return (
     <Container>
+      <Header />
+
       <GameInfo>
         <Input
           label="Nome"
@@ -161,7 +177,10 @@ const CreateEvent: React.FC = ()=>{
           />
 
         <SubmitButtonView>
-          <SubmitButton onPress={handleSubmit}>
+          <SubmitButton
+            disabled={disableButton ? true : false}
+            style={{backgroundColor: disableButton ? "#686868" : "#007E33"}}
+            onPress={sendData}>
             <SubmitButtonText>Cadastrar partida</SubmitButtonText>
           </SubmitButton>
         </SubmitButtonView>

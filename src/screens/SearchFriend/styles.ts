@@ -14,6 +14,7 @@ export const SearchArea = styled.View`
   padding-bottom: 10px;
   justify-content: center;
   flex-direction: row;
+  margin-top: 35px;
 `;
 
 export const FriendsArea = styled.ScrollView`

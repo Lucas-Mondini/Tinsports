@@ -1,8 +1,6 @@
 import {useNavigation} from '@react-navigation/core';
-import { useIsFocused } from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
-import { useEffect } from 'react';
-import {Image} from 'react-native';
+import React from 'react';
+import {Image, Text} from 'react-native';
 import Loading from '../../Components/Loading';
 import { useAuth } from '../../Contexts/Auth';
 
@@ -21,18 +19,27 @@ const Home: React.FC = () => {
   const navigation = useNavigation();
   const {loading} = useAuth();
 
-  const handleSignIn = useCallback(() => {
+  function handleSignIn() {
     navigation.navigate('Login');
-  }, [navigation]);
+  }
 
-  const handleRegister = useCallback(() => {
+  function handleRegister() {
     navigation.navigate('Register');
-  }, [navigation]);
+  }
 
   if (loading) return <Loading background="#dbd9ff" />;
 
   return (
     <Container>
+      <Text style={{
+        fontFamily: "Poppins-regular",
+        fontSize: 50,
+        color: "#6c1cc7",
+        position: "absolute",
+        top: "50%",
+        left: "60%",
+        transform: [{rotate: "-20deg"}]
+      }}>Beta</Text>
       <Image source={heroImg} />
       <SignInButton activeOpacity={0.8} onPress={handleSignIn}>
         <SignInButtonText>Entrar</SignInButtonText>

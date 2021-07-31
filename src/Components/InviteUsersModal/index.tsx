@@ -84,6 +84,7 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setM
       const response = await api.get(`/friend/${user._id}`, {headers: {auth_token: user.auth_token}});
 
       setFriends(response.data.friends);
+      setTotalUsers(response.data.friends);
       setLoading(false);
     } catch(err) {
       console.log(err);

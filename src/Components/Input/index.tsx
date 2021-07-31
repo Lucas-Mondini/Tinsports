@@ -13,14 +13,26 @@ interface InputProps{
   maxLength?: number;
   setValue: (value: string) => void;
   style?: object;
+  secureTextEntry?: boolean;
+  callback?: () => void;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters'
 }
 
-const Input: React.FC<InputProps> = ({label, icon, size, multilineActive, value, numeric, setValue, maxLength, style}) => {
+const Input: React.FC<InputProps> = ({
+    label, callback, icon, size,
+    multilineActive, value, numeric,
+    secureTextEntry, setValue, maxLength, style,
+    autoCapitalize = 'none'
+  }) => {
 
   let input = <InputText
+                onFocus={callback}
+                onBlur={callback}
+                secureTextEntry={secureTextEntry}
                 value={value}
                 maxLength={maxLength}
                 onChangeText={setValue}
+                autoCapitalize={autoCapitalize}
               />;
 
   let inputIcon = icon ? (
@@ -31,14 +43,20 @@ const Input: React.FC<InputProps> = ({label, icon, size, multilineActive, value,
 
   if (!icon) {
     input = <InputTextNoIcon
+              onFocus={callback}
+              onBlur={callback}
+              secureTextEntry={secureTextEntry}
               value={value}
               maxLength={maxLength}
               onChangeText={setValue}
+              autoCapitalize={autoCapitalize}
             />;
   }
 
   if (multilineActive) {
     input = <InputTextDescription
+              onFocus={callback}
+              onBlur={callback}
               multiline
               value={value}
               maxLength={maxLength}
@@ -48,6 +66,8 @@ const Input: React.FC<InputProps> = ({label, icon, size, multilineActive, value,
             />;
   } else if (numeric) {
     input = <InputText
+              onFocus={callback}
+              onBlur={callback}
               value={value}
               keyboardType="numeric"
               maxLength={maxLength}

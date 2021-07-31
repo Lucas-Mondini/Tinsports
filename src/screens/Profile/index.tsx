@@ -1,15 +1,21 @@
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { Image, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import EditProfileModal from '../../Components/EditProfileModal';
+import Header from '../../Components/Header';
 import Loading from '../../Components/Loading';
 import Metric from '../../Components/Metric';
+import Option from '../../Components/Option';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import { getFirstName } from '../../utils/functions';
 import {
-  Container, EditProfileButton, EditProfileLink,
-  EditProfileText, MetricBlock, MetricText,
-  UserImage, UserImageContainer, UserInfo,
+  Container,
+  EditProfileButton,
+  MetricText,
+  UserImage,
+  UserImageContainer,
+  UserInfo,
   UserName
 } from './styles';
 
@@ -18,6 +24,7 @@ const photo = require('../../../assets/photos/photo.jpg');
 type User = {
   email: string;
   _id: string;
+  user_ID: string;
   name: string;
   reputation: number;
 }
@@ -28,20 +35,32 @@ type Params = {
 
 const Profile: React.FC = () => {
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const isFocused = useIsFocused();
-  const {user, signOut, checkLogin} = useAuth();
   const route = useRoute();
   const params = route.params as Params;
-  const [ friend, setFriend ] = useState<User>();
-  const [loading, setLoading] = useState(false);
 
-  const handleGoToFriendsList = useCallback(() => {
-    navigation.navigate('FriendsList');
-  }, []);
+  const { user, signOut, checkLogin, setString, string } = useAuth();
+  const [ friend, setFriend ] = useState<User>();
+  const [ modalVisible, setModalVisible ] = useState(false);
+  const [ loading, setLoading ] = useState(false);
+
+  function handleGoToFriendsList() {
+    if (!params) navigation.navigate('FriendsList');
+    else navigation.push('FriendsList', {id: params.id});
+  }
+
+  function handleGoToInvitesList() {
+    navigation.navigate('InviteList');
+  }
+
+  function setModal() {
+    setModalVisible(!modalVisible);
+  }
 
   async function getUser() {
-    setLoading(true);
+    if (params) setLoading(true);
+
     try {
       if (!user) return signOut();
 
@@ -49,12 +68,17 @@ const Profile: React.FC = () => {
         const response = await api.get(`/user/${params.id}`, {headers: {auth_token: user.auth_token}});
 
         setFriend(response.data);
+        setString(getFirstName(response.data.name));
       } else checkLogin();
 
-      setLoading(false);
+      if (params) setLoading(false);
     } catch (err) {
-      signOut();
+      navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
     }
+  }
+
+  function goToFriendHome() {
+    navigation.push("Main", {id: params.id});
   }
 
   useEffect(() => {
@@ -66,6 +90,8 @@ const Profile: React.FC = () => {
 
   return (
     <Container>
+      <Header visible={!modalVisible}/>
+
       <UserInfo>
         <UserImageContainer>
           <UserImage source={photo}/>
@@ -79,21 +105,45 @@ const Profile: React.FC = () => {
         <MetricText>Reputação</MetricText>
         <Metric reputation={params && friend ? friend.reputation : user.reputation} size={70}/>
 
-        {!friend &&
-          <EditProfileLink onPress={handleGoToFriendsList}>
-            <EditProfileText>
-              Lista de amigos
-            </EditProfileText>
-          </EditProfileLink>
-        }
+        <Option
+          text={!friend ? "Lista de amigos" : `Amigos de ${getFirstName(string)}`}
+          icon={{name: "user-friends", size: 28}}
+          actions={handleGoToFriendsList}
+        />
 
         {!friend &&
-          <EditProfileLink>
-            <EditProfileText>
-              Editar perfil
-            </EditProfileText>
-          </EditProfileLink>
+          <Option
+            text="Convites de jogos"
+            icon={{name: "baseball-ball", size: 28}}
+            actions={handleGoToInvitesList}
+          />
         }
+
+        {!friend ?
+          <Option
+            text="Editar perfil"
+            icon={{name: "user-edit", size: 28}}
+            actions={setModal}
+          /> :
+          <Option
+            text={`Jogos de ${getFirstName(string)}`}
+            icon={{name: "baseball-ball", size: 28}}
+            actions={goToFriendHome}
+          />
+        }
+
+        {!friend && <>
+          <EditProfileModal
+            reloadFunction={getUser}
+            visible={modalVisible}
+            setModal={setModal}
+          />
+          <Option
+            text="Sair"
+            icon={{name: "exit", size: 35, ionicons: true}}
+            actions={signOut}
+          />
+        </>}
 
       </UserInfo>
     </Container>

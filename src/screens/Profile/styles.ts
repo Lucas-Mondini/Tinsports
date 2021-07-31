@@ -45,15 +45,6 @@ export const UserName = styled.Text`
   line-height: 40px;
 `;
 
-export const MetricBlock = styled.View`
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: row;
-  border-bottom-width: 1px;
-  border-bottom-color: #E6E6E6;
-  padding-bottom: 10px;
-`;
-
 export const MetricText = styled.Text`
   font-size: 35px;
   color: #686868;
@@ -62,21 +53,4 @@ export const MetricText = styled.Text`
   font-family: "Poppins-Regular";
   line-height: 40px;
   padding-bottom:10px;
-`;
-
-export const EditProfileText = styled.Text`
-  color: #686868;
-  border-bottom-width: 1px;
-  border-bottom-color: #686868;
-  text-align: center;
-  font-size: 35px;
-  font-family: "Poppins-Regular";
-  line-height: 40px;
-`;
-
-export const EditProfileLink = styled.TouchableOpacity`
-  height: 40px;
-  margin-top: 40px;
-  justify-content: center;
-  align-items: center;
 `;

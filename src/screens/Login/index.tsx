@@ -1,42 +1,65 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import Loading from '../../Components/Loading';
 import { useAuth } from '../../Contexts/Auth';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
 
 const Login: React.FC = () => {
 
-  const [email, setEmail] = useState('jeangames15@gmail.com');
-  const [pass, setPass] = useState('123456');
-  const {signIn} = useAuth();
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const [disableButton, setDisableButton] = useState(true);
+  const {signIn, loading} = useAuth();
 
-  const handleSignIn = useCallback(async () =>{
-    signIn(email, pass);
-  },[]);
+  async function handleSignIn() {
+    await signIn(email, pass);
+  }
 
-  return (
+  function enableButton() {
+    if ((email && email.trim() !== '')
+        && (pass && pass.trim() !== '')
+       )
+        {
+          setDisableButton(false);
+        } else setDisableButton(true);
+  }
 
-    <Container>
-      <Label>Email</Label>
-      <Input
-        placeholder="Digite seu email"
-        value={email}
-        onChangeText={setEmail}/>
+  useEffect(() => {
+    enableButton();
+  }, [email, pass]);
 
-      <Label>Senha</Label>
-      <Input
-        placeholder="Digite sua senha"
-        secureTextEntry={true}
-        value={pass}
-        onChangeText={setPass}/>
+  function load() {
+    if (loading) return <Loading />
+    else {
+      return (
+        <Container>
+          <Input
+            placeholder="Digite seu email"
+            value={email}
+            onChangeText={setEmail}/>
 
-      <ButtonView>
-        <SignInButton onPress={handleSignIn}>
-          <SignInButtonText>Entrar</SignInButtonText>
-        </SignInButton>
-      </ButtonView>
-    </Container>
+          <Label>Senha</Label>
+          <Input
+            placeholder="Digite sua senha"
+            secureTextEntry
+            value={pass}
+            onChangeText={setPass}/>
 
-  );
+          <ButtonView>
+            <SignInButton
+              disabled={disableButton}
+              style={{backgroundColor: disableButton ? "#686868" : '#007e33'}}
+              onPress={handleSignIn}
+            >
+              <SignInButtonText>Entrar</SignInButtonText>
+            </SignInButton>
+          </ButtonView>
+        </Container>
+      )
+    }
+  }
+
+  return load();
 };
 
 export default Login;

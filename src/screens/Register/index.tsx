@@ -1,65 +1,84 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Loading from '../../Components/Loading';
 import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
-import { formatName } from '../../utils/functions';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
 
 const Register: React.FC = () => {
 
-  const [name, setName] = useState('jdascgas@gmail.com');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
   const [confPass, setConfPass] = useState('');
-  const {register} = useAuth();
+  const {register, loading} = useAuth();
+  const [disableButton, setDisableButton] = useState(true);
 
-  function formatUserName(userName: string){
-    formatName(userName, setName);
+  async function handleRegister() {
+    await register(name, email, pass, confPass);
   }
 
-  const handleRegister = useCallback(async () =>{
-    register(name, email, pass, confPass);
-  },[]);
+  function enableButton() {
+    if ((email && email.trim() !== '')
+        && (name && name.trim() !== '')
+        && (pass && pass.trim() !== '')
+        && (confPass && confPass.trim() !== '')
+       )
+        {
+          setDisableButton(false);
+        } else setDisableButton(true);
+  }
 
-  return (
+  useEffect(() => {
+    enableButton();
+  }, [name, email, pass, confPass]);
 
-    <Container>
-      <Label>Nome</Label>
-      <Input
-        placeholder="Digite seu nome"
-        value={name}
-        onChangeText={formatUserName}/>
+  function loadPage() {
+    if (loading) return <Loading />
+    else {
+      return (
+        <Container>
+          <Label>Nome</Label>
+          <Input
+            placeholder="Digite seu nome"
+            value={name}
+            autoCapitalize="words"
+            onChangeText={setName}/>
 
-      <Label>Email</Label>
-      <Input
-        placeholder="Digite seu email"
-        value={email}
-        onChangeText={setEmail}/>
+          <Label>Email</Label>
+          <Input
+            placeholder="Digite seu email"
+            value={email}
+            onChangeText={setEmail}/>
 
-      <Label>Senha</Label>
-      <Input
-        placeholder="Digite sua senha"
-        value={pass}
-        secureTextEntry={true}
-        onChangeText={setPass}/>
+          <Label>Senha</Label>
+          <Input
+            placeholder="Digite sua senha"
+            value={pass}
+            secureTextEntry={true}
+            onChangeText={setPass}/>
 
-      <Label>Confirme sua senha</Label>
-      <Input
-        placeholder="Digite sua senha novamente"
-        value={confPass}
-        secureTextEntry={true}
-        onChangeText={setConfPass}/>
+          <Label>Confirme sua senha</Label>
+          <Input
+            placeholder="Digite sua senha novamente"
+            value={confPass}
+            secureTextEntry={true}
+            onChangeText={setConfPass}/>
 
-      <ButtonView>
-        <SignInButton onPress={handleRegister}>
-          <SignInButtonText>Registrar</SignInButtonText>
-        </SignInButton>
-      </ButtonView>
+          <ButtonView>
+            <SignInButton
+              onPress={handleRegister}
+              disabled={disableButton}
+              style={{backgroundColor: disableButton ? '#686868' : "#007e33"}}
+            >
+              <SignInButtonText>Registrar</SignInButtonText>
+            </SignInButton>
+          </ButtonView>
+        </Container>
+      );
+    }
+  }
 
-    </Container>
-  )
+  return loadPage();
 };
 
 export default Register;

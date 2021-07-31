@@ -32,7 +32,6 @@ export const ButtonView = styled.View`
 `;
 export const SignInButton = styled.TouchableOpacity`
   align-items: center;
-  background-color: #007e33;
   margin-top: 32px;
   padding: 8px 0;
   width: 70%;

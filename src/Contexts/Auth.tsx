@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import api from '../services/api';
 
 type AuthData = {
@@ -12,6 +13,8 @@ type AuthData = {
   register: (name: string, email: string, pass: string, confPass: string) => void;
   signOut: () => void;
   checkLogin: () => void;
+  string: string;
+  setString: (value: string) => void;
 }
 
 export type User = {
@@ -32,6 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
 
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [string, setString] = useState('');
 
   async function checkLogin() {
     try {
@@ -48,34 +52,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
 
       setLoading(false);
     } catch(err) {
-      console.log(err.result.data);
+      return signOut();
     }
   }
 
   async function signIn(email: string, pass: string) {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const response = await api.post(`/login`,{
-      email, pass
-    });
+      const response = await api.post(`/login`,{
+        email, pass
+      });
 
-    setUser(response.data);
-    await AsyncStorage.setItem("user", JSON.stringify(response.data));
+      setUser(response.data);
+      await AsyncStorage.setItem("user", JSON.stringify(response.data));
 
-    setLoading(false);
+      setLoading(false);
+    } catch (err) {
+      return signOut();
+    }
   }
 
   async function register(name: string, email: string, pass: string, confPass: string) {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const response = await api.post(`/register/user`,{
-      name, email, pass, confPass
-    });
+      if (pass !== confPass) {
+        setLoading(false);
+        return Alert.alert("Senhas diferentes", "A senha e a confirmação de senha são diferentes");
+      }
 
-    setUser(response.data);
-    await AsyncStorage.setItem('user', JSON.stringify(response.data));
+      const response = await api.post(`/register/user`,{
+        name, email, pass, confPass
+      });
 
-    setLoading(false);
+      setUser(response.data);
+      await AsyncStorage.setItem('user', JSON.stringify(response.data));
+
+      setLoading(false);
+    } catch (err) {
+      return signOut();
+    }
   }
 
   async function signOut() {
@@ -84,9 +101,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
     return;
   }
 
-  useEffect(() =>{
+  useEffect(() => {
     checkLogin();
-  },[]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{
@@ -97,7 +114,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
       signIn,
       signOut,
       checkLogin,
-      register
+      register,
+      string,
+      setString
     }}>
       {children}
     </AuthContext.Provider>

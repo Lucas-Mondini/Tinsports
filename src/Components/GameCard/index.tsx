@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { Alert, ImageSourcePropType, View } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { Alert, View } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import{Game, GameInfo, GameTitle, LocationText, TimeText} from './styles';
@@ -25,26 +25,53 @@ interface Game {
   hour: string;
 }
 
-const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, setGames, finished}) =>{
+const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, setGames, finished}) => {
 
   const navigation = useNavigation();
   const {signOut, user} = useAuth();
 
-  const handleGame = useCallback(() =>{
+  function gameIconRandom(): string {
+    const number = Math.floor(Math.random() * 5);
+    let icon = "";
+
+    switch(number) {
+      case 0:
+        icon = "american-football"
+        break;
+      case 1:
+        icon = "baseball"
+        break;
+      case 2:
+         icon = "basketball-sharp"
+         break;
+      case 3:
+         icon = "football"
+         break;
+      case 4:
+         icon = "tennisball"
+         break;
+    }
+
+    return icon;
+  }
+
+  function handleGame() {
     navigation.navigate('GameInfo', {_id});
-  },[navigation]);
+  }
 
   if (!user) {
     signOut();
     return <View />
   }
 
-  const handleDelete = useCallback(() =>{
+  async function handleDelete() {
     Alert.alert('Excluir o jogo', "Deseja realmente excluir esse jogo?",[
       {
         text: 'Sim',
-        async onPress(){
+        async onPress() {
           try {
+            if (!user) return signOut();
+
             await api.post(`/games/${_id}/delete`, {host_ID: user._id},{
               headers: {
                 auth_token: user.auth_token,
@@ -53,7 +80,7 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
 
             setGames();
           } catch (error) {
-            signOut();
+            navigation.reset({index: 0, routes: [{name: "Main"}]});
           }
         }
       },
@@ -61,11 +88,11 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
         text: 'Não'
       }
     ]);
-  },[]);
+  }
 
   return (
     <Game onPress={handleGame} onLongPress={host_ID === user._id ? handleDelete : () => {}} key={_id}>
-      <Icon name="soccer-ball-o" size={51} color="#686868"/>
+      <Icon name={gameIconRandom()} size={51} color="#686868"/>
       <GameInfo>
         <View>
           <GameTitle>{title.length >= 18 ? title.substr(0, 18) + "..." : title}</GameTitle>

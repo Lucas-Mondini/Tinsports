@@ -23,6 +23,7 @@ import { useAuth } from "../../Contexts/Auth";
 import InviteUsersModal from "../../Components/InviteUsersModal";
 import Loading from "../../Components/Loading";
 import EvaluationModal from "../../Components/EvaluationModal";
+import Header from "../../Components/Header";
 
 const photo = require('../../../assets/photos/photo.jpg');
 
@@ -50,6 +51,8 @@ type Game = {
   host_ID: string;
   value: string;
   finished: boolean;
+  hostName: string;
+  hostEmail: string;
 }
 
 const GameInfo: React.FC = () => {
@@ -69,10 +72,7 @@ const GameInfo: React.FC = () => {
   async function getGameInfo() {
     setLoading(true);
 
-    if(!user){
-      signOut();
-      return;
-    }
+    if(!user) return signOut();
 
     try{
       const token = user.auth_token
@@ -112,7 +112,7 @@ const GameInfo: React.FC = () => {
             await api.delete(`/game-list/${inviteId}/delete`, {headers: {auth_token: user.auth_token}});
             getGameInfo();
           } catch(err) {
-            signOut();
+            navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
           }
         }
       },
@@ -141,6 +141,7 @@ const GameInfo: React.FC = () => {
 
   return (
     <Container>
+      <Header visible={!modalOpened}/>
 
       {user && game.host_ID === user._id ?
         game.finished ?
@@ -176,6 +177,14 @@ const GameInfo: React.FC = () => {
 
         <BadgeContainer>
           <Badge text={game.location} icon="map-marker" size={32}/>
+        </BadgeContainer>
+
+        <BadgeContainer style={{ paddingTop: 25}}>
+          <Badge text={game.hostName} icon="user" size={32}/>
+        </BadgeContainer>
+
+        <BadgeContainer>
+          <Badge text={game.hostEmail} icon="at" size={32}/>
         </BadgeContainer>
 
         <Description>{game.description}</Description>

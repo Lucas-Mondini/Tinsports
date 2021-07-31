@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { ImageSourcePropType, View } from 'react-native';
+import { Alert, ImageSourcePropType, View } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import Metric from '../Metric';
@@ -39,6 +39,7 @@ const UserCard: React.FC<UserCardProps> = ({name, id, photo, invitationId, reput
 
   async function handleAddFriend() {
     if (!user) return signOut();
+    
     try {
       await api.post('/friend', {
         user_ID: user._id,
@@ -47,7 +48,9 @@ const UserCard: React.FC<UserCardProps> = ({name, id, photo, invitationId, reput
         auth_token: user.auth_token
       }});
     } catch(err) {
-      console.log(err);
+      if (err.response && err.response.status === 401) {
+        Alert.alert("Amigos", "Você já enviou convite de amizade para esse usuário ou vocês já são amigos");
+      }
     }
   }
 

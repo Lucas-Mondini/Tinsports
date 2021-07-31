@@ -2,7 +2,7 @@ import styled from 'styled-components/native';
 
 export const Container = styled.View`
   align-items: center;
-  padding-top: 20px;
+  padding-top: 45px;
   background-color: #fff;
   height: 100%;
 `;
@@ -57,7 +57,6 @@ export const SubmitButton = styled.TouchableOpacity`
   height: 40px;
   justify-content: center;
   align-items: center;
-  background-color: #007E33;
   border-radius: 100px;
 `;
 

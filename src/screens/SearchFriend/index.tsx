@@ -1,11 +1,10 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import Header from '../../Components/Header';
 import Input from '../../Components/Input';
-import Loading from '../../Components/Loading';
 import UserCard from '../../Components/UserCard';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
-import { formatName } from '../../utils/functions';
 import { FriendsArea, MainView, SearchArea, SearchFriendText } from './styles';
 
 const photo = require('../../../assets/photos/photo.jpg');
@@ -19,6 +18,8 @@ type User = {
 
 const SearchFriend: React.FC = () => {
   const { signOut, user } = useAuth();
+  const navigation = useNavigation();
+
   const [name, setName] = useState('');
   const [users, setUsers] = useState<User[]>();
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ const SearchFriend: React.FC = () => {
 
       if (users && users.length === 0) return setFriendSearchText("Nenhum amigo encontrado");
     } catch (err) {
-      signOut();
+      navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
     }
   }
 
@@ -49,8 +50,18 @@ const SearchFriend: React.FC = () => {
 
   return (
     <MainView>
+      <Header />
+
       <SearchArea>
-        <Input label="Buscar por um amigo" value={name} icon="search" size={25} setValue={text => formatName(text, setName)}/>
+        <Input
+          label="Buscar por um amigo"
+          value={name}
+          icon="search"
+          size={25}
+          autoCapitalize="words"
+          setValue={setName}
+          style={{flex: 1}}
+        />
       </SearchArea>
       <FriendsArea>
         <SearchFriendText>{friendSearchText}</SearchFriendText>

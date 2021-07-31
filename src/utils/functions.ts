@@ -1,15 +1,3 @@
-export function formatName(name: string, setState: (value: string) =>void){
-  let nameArray = name.split(" ");
-  const formatName: string[] = [];
-
-  for (name in nameArray) {
-    const formattedName = nameArray[name].charAt(0).toUpperCase() + nameArray[name].substr(1);
-    formatName.push(formattedName);
-  }
-
-  return setState(formatName.join(" "));
-}
-
 export function formatHour(hour: string) {
   let formatHour = ""
 
@@ -53,4 +41,9 @@ export function formatDate(date: string):string {
   }
 
   return formatDate;
+}
+
+export function getFirstName(name: string):string {
+  const firstName = name.split(" ")[0];
+  return firstName;
 }

@@ -70,7 +70,7 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
 
       navigation.reset({index: 0, routes: [{name: "Main"}]});
     } catch (err) {
-      signOut();
+      navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
     }
   }
 
@@ -104,7 +104,7 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
             {
               invitedUsers.length === 0 ?
               <NoFriendsView key={1}>
-                <NoContent text="Não há amigos para convidar"/>
+                <NoContent text="Não há jogadores para avaliar"/>
               </NoFriendsView> :
               invitedUsers.map(friend =>
                 <UserCard
