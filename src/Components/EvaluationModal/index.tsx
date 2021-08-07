@@ -1,8 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Modal, View } from 'react-native';
+import { Alert, Modal, View } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import { Evaluation, Friend } from '../../utils/types';
 import Loading from '../Loading';
 import NoContent from '../NoContent';
 import UserCard from './components/UserCard';
@@ -29,49 +30,42 @@ type ModalProps = {
   invitedUsers: Friend[];
 }
 
-type Friend = {
-  _id: string;
-  name: string;
-  reputation: number;
-  user_ID: string;
-}
-
-type Evaluation = {
-  user_ID: string;
-  paid: boolean;
-  participated: boolean;
-}
-
 const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, invitedUsers}) => {
   const {user, signOut} = useAuth();
   const navigation = useNavigation();
   const [evaluationList, setEvaluationList] = useState<Evaluation[]>([]);
   const [loading, setLoading] = useState(false);
 
-  async function sendEvaluations() {
-    try {
-      setLoading(true);
-      if (!user) return signOut();
+  function sendEvaluations() {
+    Alert.alert("Avaliar usuários?", "Essa ação não poderá ser revertida",[{
+      text: "Sim",
+      onPress: async () => {
 
-      for (const evaluation of evaluationList) {
-        await api.post('/register/user/update-reputation', {
-          user_ID: evaluation.user_ID,
-          paid: evaluation.paid,
-          participated: evaluation.participated
-        }, {headers: {auth_token: user.auth_token}});
+        try {
+          setLoading(true);
+          if (!user) return signOut();
+
+          for (const evaluation of evaluationList) {
+            await api.post('/register/user/update-reputation', {
+              user_ID: evaluation.user_ID,
+              paid: evaluation.paid,
+              participated: evaluation.participated
+            }, {headers: {auth_token: user.auth_token}});
+          }
+
+          await api.post(`/games/${gameId}/delete`, {
+            host_ID: user._id
+          }, {headers: {auth_token: user.auth_token}});
+
+          setLoading(false);
+          setModal();
+
+          navigation.reset({index: 0, routes: [{name: "Main"}]});
+        } catch (err) {
+          navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
+        }
       }
-
-      await api.post(`/games/${gameId}/delete`, {
-        host_ID: user._id
-      }, {headers: {auth_token: user.auth_token}});
-
-      setLoading(false);
-      setModal();
-
-      navigation.reset({index: 0, routes: [{name: "Main"}]});
-    } catch (err) {
-      navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
-    }
+    }, {text: "Não"}]);
   }
 
   function fillEvaluationArray() {
@@ -99,7 +93,7 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
     <Modal transparent onRequestClose={setModal} visible={visible} animationType="fade">
       <ModalBackground>
         <ModalContent>
-          {loading ? <Loading background="#f6f6f6"/> :
+          {loading ? <Loading styles={{backgroundColor: "#f6f6f6"}}/> :
           <FriendsView>
             {
               invitedUsers.length === 0 ?

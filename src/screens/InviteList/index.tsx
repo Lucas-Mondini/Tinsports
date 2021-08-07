@@ -7,22 +7,8 @@ import Loading from '../../Components/Loading';
 import NoContent from '../../Components/NoContent';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import { Invite, Params } from '../../utils/types';
 import { Container, FriendsView, Title } from './styles';
-
-type Invite = {
-  _id: string;
-  host_ID: string;
-  game_ID: string;
-  hostName: string;
-  gameName: string;
-  date: string;
-  hour: string;
-  location: string;
-}
-
-type Params = {
-  id?: string;
-}
 
 const InviteList: React.FC = () => {
   const params = useRoute().params as Params;

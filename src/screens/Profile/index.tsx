@@ -9,6 +9,7 @@ import Option from '../../Components/Option';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import { getFirstName } from '../../utils/functions';
+import { Params, User } from '../../utils/types';
 import {
   Container,
   EditProfileButton,
@@ -20,18 +21,6 @@ import {
 } from './styles';
 
 const photo = require('../../../assets/photos/photo.jpg');
-
-type User = {
-  email: string;
-  _id: string;
-  user_ID: string;
-  name: string;
-  reputation: number;
-}
-
-type Params = {
-  id: string | null;
-}
 
 const Profile: React.FC = () => {
 

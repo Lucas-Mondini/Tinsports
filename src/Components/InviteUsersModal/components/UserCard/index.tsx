@@ -4,15 +4,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { User, UserInfo, UserName, UserPhoto, ReputationText, ReputationView, InviteButton} from './styles';
 import Metric from '../../../Metric';
+import { GameList } from '../../../../utils/types';
 
-type GameList = {
-  _id: string;
-  user_ID: string;
-  name: string;
-  email: string;
-  confirmed: boolean;
-  reputation: number;
-}
 interface UserCardProps{
   name: string;
   reputation: number;
