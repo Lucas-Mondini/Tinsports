@@ -24,36 +24,9 @@ import InviteUsersModal from "../../Components/InviteUsersModal";
 import Loading from "../../Components/Loading";
 import EvaluationModal from "../../Components/EvaluationModal";
 import Header from "../../Components/Header";
+import { Game, GameList, Params } from "../../utils/types";
 
 const photo = require('../../../assets/photos/photo.jpg');
-
-type Params = {
-  _id: string;
-}
-
-type GameList = {
-  _id: string;
-  user_ID: string;
-  name: string;
-  email: string;
-  confirmed: boolean;
-  reputation: number;
-}
-
-type Game = {
-  name: string;
-  location: string;
-  date: string;
-  hour: string;
-  _id: string;
-  type: string;
-  description: string;
-  host_ID: string;
-  value: string;
-  finished: boolean;
-  hostName: string;
-  hostEmail: string;
-}
 
 const GameInfo: React.FC = () => {
 
@@ -77,7 +50,7 @@ const GameInfo: React.FC = () => {
     try{
       const token = user.auth_token
 
-      const result = await api.get(`/games/${params._id}`, {
+      const result = await api.get(`/games/${params.id}`, {
         headers: {
           auth_token: token
         }

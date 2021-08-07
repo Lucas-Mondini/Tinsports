@@ -27,7 +27,7 @@ const Home: React.FC = () => {
     navigation.navigate('Register');
   }
 
-  if (loading) return <Loading background="#dbd9ff" />;
+  if (loading) return <Loading styles={{backgroundColor: "#dbd9ff"}}/>;
 
   return (
     <Container>

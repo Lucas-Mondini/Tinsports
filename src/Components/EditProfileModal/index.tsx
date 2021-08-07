@@ -17,8 +17,6 @@ import {
   ModalContent
 } from './styles';
 
-const photo = require('../../../assets/photos/photo.jpg');
-
 type ModalProps = {
   visible: boolean;
   setModal: () => void;

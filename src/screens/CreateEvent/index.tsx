@@ -22,16 +22,7 @@ import {
 } from '../../utils/functions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../../Components/Header';
-
-interface Game {
-  name: string;
-  type: string;
-  location: string
-  date: string;
-  hour: string;
-  value: string;
-  description: string,
-}
+import { Game } from '../../utils/types';
 
 const CreateEvent: React.FC = ()=>{
   const navigation = useNavigation();

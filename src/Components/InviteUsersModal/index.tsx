@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import { Friend, GameList } from '../../utils/types';
 import Loading from '../Loading';
 import NoContent from '../NoContent';
 import UserCard from './components/UserCard';
@@ -26,22 +27,6 @@ type ModalProps = {
   setModal: () => void;
   reloadFunction: () => void;
   gameList: GameList[];
-}
-
-type Friend = {
-  _id: string;
-  name: string;
-  reputation: number;
-  user_ID: string;
-}
-
-type GameList = {
-  _id: string;
-  user_ID: string;
-  name: string;
-  email: string;
-  confirmed: boolean;
-  reputation: number;
 }
 
 const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setModal, reloadFunction}) => {
@@ -99,7 +84,7 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setM
     <Modal transparent onRequestClose={setModal} visible={visible} animationType="fade">
       <ModalBackground>
         <ModalContent>
-          {loading ? <Loading background="#f6f6f6"/> :
+          {loading ? <Loading styles={{backgroundColor: "#f6f6f6"}}/> :
             totalUsers <= 0 ?
             <NoFriendsView key={1}>
               <NoContent text="Não há amigos para convidar"/>

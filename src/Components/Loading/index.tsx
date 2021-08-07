@@ -2,18 +2,17 @@ import React from "react";
 import { View, ActivityIndicator } from "react-native";
 
 type LoadingProps = {
-  background?: string;
+  styles?: object;
 }
 
-const Loading: React.FC<LoadingProps> = ({background}) => {
+const Loading: React.FC<LoadingProps> = ({styles}) => {
   return (
-    <View style={{
-      backgroundColor: background || "#fff",
+    <View style={[{
+      backgroundColor: "#fff",
       flex: 1,
       justifyContent: 'center',
-      alignItems: 'center',
-      paddingTop: 20
-    }}>
+      alignItems: 'center'
+    }, styles]}>
       <ActivityIndicator size="large" color="#686868"/>
     </View>
   );

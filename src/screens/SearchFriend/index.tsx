@@ -1,20 +1,17 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
+
+import api from '../../services/api';
+import { useAuth } from '../../Contexts/Auth';
+import { User } from '../../utils/types';
+
 import Header from '../../Components/Header';
 import Input from '../../Components/Input';
 import UserCard from '../../Components/UserCard';
-import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
+
 import { FriendsArea, MainView, SearchArea, SearchFriendText } from './styles';
 
 const photo = require('../../../assets/photos/photo.jpg');
-
-type User = {
-  _id: string;
-  name: string;
-  email: string;
-  reputation: number;
-}
 
 const SearchFriend: React.FC = () => {
   const { signOut, user } = useAuth();

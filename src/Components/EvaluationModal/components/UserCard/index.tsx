@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ImageSourcePropType, View } from 'react-native';
+import { Evaluation } from '../../../../utils/types';
 import Metric from '../../../Metric';
 import {
   ButtonsView,
@@ -20,12 +21,6 @@ interface UserCardProps {
   user_ID: string;
   evaluationList: Evaluation[];
   setEvaluationList: (value: Evaluation[]) => void;
-}
-
-type Evaluation = {
-  user_ID: string;
-  paid: boolean;
-  participated: boolean;
 }
 
 const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, user_ID, evaluationList, setEvaluationList}) => {

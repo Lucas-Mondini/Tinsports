@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Alert, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../../Contexts/Auth';
@@ -14,15 +14,6 @@ interface GameCardProps{
   host_ID: string;
   setGames: () => void;
   finished: boolean;
-}
-
-interface Game {
-  _id: string;
-  date: string;
-  location: string;
-  name: string;
-  type: string;
-  hour: string;
 }
 
 const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, setGames, finished}) => {
@@ -56,7 +47,7 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
   }
 
   function handleGame() {
-    navigation.navigate('GameInfo', {_id});
+    navigation.navigate('GameInfo', {id: _id});
   }
 
   if (!user) {

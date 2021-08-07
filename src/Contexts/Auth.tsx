@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import api from '../services/api';
+import { User } from '../utils/types';
 
 type AuthData = {
   signed: boolean;
@@ -15,14 +16,6 @@ type AuthData = {
   checkLogin: () => void;
   string: string;
   setString: (value: string) => void;
-}
-
-export type User = {
-  name: string;
-  email: string;
-  _id: string;
-  auth_token: string;
-  reputation: number;
 }
 
 type AuthProviderProps = {

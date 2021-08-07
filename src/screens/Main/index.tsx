@@ -1,6 +1,5 @@
 import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { useCallback } from "react";
 import { Alert, Image, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/FontAwesome5";
@@ -10,6 +9,7 @@ import Loading from "../../Components/Loading";
 import NoContent from "../../Components/NoContent";
 import { useAuth } from "../../Contexts/Auth";
 import api from "../../services/api";
+import { Game, Params } from "../../utils/types";
 
 import {
   BottomNavbar,
@@ -18,21 +18,6 @@ import {
 
 const goal = require('../../../assets/images/goal.png');
 const AddButton = require('../../../assets/images/RoundButton.png');
-
-type Game = {
-  _id: string;
-  host_ID: string;
-  date: string;
-  location: string;
-  name: string;
-  type: string;
-  hour: string;
-  finished: boolean;
-}
-
-type Params = {
-  id: string;
-}
 
 const Main: React.FC = () => {
   const params = useRoute().params as Params;
@@ -127,7 +112,7 @@ const Main: React.FC = () => {
             </GameTitleContainer>
 
             {
-              loading ? <Loading /> :
+              loading ? <Loading styles={{marginTop: 25}}/> :
               friendsGames && friendsGames.length > 0 ? mapGames(friendsGames) : <NoContent text="Seus amigos anda não criaram nenhum jogo" />
             }
 
@@ -140,7 +125,7 @@ const Main: React.FC = () => {
           </GameTitleContainer>
 
           {
-            loading ? <Loading /> :
+            loading ? <Loading styles={{marginTop: 25}}/> :
             userGames && userGames.length > 0 ? mapGames(userGames) : <NoContent text={!params
                                                                                         ? "Você ainda não criou nenhum jogo"
                                                                                         : `${string} ainda não criou nenhum jogo`
@@ -155,7 +140,7 @@ const Main: React.FC = () => {
             </GameTitleContainer>
 
               {
-                loading ? <Loading /> :
+                loading ? <Loading styles={{marginTop: 25}}/> :
                 invitedGames && invitedGames.length > 0 ? mapGames(invitedGames) : <NoContent text="Você ainda não tem convites de jogos" />
               }
 

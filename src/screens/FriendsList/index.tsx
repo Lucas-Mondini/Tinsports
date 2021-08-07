@@ -7,21 +7,10 @@ import Loading from '../../Components/Loading';
 import NoContent from '../../Components/NoContent';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import { Friend, Params } from '../../utils/types';
 import { Container, FriendsView, Title } from './styles';
 
 const photo = require('../../../assets/photos/photo.jpg');
-
-type Friend = {
-  _id: string;
-  user_ID: string;
-  friend_ID: string;
-  name: string;
-  reputation: number;
-}
-
-type Params = {
-  id?: string;
-}
 
 const Friends: React.FC = () => {
   const params = useRoute().params as Params;
