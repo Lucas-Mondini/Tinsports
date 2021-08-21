@@ -1,8 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Alert, ImageSourcePropType, View } from 'react-native';
+import { Alert, Dimensions, ImageSourcePropType, View } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import { splitText } from '../../utils/functions';
 import Metric from '../Metric';
 import {
   UnconfirmedText,
@@ -33,13 +34,15 @@ const UserCard: React.FC<UserCardProps> = ({name, id, photo, invitationId, reput
   const navigation = useNavigation();
   const { user, signOut } = useAuth();
 
+  const userName = Dimensions.get('window').width < 480 ? splitText(name, 10) : splitText(name, 18);
+
   function accessProfile(){
     navigation.navigate("Profile", {id});
   }
 
   async function handleAddFriend() {
     if (!user) return signOut();
-    
+
     try {
       await api.post('/friend', {
         user_ID: user._id,
@@ -64,9 +67,9 @@ const UserCard: React.FC<UserCardProps> = ({name, id, photo, invitationId, reput
       <UserPhoto source={photo} />
       <UserInfo>
         <View>
-          <UserName>{name}</UserName>
+          <UserName>{userName}</UserName>
           <ReputationView>
-            <ReputationText>Reputação: </ReputationText>
+            <ReputationText>Rep.: </ReputationText>
             <Metric reputation={reputation} size={15}/>
           </ReputationView>
         </View>

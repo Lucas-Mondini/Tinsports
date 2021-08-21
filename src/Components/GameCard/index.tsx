@@ -1,9 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, Dimensions, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import { splitText } from '../../utils/functions';
 import{Game, GameInfo, GameTitle, LocationText, TimeText} from './styles';
 
 interface GameCardProps{
@@ -20,6 +21,8 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
 
   const navigation = useNavigation();
   const {signOut, user} = useAuth();
+
+  const gameTitle = Dimensions.get('window').width < 480 ? splitText(title, 10) : splitText(title, 18);
 
   function gameIconRandom(): string {
     const number = Math.floor(Math.random() * 5);
@@ -63,7 +66,7 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
           try {
             if (!user) return signOut();
 
-            await api.post(`/games/${_id}/delete`, {host_ID: user._id},{
+            await api.delete(`/games/${_id}`, {
               headers: {
                 auth_token: user.auth_token,
               }
@@ -86,8 +89,8 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
       <Icon name={gameIconRandom()} size={51} color="#686868"/>
       <GameInfo>
         <View>
-          <GameTitle>{title.length >= 18 ? title.substr(0, 18) + "..." : title}</GameTitle>
-          {finished ? <LocationText>Avalie os jogadores</LocationText> : <LocationText>Local: {location}</LocationText>}
+          <GameTitle>{gameTitle}</GameTitle>
+          {finished ? <LocationText>Avalie os jogadores</LocationText> : <LocationText>Local: {splitText(location, 10)}</LocationText>}
         </View>
         <TimeText style={{color: finished ? "#C50000": "#686868"}}>{finished ? 'Finalizado' : time}</TimeText>
       </GameInfo>

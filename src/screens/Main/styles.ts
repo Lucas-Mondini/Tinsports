@@ -3,7 +3,6 @@ import styled from 'styled-components/native';
 export const Container = styled.View`
   flex: 1;
   align-items: center;
-  padding-top: 20px;
   background-color: #fff;
 `;
 
@@ -16,13 +15,13 @@ export const Games = styled.ScrollView`
 export const GameContainer = styled.View`
   width: 100%;
   padding: 0 3% 0 3%;
-  padding-bottom: 25px;
 `;
 
 export const GameTitleContainer = styled.View`
   width: 100%;
   border-bottom-width: 1px;
   border-bottom-color: #E6E6E6;
+  margin-top: 10px;
 `;
 
 export const GameTitle = styled.Text`

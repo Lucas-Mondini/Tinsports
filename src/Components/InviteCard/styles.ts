@@ -44,6 +44,7 @@ export const TimeText = styled.Text`
   font-size: 12px;
   font-family: "Poppins-Regular";
   line-height: 15px;
+  color: #686868;
 `;
 
 export const ButtonsView = styled.View`

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
 import Loading from '../../Components/Loading';
 import { useAuth } from '../../Contexts/Auth';
 
@@ -37,42 +38,48 @@ const Register: React.FC = () => {
     else {
       return (
         <Container>
-          <Label>Nome</Label>
-          <Input
-            placeholder="Digite seu nome"
-            value={name}
-            autoCapitalize="words"
-            onChangeText={setName}/>
+          <ScrollView>
+            <Label>Nome</Label>
+            <Input
+              placeholder="Digite seu nome"
+              placeholderTextColor="#b1b1b1"
+              value={name}
+              autoCapitalize="words"
+              onChangeText={setName}/>
 
-          <Label>Email</Label>
-          <Input
-            placeholder="Digite seu email"
-            value={email}
-            onChangeText={setEmail}/>
+            <Label>Email</Label>
+            <Input
+              placeholder="Digite seu email"
+              placeholderTextColor="#b1b1b1"
+              value={email}
+              onChangeText={setEmail}/>
 
-          <Label>Senha</Label>
-          <Input
-            placeholder="Digite sua senha"
-            value={pass}
-            secureTextEntry={true}
-            onChangeText={setPass}/>
+            <Label>Senha</Label>
+            <Input
+              placeholder="Digite sua senha"
+              placeholderTextColor="#b1b1b1"
+              value={pass}
+              secureTextEntry={true}
+              onChangeText={setPass}/>
 
-          <Label>Confirme sua senha</Label>
-          <Input
-            placeholder="Digite sua senha novamente"
-            value={confPass}
-            secureTextEntry={true}
-            onChangeText={setConfPass}/>
+            <Label>Confirme sua senha</Label>
+            <Input
+              placeholder="Digite sua senha novamente"
+              placeholderTextColor="#b1b1b1"
+              value={confPass}
+              secureTextEntry={true}
+              onChangeText={setConfPass}/>
 
-          <ButtonView>
-            <SignInButton
-              onPress={handleRegister}
-              disabled={disableButton}
-              style={{backgroundColor: disableButton ? '#686868' : "#007e33"}}
-            >
-              <SignInButtonText>Registrar</SignInButtonText>
-            </SignInButton>
-          </ButtonView>
+            <ButtonView>
+              <SignInButton
+                onPress={handleRegister}
+                disabled={disableButton}
+                style={{backgroundColor: disableButton ? '#686868' : "#007e33"}}
+              >
+                <SignInButtonText>Registrar</SignInButtonText>
+              </SignInButton>
+            </ButtonView>
+          </ScrollView>
         </Container>
       );
     }

@@ -4,11 +4,12 @@ import { NoContentText, NoContentView} from "./styles";
 
 interface NoContentProps {
   text: string;
+  style?: object;
 }
 
-const NoContent: React.FC<NoContentProps> = ({text}) => {
+const NoContent: React.FC<NoContentProps> = ({text, style}) => {
   return (
-    <NoContentView>
+    <NoContentView style={style}>
       <Icon name="do-not-disturb" size={35} color="#d8d8d8"/>
       <NoContentText>{text}</NoContentText>
     </NoContentView>

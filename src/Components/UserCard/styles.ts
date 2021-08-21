@@ -6,6 +6,7 @@ export const User = styled.TouchableOpacity`
   justify-content: space-between;
   align-items: center;
   padding-left: 10px;
+  width: 100%;
 `;
 
 export const UserPhoto = styled.Image`
@@ -68,6 +69,9 @@ export const AddFriendButton = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   border-radius: 50px;
+  position: absolute;
+  right: 20px;
+  top: 50%
 `;
 
 export const AddFriendButtonText = styled.Text`

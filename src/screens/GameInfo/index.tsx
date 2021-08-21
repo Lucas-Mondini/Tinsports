@@ -82,7 +82,7 @@ const GameInfo: React.FC = () => {
           if (!user) return signOut();
 
           try {
-            await api.delete(`/game-list/${inviteId}/delete`, {headers: {auth_token: user.auth_token}});
+            await api.delete(`/game-list/${inviteId}`, {headers: {auth_token: user.auth_token}});
             getGameInfo();
           } catch(err) {
             navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});

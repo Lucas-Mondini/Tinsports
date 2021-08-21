@@ -1,8 +1,7 @@
 import React from "react";
-import { View } from "react-native";
+import { Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { MetricView } from "./styles";
-//import { NoGameText, NoGameView} from "./styles";
 
 interface NoGameProps {
   reputation: number;
@@ -39,16 +38,18 @@ const Metric: React.FC<NoGameProps> = ({reputation, size}) => {
 
   let i = 0;
 
+  const metricSize = Dimensions.get("window").width <= 320 ? size * 0.75 : size;
+
   for (let star of fullStars) {
     switch (star) {
       case 1:
-        starArray.push(<Icon key={i} name="star-o" size={size} color="#FAFE50"/>)
+        starArray.push(<Icon key={i} name="star-o" size={metricSize} color="#FAFE50"/>)
         break;
       case 2:
-        starArray.push(<Icon key={i} name="star-half-full" size={size} color="#FAFE50"/>)
+        starArray.push(<Icon key={i} name="star-half-full" size={metricSize} color="#FAFE50"/>)
         break;
       case 3:
-        starArray.push(<Icon key={i} name="star" size={size} color="#FAFE50"/>)
+        starArray.push(<Icon key={i} name="star" size={metricSize} color="#FAFE50"/>)
         break;
     }
 

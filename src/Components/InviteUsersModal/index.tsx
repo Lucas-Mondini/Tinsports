@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-native';
+import { Dimensions, Modal } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import { Friend, GameList } from '../../utils/types';
@@ -45,7 +45,7 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setM
       if (!user) return signOut();
 
       for (const invite of inviteList) {
-        await api.post('/game-list/invite', {
+        await api.post('/game-list', {
           user_ID: invite,
           game_ID: gameId
         }, {headers: {auth_token: user.auth_token}});
@@ -56,7 +56,7 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setM
       setModal();
       reloadFunction();
     } catch (err) {
-      signOut();
+      setModal();
     }
   }
 
@@ -66,13 +66,14 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setM
     if (!user) return signOut();
 
     try {
-      const response = await api.get(`/friend/${user._id}`, {headers: {auth_token: user.auth_token}});
+      const response = await api.get(`/friend`,
+        {headers: {auth_token: user.auth_token}});
 
       setFriends(response.data.friends);
       setTotalUsers(response.data.friends);
       setLoading(false);
     } catch(err) {
-      console.log(err);
+      setModal();
     }
   }
 
@@ -109,7 +110,13 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setM
           }
 
           <Footer>
-            <ConfirmButton onPress={sendInvites}>
+            <ConfirmButton
+              onPress={sendInvites}
+              style={{
+                height: Dimensions.get("window").width <= 320 ? 30 : 40,
+                width: Dimensions.get("window").width <= 320 ? 130 : 150
+              }}
+            >
               <ButtonText>Confirmar</ButtonText>
             </ConfirmButton>
 

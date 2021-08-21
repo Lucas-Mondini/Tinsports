@@ -1,5 +1,5 @@
 import React, {  useEffect, useState } from 'react';
-import { Alert, Modal } from 'react-native';
+import { Alert, Dimensions, Modal, View } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import Input from '../Input';
@@ -146,11 +146,17 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
             </ModalContainer>
           }
 
+          <View style={{marginTop: 30}}/>
+
           {footerVisible &&
             <Footer>
               <ConfirmButton
                 onPress={updateUser}
-                style={{backgroundColor: disableButton ? '#686868' : "#2FB400"}}
+                style={{
+                  backgroundColor: disableButton ? '#686868' : "#2FB400",
+                  height: Dimensions.get("window").width <= 320 ? 30 : 40,
+                  width: Dimensions.get("window").width <= 320 ? 130 : 150
+                }}
               >
                 <ButtonText>Confirmar</ButtonText>
               </ConfirmButton>

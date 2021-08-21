@@ -1,6 +1,7 @@
 import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Alert, Image, TouchableOpacity, View } from "react-native";
+import { Alert, Image, TouchableOpacity, View, RefreshControl } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/FontAwesome5";
 import GameCard from "../../Components/GameCard";
@@ -13,7 +14,12 @@ import { Game, Params } from "../../utils/types";
 
 import {
   BottomNavbar,
-  Container, GameContainer, Games, GameTitle, GameTitleContainer, TopImage
+  Container,
+  GameContainer,
+  Games,
+  GameTitle,
+  GameTitleContainer,
+  TopImage
 } from "./styles";
 
 const goal = require('../../../assets/images/goal.png');
@@ -36,7 +42,7 @@ const Main: React.FC = () => {
     if(!user) return signOut();
 
     try{
-      const result = await api.get(`/games/home/${params && params.id ? params.id + "?friendGames=true" : user._id}`, {
+      const result = await api.get(`/games/home?_id=${params && params.id ? params.id : ""}&friendGames=${params ? "true" : ''}`, {
         headers: {auth_token: user.auth_token}
       });
 
@@ -49,7 +55,7 @@ const Main: React.FC = () => {
       setLoading(false);
     } catch(err) {
       setLoading(false);
-      navigation.reset({index: 0, routes: [{name: "Main"}]});
+      //signOut();
     }
   }
 
@@ -80,27 +86,33 @@ const Main: React.FC = () => {
   function mapGames(games: Game[]) {
     return (<>
       {
-        games.map(game => (
-          <View key={game._id}>
-            <GameCard
-              host_ID={game.host_ID}
-              setGames={getGames}
-              _id={game._id}
-              title={game.name}
-              location={game.location}
-              time={game.hour}
-              finished={game.finished}
-            />
-          </View>
-        ))
+        <FlatList
+          data={games}
+          renderItem={({item}: {item: any}) => (
+            <View>
+              <GameCard
+                host_ID={item.host_ID}
+                setGames={getGames}
+                _id={item._id}
+                title={item.name}
+                location={item.location}
+                time={item.hour}
+                finished={item.finished}
+              />
+            </View>)}
+          keyExtractor={game => game._id}
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={getGames}/>}
+        />
       }
     </>)
   }
 
   return (
-    <Container>
+    <Container style={{paddingTop : params ? 50 : 0}}>
       {params && params.id && <Header />}
       <Games>
+        {!params && <View style={{marginTop: 20}}/>}
+
         <TopImage>
           <Image source={goal}/>
         </TopImage>
@@ -146,6 +158,8 @@ const Main: React.FC = () => {
 
           </GameContainer>
         }
+
+        <View style={{marginBottom: 20}}/>
       </Games>
 
       {!params &&

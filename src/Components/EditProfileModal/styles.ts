@@ -21,6 +21,7 @@ export const ModalContent = styled.View`
 `;
 
 export const Footer = styled.View`
+  background-color: #f6f6f6;
   height: 50px;
   width: 100%;
   flex-direction: row;
@@ -42,8 +43,6 @@ export const ChangePasswordText = styled.Text`
 `;
 
 export const ConfirmButton = styled.TouchableOpacity`
-  height: 40px;
-  width: 150px;
   border-radius: 20px;
   justify-content: center;
   align-items: center;
@@ -53,7 +52,6 @@ export const ButtonText = styled.Text`
   color: #fff;
   font-size: 20px;
   font-family: "Poppins-Regular";
-  line-height: 24px;
 `;
 
 export const CancelButton = styled.TouchableOpacity``;

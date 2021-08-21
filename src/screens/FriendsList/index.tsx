@@ -1,6 +1,6 @@
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 import FriendCard from '../../Components/FriendCard';
 import Header from '../../Components/Header';
 import Loading from '../../Components/Loading';
@@ -28,7 +28,7 @@ const Friends: React.FC = () => {
     if (!user) return signOut();
 
     try {
-      const response = await api.get(`/friend/${params && params.id ? params.id + "?friendFriends=true" : user._id}`,
+      const response = await api.get(`/friend?_id=${params && params.id ? params.id + "?friendFriends=true" : ""}`,
         {headers: {auth_token: user.auth_token}});
 
       setFriends(response.data.friends);
@@ -50,22 +50,30 @@ const Friends: React.FC = () => {
       {!params &&
       <>
         <Title>Convites de amizade</Title>
-        {loading ? <Loading /> :
+        {loading ? <Loading  styles={{flex: 0, marginTop: 15, marginBottom: 20}}/> :
           <FriendsView>
-              {!invites || invites.length === 0 ? <NoContent text="Você ainda não convites de amizade"/> :
+              {!invites || invites.length === 0
+                ?
+                <NoContent
+                  style={{marginTop:15, marginBottom:20}}
+                  text="Você ainda não convites de amizade"/>
+                :
                 <>
-                  {invites.map(invite => (
-                    <FriendCard
-                      user_ID={invite.user_ID}
-                      reloadFunction={getFriends}
-                      key={invite._id}
-                      photo={photo}
-                      name={invite.name}
-                      _id={invite._id}
-                      reputation={invite.reputation}
-                      invite
-                    />
-                  ))}
+                  <FlatList
+                    data={invites}
+                    renderItem={({item}: {item: Friend}) => (
+                      <FriendCard
+                        user_ID={item.user_ID}
+                        reloadFunction={getFriends}
+                        photo={photo}
+                        name={item.name}
+                        _id={item._id}
+                        reputation={item.reputation}
+                        invite
+                      />)}
+                      keyExtractor={invite => invite._id}
+                      refreshControl={<RefreshControl refreshing={loading} onRefresh={getFriends}/>}
+                  />
                 </>
               }
             </FriendsView>
@@ -74,28 +82,35 @@ const Friends: React.FC = () => {
       }
 
       <Title>{params && params.id ? `Amigos de ${string}` : "Lista de amigos"}</Title>
-      {loading ? <Loading /> :
-        <FriendsView>
-            {!friends || friends.length === 0 ? <NoContent text={
-                                                              params && params.id
-                                                              ? `${string} ainda não possui amigos`
-                                                              :"Você ainda não possui amigos"}/> :
-              <>
-                {friends.map(friend => (
+      {loading ? <Loading styles={{flex: 0, marginTop: 15, marginBottom: 20}}/> :
+
+          !friends || friends.length === 0
+              ?
+              <NoContent
+                style={{marginTop:15, marginBottom:20}}
+                text={
+                  params && params.id
+                  ? `${string} ainda não possui amigos`
+                  :"Você ainda não possui amigos"
+                }
+              />
+              :
+              <FlatList
+                data={friends}
+                renderItem={({item}: {item: Friend}) => (
                   <FriendCard
-                    user_ID={friend.user_ID}
+                    user_ID={item.user_ID}
                     reloadFunction={getFriends}
-                    key={friend._id}
+                    key={item._id}
                     photo={photo}
-                    name={friend.name}
-                    _id={friend._id}
-                    reputation={friend.reputation}
+                    name={item.name}
+                    _id={item._id}
+                    reputation={item.reputation}
                     disableButtons={!params ? false : true}
-                  />
-                ))}
-              </>
-            }
-          </FriendsView>
+                  />)}
+                  keyExtractor={friend => friend._id}
+                  refreshControl={<RefreshControl refreshing={loading} onRefresh={getFriends}/>}
+              />
         }
 
     </Container>

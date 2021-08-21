@@ -10,7 +10,6 @@ export const BackButton = styled.TouchableOpacity`
 
 export const HeaderContainer = styled.View`
   height: 50px;
-  background-color: transparent;
   position: absolute;
   top: 0;
   width: 100%;
@@ -18,4 +17,6 @@ export const HeaderContainer = styled.View`
   flex-direction: row;
   align-items: center;
   padding: 0 3%;
+  border-bottom-color: #f6f6f6;
+  border-bottom-width: 1px;
 `;

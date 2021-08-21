@@ -25,7 +25,7 @@ const InviteList: React.FC = () => {
     if (!user) return signOut();
 
     try {
-      const response = await api.get(`/game-list/invite/${user._id}`,
+      const response = await api.get(`/game-list/invite`,
         {headers: {auth_token: user.auth_token}});
 
       setInvites(response.data);

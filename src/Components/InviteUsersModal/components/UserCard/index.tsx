@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ImageSourcePropType, View } from 'react-native';
+import { Dimensions, ImageSourcePropType, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { User, UserInfo, UserName, UserPhoto, ReputationText, ReputationView, InviteButton} from './styles';
 import Metric from '../../../Metric';
 import { GameList } from '../../../../utils/types';
+import { splitText } from '../../../../utils/functions';
 
 interface UserCardProps{
   name: string;
@@ -24,6 +25,8 @@ const UserCard: React.FC<UserCardProps> = ({name, user_ID, gameLists, inviteList
   const [invite, setInvite] = useState(false);
   const [visible, setVisible] = useState(true);
   const [loading, setLoading] = useState(true);
+
+  const userName = Dimensions.get("window").width <= 320 ? splitText(name, 15) : splitText(name, 20);
 
   function handleInviteList() {
     let usersList = [...inviteList];
@@ -60,9 +63,9 @@ const UserCard: React.FC<UserCardProps> = ({name, user_ID, gameLists, inviteList
       <UserPhoto source={photo} />
       <UserInfo>
         <View>
-          <UserName>{name}</UserName>
+          <UserName>{userName}</UserName>
           <ReputationView>
-            <ReputationText>Reputação: </ReputationText>
+            <ReputationText>Rep.: </ReputationText>
             <Metric reputation={reputation} size={15}/>
           </ReputationView>
         </View>

@@ -31,8 +31,6 @@ export const Footer = styled.View`
 `;
 
 export const ConfirmButton = styled.TouchableOpacity`
-  height: 40px;
-  width: 150px;
   background-color: #2FB400;
   border-radius: 20px;
   justify-content: center;

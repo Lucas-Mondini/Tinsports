@@ -1,5 +1,6 @@
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import EditProfileModal from '../../Components/EditProfileModal';
 import Header from '../../Components/Header';
@@ -134,6 +135,7 @@ const Profile: React.FC = () => {
           />
         </>}
 
+        <View style={{marginBottom: 20}}/>
       </UserInfo>
     </Container>
   );

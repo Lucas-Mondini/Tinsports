@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Modal, View } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
-import { Evaluation, Friend } from '../../utils/types';
+import { Evaluation, GameList } from '../../utils/types';
 import Loading from '../Loading';
 import NoContent from '../NoContent';
 import UserCard from './components/UserCard';
@@ -16,7 +16,6 @@ import {
   FriendsView,
   ModalBackground,
   ModalContent,
-  NoFriendsText,
   NoFriendsView
 } from './styles';
 
@@ -27,7 +26,7 @@ type ModalProps = {
   gameId: string;
   setModal: () => void;
   reloadFunction: () => void;
-  invitedUsers: Friend[];
+  invitedUsers: GameList[];
 }
 
 const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, invitedUsers}) => {

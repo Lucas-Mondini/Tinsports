@@ -43,6 +43,11 @@ export function formatDate(date: string):string {
   return formatDate;
 }
 
+export function splitText(text: string, delimiter: number): string {
+  const formattedText = text.substr(0, delimiter).trim() + (text.length > delimiter ? "..." : "");
+  return formattedText;
+}
+
 export function getFirstName(name: string):string {
   const firstName = name.split(" ")[0];
   return firstName;

@@ -2,8 +2,8 @@ import styled from 'styled-components/native';
 
 export const Container = styled.View`
   align-items: center;
-  padding-top: 20px;
   background-color: #fff;
+  padding-top: 50px;
   height: 100%;
 `;
 
@@ -13,7 +13,7 @@ export const UserInfo = styled.ScrollView`
 `;
 
 export const UserImageContainer = styled.View`
-  margin-top: 60px;
+  margin-top: 30px;
   height: 185px;
   justify-content: center;
   align-items: center;

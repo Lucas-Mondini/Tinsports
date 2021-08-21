@@ -1,10 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, Dimensions, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
-import { getFirstName } from '../../utils/functions';
+import { getFirstName, splitText } from '../../utils/functions';
 import{Button, ButtonsView, GameNameText, Invite, InviteInfo, InviteTitle, LocationText, TimeText} from './styles';
 
 interface InviteCardProps{
@@ -24,8 +24,11 @@ const InviteCard: React.FC<InviteCardProps> = ({_id, host_ID, game_ID, date, loc
   const navigation = useNavigation<any>();
   const {signOut, user} = useAuth();
 
+  const gameLocation = Dimensions.get('window').width <= 320 ? splitText(location, 8) : splitText(location, 18);
+  const name = Dimensions.get('window').width <= 320 ? splitText(gameName, 10) : splitText(gameName, 18);
+
   function goToGameInfo() {
-    navigation.push('GameInfo', {_id: game_ID});
+    navigation.push('GameInfo', {id: game_ID});
   }
 
   function goToUserProfile() {
@@ -96,10 +99,10 @@ const InviteCard: React.FC<InviteCardProps> = ({_id, host_ID, game_ID, date, loc
     <Invite onPress={goToGameInfo} onLongPress={goToUserProfile}>
       <Icon name="soccer-ball-o" size={51} color="#686868"/>
       <InviteInfo>
-        <View>
+        <View style={{marginLeft: Dimensions.get('window').width <= 320 ? 10 : 0}}>
           <InviteTitle>{getFirstName(hostName)}</InviteTitle>
-          <GameNameText>{gameName}</GameNameText>
-          <LocationText>Local: {location}</LocationText>
+          <GameNameText>{name}</GameNameText>
+          <LocationText>Local: {gameLocation}</LocationText>
           <TimeText>{date} {hour}</TimeText>
         </View>
 

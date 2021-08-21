@@ -95,6 +95,7 @@ const CreateEvent: React.FC = ()=>{
           icon="soccer-ball-o"
           size={25}
           value={game.type}
+          maxLength={17}
           setValue={type => setGame({...game, type})}
           />
         <Input
@@ -172,7 +173,7 @@ const CreateEvent: React.FC = ()=>{
             disabled={disableButton ? true : false}
             style={{backgroundColor: disableButton ? "#686868" : "#007E33"}}
             onPress={sendData}>
-            <SubmitButtonText>Cadastrar partida</SubmitButtonText>
+            <SubmitButtonText>Cadastrar</SubmitButtonText>
           </SubmitButton>
         </SubmitButtonView>
       </GameInfo>
