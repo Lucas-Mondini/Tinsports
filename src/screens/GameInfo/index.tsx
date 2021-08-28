@@ -1,6 +1,6 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, View } from "react-native";
+import { Alert, RefreshControl, View } from "react-native";
 import Badge from "../../Components/Badge";
 import UserCard from "../../Components/UserCard";
 import api from "../../services/api";
@@ -58,6 +58,13 @@ const GameInfo: React.FC = () => {
 
       if(result.status == 401 || !token){
         signOut();
+      }
+
+      if (game?.finished && game.host_ID !== user._id) {
+        return navigation.reset({
+          index: 0,
+          routes: [{name: "Main"}]
+        });
       }
 
       setLoading(false);
@@ -126,7 +133,6 @@ const GameInfo: React.FC = () => {
             reloadFunction={getGameInfo}
           /> :
           <InviteUsersModal
-            gameList={gameList}
             gameId={game._id}
             setModal={handleModal}
             visible={modalOpened}
@@ -135,7 +141,7 @@ const GameInfo: React.FC = () => {
         : null
       }
 
-      <GameInfoView>
+      <GameInfoView refreshControl={<RefreshControl refreshing={loading} onRefresh={getGameInfo}/>}>
         <Title>{game.name}</Title>
 
         <BadgeContainer style={{ paddingRight: 38 }}>
@@ -168,7 +174,11 @@ const GameInfo: React.FC = () => {
           (game.finished && game.host_ID === user?._id)
             ?
             <EventFinishedView>
-              <EventFinishedButton onPress={handleModal}>
+              <EventFinishedButton
+                disabled={(gameList.length === 0)}
+                style={{backgroundColor: (gameList.length === 0) ? "#656565" : "#2FB400"}}
+                onPress={handleModal}
+              >
                 <ButtonText>Avaliar participantes</ButtonText>
               </EventFinishedButton>
             </EventFinishedView>
@@ -185,7 +195,6 @@ const GameInfo: React.FC = () => {
 
         {(gameList.length > 0) ?
           <>
-
             {gameList.map(user =>{
               return (<UserCard
                         key={user._id}
@@ -200,7 +209,7 @@ const GameInfo: React.FC = () => {
             })}
           </>
 
-          : <View style={{ paddingBottom: 100 }}></View>
+          : <EmptyText>Não há usuários para avaliar</EmptyText>
         }
         <View style={{ paddingBottom: 25 }}></View>
       </GameInfoView>

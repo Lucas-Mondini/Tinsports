@@ -26,17 +26,15 @@ type ModalProps = {
   gameId: string;
   setModal: () => void;
   reloadFunction: () => void;
-  gameList: GameList[];
 }
 
-const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setModal, reloadFunction}) => {
+const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, reloadFunction}) => {
   const [loading, setLoading] = useState(false);
 
   const [friends, setFriends] = useState<Friend[]>([]);
   const { user, signOut} = useAuth();
 
   const [inviteList, setInviteList] = useState([] as string[]);
-  const [totalUsers, setTotalUsers] = useState(gameList.length);
 
   async function sendInvites() {
     setLoading(true);
@@ -66,11 +64,10 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setM
     if (!user) return signOut();
 
     try {
-      const response = await api.get(`/friend`,
+      const response = await api.get(`/friend/gameList/${gameId}`,
         {headers: {auth_token: user.auth_token}});
 
-      setFriends(response.data.friends);
-      setTotalUsers(response.data.friends);
+      setFriends(response.data);
       setLoading(false);
     } catch(err) {
       setModal();
@@ -86,7 +83,7 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setM
       <ModalBackground>
         <ModalContent>
           {loading ? <Loading styles={{backgroundColor: "#f6f6f6"}}/> :
-            totalUsers <= 0 ?
+            friends.length === 0 ?
             <NoFriendsView key={1}>
               <NoContent text="Não há amigos para convidar"/>
             </NoFriendsView> :
@@ -94,11 +91,8 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, gameList, setM
               {
                 friends.map(friend =>
                   <UserCard
-                    totalUsers={totalUsers}
-                    setTotalUsers={setTotalUsers}
                     inviteList={inviteList}
                     setInviteList={setInviteList}
-                    gameLists={gameList}
                     key={friend._id}
                     name={friend.name}
                     photo={photo}

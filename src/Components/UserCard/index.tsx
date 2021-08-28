@@ -27,9 +27,13 @@ interface UserCardProps{
   confirmation?: boolean;
   addFriend?: boolean;
   handleLongPress?: (id: string) => void;
+  reloadFunction?: () => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({name, id, photo, invitationId, reputation, confirmation, addFriend, handleLongPress})=>{
+const UserCard: React.FC<UserCardProps> = ({
+    name, id, photo, invitationId, reputation, confirmation, addFriend,
+    handleLongPress, reloadFunction
+  }) => {
 
   const navigation = useNavigation();
   const { user, signOut } = useAuth();
@@ -50,6 +54,8 @@ const UserCard: React.FC<UserCardProps> = ({name, id, photo, invitationId, reput
       }, {headers: {
         auth_token: user.auth_token
       }});
+
+      if (reloadFunction) reloadFunction();
     } catch(err) {
       if (err.response && err.response.status === 401) {
         Alert.alert("Amigos", "Você já enviou convite de amizade para esse usuário ou vocês já são amigos");

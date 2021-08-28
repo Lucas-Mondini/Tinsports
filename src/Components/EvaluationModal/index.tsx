@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Modal, View } from 'react-native';
+import { Alert, Modal } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import { Evaluation, GameList } from '../../utils/types';
@@ -69,9 +69,9 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
 
   function fillEvaluationArray() {
     const evaluations = [];
-    for (const invited in invitedUsers) {
+    for (const invited of invitedUsers) {
       const user = {
-        user_ID: invitedUsers[invited].user_ID,
+        user_ID: invited.user_ID,
         paid: false,
         participated: false
       }
@@ -108,7 +108,8 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
                   photo={photo}
                   reputation={friend.reputation}
                   user_ID={friend.user_ID}
-                />)
+                />
+              )
             }
           </FriendsView>}
 

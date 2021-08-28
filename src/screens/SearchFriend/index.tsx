@@ -67,7 +67,15 @@ const SearchFriend: React.FC = () => {
         &&
           users?.map(user => {
             return (
-              <UserCard reputation={user.reputation} key={user._id} id={user._id} name={user.name} photo={photo} addFriend />
+              <UserCard
+                reputation={user.reputation}
+                key={user._id}
+                id={user._id}
+                name={user.name}
+                photo={photo}
+                addFriend
+                reloadFunction={getUsers}
+              />
             )
           })
         }

@@ -28,8 +28,8 @@ const Friends: React.FC = () => {
     if (!user) return signOut();
 
     try {
-      const response = await api.get(`/friend?_id=${params && params.id ? params.id + "?friendFriends=true" : ""}`,
-        {headers: {auth_token: user.auth_token}});
+      const response = await api.get(`/friend?_id=${params && params.id ? params.id + "&friendFriends=true" : ""}`,
+      {headers: {auth_token: user.auth_token}});
 
       setFriends(response.data.friends);
       setInvites(response.data.friendInvites);

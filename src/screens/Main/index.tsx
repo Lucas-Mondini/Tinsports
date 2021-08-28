@@ -1,7 +1,6 @@
 import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { Alert, Image, TouchableOpacity, View, RefreshControl } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/FontAwesome5";
 import GameCard from "../../Components/GameCard";
@@ -55,7 +54,7 @@ const Main: React.FC = () => {
       setLoading(false);
     } catch(err) {
       setLoading(false);
-      //signOut();
+      signOut();
     }
   }
 
@@ -86,31 +85,27 @@ const Main: React.FC = () => {
   function mapGames(games: Game[]) {
     return (<>
       {
-        <FlatList
-          data={games}
-          renderItem={({item}: {item: any}) => (
-            <View>
-              <GameCard
-                host_ID={item.host_ID}
-                setGames={getGames}
-                _id={item._id}
-                title={item.name}
-                location={item.location}
-                time={item.hour}
-                finished={item.finished}
-              />
-            </View>)}
-          keyExtractor={game => game._id}
-          refreshControl={<RefreshControl refreshing={loading} onRefresh={getGames}/>}
-        />
+        games.map(game => (
+          <View key={game._id}>
+            <GameCard
+              host_ID={game.host_ID}
+              setGames={getGames}
+              _id={game._id}
+              title={game.name}
+              location={game.location}
+              time={game.hour}
+              finished={game.finished}
+            />
+          </View>
+        ))
       }
-    </>)
+    </>);
   }
 
   return (
     <Container style={{paddingTop : params ? 50 : 0}}>
       {params && params.id && <Header />}
-      <Games>
+      <Games refreshControl={<RefreshControl refreshing={loading} onRefresh={getGames}/>}>
         {!params && <View style={{marginTop: 20}}/>}
 
         <TopImage>

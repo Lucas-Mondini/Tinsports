@@ -4,7 +4,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { User, UserInfo, UserName, UserPhoto, ReputationText, ReputationView, InviteButton} from './styles';
 import Metric from '../../../Metric';
-import { GameList } from '../../../../utils/types';
 import { splitText } from '../../../../utils/functions';
 
 interface UserCardProps{
@@ -15,16 +14,11 @@ interface UserCardProps{
   addFriend?: boolean;
   user_ID: string;
   inviteList: string[];
-  gameLists: GameList[];
   setInviteList: (value: string[]) => void;
-  totalUsers: number;
-  setTotalUsers: (number: number) => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({name, user_ID, gameLists, inviteList, reputation, setInviteList, photo, totalUsers, setTotalUsers})=>{
+const UserCard: React.FC<UserCardProps> = ({name, user_ID, inviteList, reputation, setInviteList, photo})=>{
   const [invite, setInvite] = useState(false);
-  const [visible, setVisible] = useState(true);
-  const [loading, setLoading] = useState(true);
 
   const userName = Dimensions.get("window").width <= 320 ? splitText(name, 15) : splitText(name, 20);
 
@@ -40,23 +34,6 @@ const UserCard: React.FC<UserCardProps> = ({name, user_ID, gameLists, inviteList
     setInviteList(usersList);
     setInvite(!invite);
   }
-
-  function setVisibility() {
-    const gameList = gameLists.filter(user => user.user_ID === user_ID);
-
-    if (gameList.length > 0) {
-      setTotalUsers(totalUsers - 1);
-      setVisible(false);
-    };
-
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    setVisibility();
-  }, []);
-
-  if (!visible || loading) return null;
 
   return (
     <User>

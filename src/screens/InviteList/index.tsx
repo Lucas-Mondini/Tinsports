@@ -1,6 +1,6 @@
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 import Header from '../../Components/Header';
 import InviteCard from '../../Components/InviteCard';
 import Loading from '../../Components/Loading';
@@ -47,7 +47,7 @@ const InviteList: React.FC = () => {
       <>
         <Title>Convites de jogos</Title>
         {loading ? <Loading /> :
-          <FriendsView>
+          <FriendsView refreshControl={<RefreshControl refreshing={loading} onRefresh={getInvites}/>}>
               {!invites || invites.length === 0 ? <NoContent text="Você não possui convites de jogos"/> :
                 <>
                   {invites.map(invite => (
