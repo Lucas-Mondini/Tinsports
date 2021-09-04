@@ -1,6 +1,6 @@
 import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Alert, Image, TouchableOpacity, View, RefreshControl } from "react-native";
+import { Alert, Image, TouchableOpacity, View, RefreshControl, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/FontAwesome5";
 import GameCard from "../../Components/GameCard";
@@ -18,11 +18,11 @@ import {
   Games,
   GameTitle,
   GameTitleContainer,
-  TopImage
+  TopImage,
+  AddButton
 } from "./styles";
 
 const goal = require('../../../assets/images/goal.png');
-const AddButton = require('../../../assets/images/RoundButton.png');
 
 const Main: React.FC = () => {
   const params = useRoute().params as Params;
@@ -30,6 +30,7 @@ const Main: React.FC = () => {
   const navigation = useNavigation();
 
   const [loading, setLoading] = useState(false);
+  const [disableAddButton, setDisableAddButton] = useState(true);
   const [userGames, setUserGames] = useState<Game[]>();
   const [friendsGames, setFriendsGames] = useState<Game[]>();
   const [invitedGames, setInvitedGames] = useState<Game[]>();
@@ -50,6 +51,10 @@ const Main: React.FC = () => {
         setFriendsGames(result.data.friendsGames);
       }
 
+      if (result.data.userGames.length < 5) {
+        setDisableAddButton(false);
+      }
+
       setUserGames(result.data.userGames);
       setLoading(false);
     } catch(err) {
@@ -59,7 +64,13 @@ const Main: React.FC = () => {
   }
 
   function handleNavigateToCreateEvent() {
-    navigation.navigate('CreateEvent');
+    if (disableAddButton) {
+      Alert.alert(
+        "Você ainda não é premium",
+        "Somente usuários premium podem inserir mais de 5 jogos");
+    } else {
+      navigation.navigate('CreateEvent');
+    }
   }
 
   function handleNavigateToProfile() {
@@ -161,27 +172,34 @@ const Main: React.FC = () => {
         <BottomNavbar>
           <View>
             <TouchableOpacity onPress={handleNavigateToConfiguration}>
-              <Icon name="gear" size={35} color="#686868"/>
+              <Icon name="gear" size={Dimensions.get("window").width <= 320 ? 26 : 35} color="#686868"/>
             </TouchableOpacity>
           </View>
           <View>
             <TouchableOpacity onPress={handleNavigateToPremium}>
-              <Icon2 name="crown" size={43} color="#686868"/>
+              <Icon2 name="crown" size={Dimensions.get("window").width <= 320 ? 32 : 43} color="#686868"/>
             </TouchableOpacity>
           </View>
           <View>
-            <TouchableOpacity onPress={handleNavigateToCreateEvent}>
-              <Image source={AddButton} />
-            </TouchableOpacity>
+            <AddButton
+              onPress={handleNavigateToCreateEvent}
+              style={{
+                width: Dimensions.get("window").width <= 320 ? 49 : 65,
+                height: Dimensions.get("window").width <= 320 ? 49 : 65,
+                backgroundColor: disableAddButton ? "#686868" : "#268E01"
+              }}
+            >
+              <Icon2 name="plus" size={Dimensions.get("window").width <= 320 ? 30 : 40} color="#fff"/>
+            </AddButton>
           </View>
           <View>
             <TouchableOpacity onPress={navigateToSearchFriends}>
-              <Icon name="search" size={43} color="#686868"/>
+              <Icon name="search" size={Dimensions.get("window").width <= 320 ? 32 : 43} color="#686868"/>
             </TouchableOpacity>
           </View>
           <View>
             <TouchableOpacity onPress={handleNavigateToProfile}>
-              <Icon name="user" size={35} color="#686868"/>
+              <Icon name="user" size={Dimensions.get("window").width <= 320 ? 26 : 35} color="#686868"/>
             </TouchableOpacity>
           </View>
         </BottomNavbar>

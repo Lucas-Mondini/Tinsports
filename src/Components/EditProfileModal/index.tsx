@@ -23,9 +23,9 @@ type ModalProps = {
   reloadFunction: () => void;
 }
 
-const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction}) => {
+const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction}) =>
+{
   const [loading, setLoading] = useState(false);
-  const [footerVisible, setFooterVisible] = useState(true);
   const [disableButton, setDisableButton] = useState(true);
 
   const { user, signOut } = useAuth();
@@ -37,10 +37,6 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
     confirmNewPassword: ""
   });
 
-  function setFooter() {
-    setFooterVisible(!footerVisible);
-  }
-
   async function updateUser() {
     try {
       if (!user) return signOut();
@@ -49,10 +45,9 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
         return Alert.alert("Senhas diferentes", "As senhas que você digitou são diferentes, tente novamente");
       }
 
-      setFooter();
       setLoading(true);
 
-      await api.put(`/register/user/${user._id}`, {
+      await api.put(`/register/user`, {
         newName: userInfo.name,
         newEmail: userInfo.email,
         newPass: userInfo.newPassword,
@@ -60,8 +55,8 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
       }, {headers: {auth_token: user.auth_token}});
 
       setLoading(false);
-      setFooter();
       setModal();
+      setUserInfo({...userInfo, password: ""});
       reloadFunction();
     } catch (err) {
       setLoading(false);
@@ -97,7 +92,6 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
                 icon="user"
                 size={28}
                 value={userInfo.name}
-                callback={setFooter}
                 autoCapitalize="words"
                 setValue={value => setUserInfo({...userInfo, name: value})}
               />
@@ -107,11 +101,9 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
                 value={userInfo.email}
                 icon="at"
                 size={28}
-                callback={setFooter}
                 setValue={value => setUserInfo({...userInfo, email: value})}
               />
 
-              <ChangePasswordText>Mudar senha?</ChangePasswordText>
               <Input
                 style={{marginLeft: '3%', marginRight: '3%'}}
                 label="Sua senha atual"
@@ -119,9 +111,10 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
                 icon="unlock"
                 size={27}
                 secureTextEntry
-                callback={setFooter}
                 setValue={value => setUserInfo({...userInfo, password: value})}
               />
+
+              <ChangePasswordText>Mudar senha?</ChangePasswordText>
               <Input
                 style={{marginLeft: '3%', marginRight: '3%'}}
                 label="Nova senha"
@@ -129,7 +122,6 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
                 icon="lock"
                 size={28}
                 secureTextEntry
-                callback={setFooter}
                 setValue={value => setUserInfo({...userInfo, newPassword: value})}
               />
               <Input
@@ -139,7 +131,6 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
                 icon="unlock-alt"
                 size={28}
                 secureTextEntry
-                callback={setFooter}
                 setValue={value => setUserInfo({...userInfo, confirmNewPassword: value})}
               />
 
@@ -148,23 +139,22 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
 
           <View style={{marginTop: 30}}/>
 
-          {footerVisible &&
-            <Footer>
-              <ConfirmButton
-                onPress={updateUser}
-                style={{
-                  backgroundColor: disableButton ? '#686868' : "#2FB400",
-                  height: Dimensions.get("window").width <= 320 ? 30 : 40,
-                  width: Dimensions.get("window").width <= 320 ? 130 : 150
-                }}
-              >
-                <ButtonText>Confirmar</ButtonText>
-              </ConfirmButton>
+          <Footer>
+            <ConfirmButton
+              onPress={updateUser}
+              style={{
+                backgroundColor: disableButton ? '#686868' : "#2FB400",
+                height: Dimensions.get("window").width <= 320 ? 30 : 40,
+                width: Dimensions.get("window").width <= 320 ? 130 : 150
+              }}
+            >
+              <ButtonText>Confirmar</ButtonText>
+            </ConfirmButton>
 
-              <CancelButton onPress={setModal}>
-                <CancelText>Cancelar</CancelText>
-              </CancelButton>
-            </Footer>}
+            <CancelButton onPress={setModal}>
+              <CancelText>Cancelar</CancelText>
+            </CancelButton>
+          </Footer>
         </ModalContent>
       </ModalBackground>
     </Modal>

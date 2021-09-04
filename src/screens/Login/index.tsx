@@ -1,19 +1,26 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { Alert, ScrollView } from 'react-native';
 import Loading from '../../Components/Loading';
 import { useAuth } from '../../Contexts/Auth';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
 
-const Login: React.FC = () => {
-
+const Login: React.FC = () =>
+{
+  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
   const [disableButton, setDisableButton] = useState(true);
-  const {signIn, loading} = useAuth();
+  const {signIn, loading, setLoading} = useAuth();
 
   async function handleSignIn() {
-    await signIn(email, pass);
+    try {
+      await signIn(email, pass);
+    } catch (err) {
+      Alert.alert("Email ou senha incorreto", "Certifique-se que digitou seu e-mail e senha corretamente");
+      return navigation.navigate("Login");
+    }
   }
 
   function enableButton() {
@@ -37,6 +44,7 @@ const Login: React.FC = () => {
           <ScrollView>
             <Label>Email</Label>
             <Input
+              autoCompleteType="email"
               placeholder="Digite seu email"
               placeholderTextColor="#b1b1b1"
               value={email}

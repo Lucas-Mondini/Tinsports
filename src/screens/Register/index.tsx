@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import Loading from '../../Components/Loading';
@@ -5,8 +6,9 @@ import { useAuth } from '../../Contexts/Auth';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
 
-const Register: React.FC = () => {
-
+const Register: React.FC = () =>
+{
+  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
@@ -15,7 +17,11 @@ const Register: React.FC = () => {
   const [disableButton, setDisableButton] = useState(true);
 
   async function handleRegister() {
-    await register(name, email, pass, confPass);
+    try {
+      await register(name, email, pass, confPass);
+    } catch (err) {
+      navigation.navigate("Register");
+    }
   }
 
   function enableButton() {

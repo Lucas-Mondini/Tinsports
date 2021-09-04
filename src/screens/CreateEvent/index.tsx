@@ -1,9 +1,11 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { View} from "react-native";
+import { Alert, Platform, TouchableOpacity, View} from "react-native";
 import Input from '../../Components/Input';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import DateTimePicker, {Event} from "@react-native-community/datetimepicker";
+
 import { Checkbox,
   CheckboxChecked,
   CheckboxLabel,
@@ -18,7 +20,9 @@ import { Checkbox,
 import {
   formatDate,
   formatHour,
-  formatMoney
+  formatMoney,
+  hourToString,
+  toDateString
 } from '../../utils/functions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../../Components/Header';
@@ -30,7 +34,11 @@ const CreateEvent: React.FC = ()=>{
 
   const [game, setGame] = useState({} as Game);
   const [paid, setPaid] = useState(false);
+  const [datePicker, setDatePicker] = useState(false);
+  const [hourPicker, setHourPicker] = useState(false);
   const [disableButton, setDisableButton] = useState(true);
+  const [date, setDate] = useState(new Date());
+  const [hour, setHour] = useState(new Date());
 
   const {user, signOut} = useAuth();
 
@@ -54,7 +62,18 @@ const CreateEvent: React.FC = ()=>{
       navigation.reset({index: 0, routes: [{name: "Main"}]});
     } catch(err) {
       setDisableButton(true);
-      navigation.reset({index: 0, routes: [{name: "Main"}]});
+
+      if (err.response && err.response.status === 401) {
+        Alert.alert(
+          "Você ainda não é premium",
+          "Somente usuários premium podem inserir mais de 5 jogos",
+          [{
+            text: "OK",
+            onPress: () => navigation.reset({index: 0, routes: [{name: "Main"}]})
+          }]);
+      } else {
+        navigation.reset({index: 0, routes: [{name: "Main"}]});
+      }
     }
   }
 
@@ -75,6 +94,38 @@ const CreateEvent: React.FC = ()=>{
         } else setDisableButton(true);
   }
 
+  function datePickerComponent()
+  {
+    let datePicker = <DateTimePicker
+                       value={date}
+                       onChange={(_: Event, date?: Date) => {
+                            setDatePicker(false);
+                            setDate(date || new Date());
+                            setGame({...game, date: date ? toDateString(date) : ""});
+                          }
+                       }
+                       mode="date"
+                     />
+
+    return datePicker;
+  }
+
+  function hourPickerComponent()
+  {
+    let datePicker = <DateTimePicker
+                       value={hour}
+                       onChange={(_: Event, date?: Date) => {
+                            setHourPicker(false);
+                            setHour(date || new Date());
+                            setGame({...game, hour: date ? hourToString(date) : ""});
+                          }
+                       }
+                       mode="time"
+                     />
+
+    return datePicker;
+  }
+
   useEffect(() => {
     if (isFocused) enableButton();
   }, [game, paid, isFocused]);
@@ -82,6 +133,9 @@ const CreateEvent: React.FC = ()=>{
   return (
     <Container>
       <Header />
+
+      {datePicker && datePickerComponent()}
+      {hourPicker && hourPickerComponent()}
 
       <GameInfo>
         <Input
@@ -106,28 +160,39 @@ const CreateEvent: React.FC = ()=>{
           setValue={location => setGame({...game, location})}
           />
 
-        <View style={{flexDirection: 'row', flex: 1}}>
-          <Input
-            label="Data"
-            icon="calendar-o"
-            size={25}
-            value={game.date}
-            numeric
-            style={{flex:1, marginRight: 15}}
-            maxLength={10}
-            setValue={date => setGame({...game, date: formatDate(date)})}
-            />
-          <Input
-            label="Hora"
-            icon="clock-o"
-            size={28}
-            value={game.hour}
-            numeric
-            style={{flex:1}}
-            maxLength={5}
-            setValue={hour => setGame({...game, hour: formatHour(hour)})}
-            />
-        </View>
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity activeOpacity={1} onPress={() => setDatePicker(true)} style={{flex: 1}}>
+            <View pointerEvents="none">
+              <Input
+                label="Data"
+                icon="calendar-o"
+                size={25}
+                value={game.date}
+                numeric
+                style={{flex:1, marginRight: 15}}
+                maxLength={10}
+                disabled={false}
+                setValue={date => setGame({...game, date: formatDate(date)})}
+                />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity activeOpacity={1} onPress={() => setHourPicker(true)} style={{flex: 1}}>
+              <View pointerEvents="none">
+                <Input
+                  label="Hora"
+                  icon="clock-o"
+                  size={28}
+                  value={game.hour}
+                  numeric
+                  style={{flex:1}}
+                  maxLength={5}
+                  disabled={false}
+                  setValue={hour => setGame({...game, hour: formatHour(hour)})}
+                  />
+              </View>
+            </TouchableOpacity>
+          </View>
 
           {(paid == false)
             ?

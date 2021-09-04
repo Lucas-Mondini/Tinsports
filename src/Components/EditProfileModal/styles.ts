@@ -28,7 +28,7 @@ export const Footer = styled.View`
   justify-content: space-between;
   align-items: center;
   padding: 0 10% 10px 10%;
-  position: absolute;
+  border-radius: 8px;
   bottom: 0;
 `;
 

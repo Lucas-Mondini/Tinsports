@@ -24,8 +24,8 @@ type AuthProviderProps = {
 
 const AuthContext = createContext({} as AuthData);
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
-
+export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>
+{
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [string, setString] = useState('');
@@ -62,7 +62,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
 
       setLoading(false);
     } catch (err) {
-      return signOut();
+      signOut();
+      setLoading(false);
+
+      throw new Error(err);
     }
   }
 
@@ -84,7 +87,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>{
 
       setLoading(false);
     } catch (err) {
-      return signOut();
+      signOut();
+      setLoading(false);
+
+      if (err.response.data.status == 400) {
+        Alert.alert("E-mail já cadastrado", "O e-mail utilizado já foi cadastrado");
+      } else if (err.response.data.status) {
+        Alert.alert("Senhas diferente", "As senhas digitadas não são iguais");
+      } else Alert.alert("Ocorreu um erro", "Ocorreu um erro interno do servidor, sentimos muito. Tente novamente");
     }
   }
 

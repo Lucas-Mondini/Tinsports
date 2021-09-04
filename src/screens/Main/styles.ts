@@ -50,3 +50,10 @@ export const BottomNavbar = styled.View`
   border-top-color: #E6E6E6;
   margin-top: 20px;
 `;
+
+export const AddButton = styled.TouchableOpacity`
+  background-color: #268E01;
+  border-radius: 80px;
+  justify-content: center;
+  align-items: center;
+`

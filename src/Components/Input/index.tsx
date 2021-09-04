@@ -16,13 +16,14 @@ interface InputProps{
   secureTextEntry?: boolean;
   callback?: () => void;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters'
+  disabled?: boolean;
 }
 
 const Input: React.FC<InputProps> = ({
     label, callback, icon, size,
     multilineActive, value, numeric,
     secureTextEntry, setValue, maxLength, style,
-    autoCapitalize = 'none'
+    autoCapitalize = 'none', disabled
   }) => {
 
   let input = <InputText
@@ -33,6 +34,8 @@ const Input: React.FC<InputProps> = ({
                 maxLength={maxLength}
                 onChangeText={setValue}
                 autoCapitalize={autoCapitalize}
+                autoFocus={disabled}
+                editable={disabled}
               />;
 
   let inputIcon = icon ? (

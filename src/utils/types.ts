@@ -29,6 +29,8 @@ export type User = {
   email: string;
   auth_token: string;
   reputation: number;
+  photo: string;
+  premium: boolean | undefined;
 }
 
 export type Friend = {
