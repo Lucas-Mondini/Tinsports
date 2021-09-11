@@ -58,7 +58,7 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
       setModal();
       setUserInfo({...userInfo, password: ""});
       reloadFunction();
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
 
       if (err.response && err.response.status === 401)

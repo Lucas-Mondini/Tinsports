@@ -7,6 +7,7 @@ import Header from '../../Components/Header';
 import Loading from '../../Components/Loading';
 import Metric from '../../Components/Metric';
 import Option from '../../Components/Option';
+import UserPhotoModal from '../../Components/UserPhotoModal';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import { getFirstName } from '../../utils/functions';
@@ -33,6 +34,7 @@ const Profile: React.FC = () => {
   const { user, signOut, checkLogin, setString, string } = useAuth();
   const [ friend, setFriend ] = useState<User>();
   const [ modalVisible, setModalVisible ] = useState(false);
+  const [ photoModal, setPhotoModal ] = useState(false);
   const [ loading, setLoading ] = useState(false);
 
   function handleGoToFriendsList() {
@@ -46,6 +48,10 @@ const Profile: React.FC = () => {
 
   function setModal() {
     setModalVisible(!modalVisible);
+  }
+
+  function setUserPhotoModal() {
+    setPhotoModal(!photoModal);
   }
 
   async function getUser() {
@@ -85,7 +91,7 @@ const Profile: React.FC = () => {
       <UserInfo>
         <UserImageContainer>
           <UserImage source={photo}/>
-          {!friend && <EditProfileButton>
+          {!friend && <EditProfileButton onPress={setUserPhotoModal}>
             <Icon name="pen" size={23} color="#686868"/>
           </EditProfileButton>}
         </UserImageContainer>
@@ -134,6 +140,13 @@ const Profile: React.FC = () => {
             actions={signOut}
           />
         </>}
+
+        {!friend &&
+          <UserPhotoModal
+            reloadFunction={getUser}
+            visible={photoModal}
+            setModal={setUserPhotoModal}
+          />}
 
         <View style={{marginBottom: 20}}/>
       </UserInfo>

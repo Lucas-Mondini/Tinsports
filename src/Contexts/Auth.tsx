@@ -64,8 +64,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>
     } catch (err) {
       signOut();
       setLoading(false);
-
-      throw new Error(err);
     }
   }
 
@@ -86,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>
       await AsyncStorage.setItem('user', JSON.stringify(response.data));
 
       setLoading(false);
-    } catch (err) {
+    } catch (err: any) {
       signOut();
       setLoading(false);
 
