@@ -65,7 +65,7 @@ const Friends: React.FC = () => {
                       <FriendCard
                         user_ID={item.user_ID}
                         reloadFunction={getFriends}
-                        photo={photo}
+                        photo={item.photo || photo}
                         name={item.name}
                         _id={item._id}
                         reputation={item.reputation}
@@ -102,7 +102,7 @@ const Friends: React.FC = () => {
                     user_ID={item.user_ID}
                     reloadFunction={getFriends}
                     key={item._id}
-                    photo={photo}
+                    photo={item.photo || photo}
                     name={item.name}
                     _id={item._id}
                     reputation={item.reputation}

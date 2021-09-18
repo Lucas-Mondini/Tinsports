@@ -55,7 +55,7 @@ export const EventFinishedView = styled.View`
 
 export const EventFinishedButton = styled.TouchableOpacity`
   height: 40px;
-  width:60%;
+  width: 75%;
   background-color: #2FB400;
   border-radius: 20px;
   justify-content: center;

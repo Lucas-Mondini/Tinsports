@@ -9,7 +9,7 @@ import { splitText } from '../../../../utils/functions';
 interface UserCardProps{
   name: string;
   reputation: number;
-  photo: ImageSourcePropType;
+  photo: ImageSourcePropType | string;
   confirmation?: boolean;
   addFriend?: boolean;
   user_ID: string;
@@ -37,7 +37,7 @@ const UserCard: React.FC<UserCardProps> = ({name, user_ID, inviteList, reputatio
 
   return (
     <User>
-      <UserPhoto source={photo} />
+      <UserPhoto source={typeof photo == "string" ? {uri: photo} : photo} />
       <UserInfo>
         <View>
           <UserName>{userName}</UserName>

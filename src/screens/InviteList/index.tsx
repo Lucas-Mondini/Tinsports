@@ -27,10 +27,10 @@ const InviteList: React.FC = () => {
     try {
       const response = await api.get(`/game-list/invite`,
         {headers: {auth_token: user.auth_token}});
-
+console.log(response.data)
       setInvites(response.data);
       setLoading(false);
-    } catch(err) {
+    } catch(err: any) {
       navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
     }
   }

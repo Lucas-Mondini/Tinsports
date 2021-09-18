@@ -23,7 +23,7 @@ interface UserCardProps{
   id: string;
   invitationId?: string;
   reputation: number;
-  photo: ImageSourcePropType;
+  photo: ImageSourcePropType | string;
   confirmation?: boolean;
   addFriend?: boolean;
   handleLongPress?: (id: string) => void;
@@ -56,7 +56,7 @@ const UserCard: React.FC<UserCardProps> = ({
       }});
 
       if (reloadFunction) reloadFunction();
-    } catch(err) {
+    } catch(err: any) {
       if (err.response && err.response.status === 401) {
         Alert.alert("Amigos", "Você já enviou convite de amizade para esse usuário ou vocês já são amigos");
       }
@@ -70,7 +70,7 @@ const UserCard: React.FC<UserCardProps> = ({
 
   return (
     <User onPress={accessProfile} onLongPress={handleLongPress && invitationId ? () => handleLongPress(invitationId) : () =>{}}>
-      <UserPhoto source={photo} />
+      <UserPhoto source={typeof photo === 'string' ? {uri: photo} : photo} />
       <UserInfo>
         <View>
           <UserName>{userName}</UserName>

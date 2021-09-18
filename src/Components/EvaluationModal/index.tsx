@@ -105,7 +105,7 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
                   setEvaluationList={setEvaluationList}
                   key={friend._id}
                   name={friend.name}
-                  photo={photo}
+                  photo={friend.photo || photo}
                   reputation={friend.reputation}
                   user_ID={friend.user_ID}
                 />

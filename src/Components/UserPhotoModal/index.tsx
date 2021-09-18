@@ -3,6 +3,8 @@ import { Dimensions, Image, Modal } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../../Contexts/Auth';
+import storage from '@react-native-firebase/storage';
+import { utils } from '@react-native-firebase/app';
 import api from '../../services/api';
 
 import Loading from '../Loading';
@@ -66,6 +68,34 @@ const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction
     });
   }
 
+  async function sendImage()
+  {
+    try {
+      if (!user) return signOut();
+
+      const reference = storage().ref(`PICTURES_DIRECTORY/${user._id}`);
+
+      try {
+        await reference.delete();
+      } catch (err) {}
+
+      if (!photo || !photo.uri) return;
+
+      const pathToFile = photo.uri;
+
+      await reference.putFile(pathToFile);
+
+      await api.put("/register/photo", {
+        photoUrl: await reference.getDownloadURL()
+      }, {headers: {auth_token: user.auth_token}});
+
+      reloadFunction();
+      setModal();
+    } catch (err: any) {
+      setModal();
+    }
+  }
+
   useEffect(() => {
     if (visible) !photo?.uri && setDisableButton(true);
   }, [visible]);
@@ -106,7 +136,7 @@ const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction
 
           <Footer>
             <ConfirmButton
-              onPress={() => {}}
+              onPress={sendImage}
               disabled={disableButton}
               style={{
                 backgroundColor: disableButton ? "#686868" : '#2FB400',

@@ -95,7 +95,7 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
                     setInviteList={setInviteList}
                     key={friend._id}
                     name={friend.name}
-                    photo={photo}
+                    photo={friend.photo || photo}
                     reputation={friend.reputation}
                     user_ID={friend.user_ID}
                   />)

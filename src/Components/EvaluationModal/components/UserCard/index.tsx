@@ -55,12 +55,12 @@ const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, user_
 
   return (
     <User>
-      <UserPhoto source={photo} />
+      <UserPhoto source={typeof photo === 'string' ? {uri: photo} : photo} />
       <UserInfo>
         <View>
           <UserName>{name}</UserName>
           <ReputationView>
-            <ReputationText>Reputação: </ReputationText>
+            <ReputationText>Rep.: </ReputationText>
             <Metric reputation={reputation} size={15}/>
           </ReputationView>
         </View>

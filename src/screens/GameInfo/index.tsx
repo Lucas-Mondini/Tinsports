@@ -196,11 +196,12 @@ const GameInfo: React.FC = () => {
         {(gameList.length > 0) ?
           <>
             {gameList.map(user =>{
+              console.log(user.photo)
               return (<UserCard
                         key={user._id}
                         invitationId={user._id}
                         id={user.user_ID}
-                        photo={photo}
+                        photo={user.photo || photo}
                         name={user.name}
                         reputation={user.reputation}
                         confirmation={user.confirmed}
@@ -209,7 +210,7 @@ const GameInfo: React.FC = () => {
             })}
           </>
 
-          : <EmptyText>Não há usuários para avaliar</EmptyText>
+          : game.finished && <EmptyText>Não há usuários para avaliar</EmptyText>
         }
         <View style={{ paddingBottom: 25 }}></View>
       </GameInfoView>

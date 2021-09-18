@@ -20,6 +20,7 @@ export type GameList = {
   email: string;
   confirmed: boolean;
   reputation: number;
+  photo: string;
 }
 
 export type User = {
@@ -39,6 +40,7 @@ export type Friend = {
   friend_ID: string;
   name: string;
   reputation: number;
+  photo: string;
 }
 
 export type Invite = {

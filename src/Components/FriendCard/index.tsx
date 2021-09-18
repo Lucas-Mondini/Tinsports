@@ -108,7 +108,7 @@ const FriendCard: React.FC<UserCardProps> = ({_id, user_ID, disableButtons, relo
       onLongPress={disableButtons ? ()=>{} : (invite ? () => handleDeleteFriend(true) : () => handleDeleteFriend())}
       onPress={friendProfile}
     >
-      <UserPhoto source={photo} />
+      <UserPhoto source={typeof photo === 'string' ? {uri: photo} : photo} />
       <UserInfo>
         <View>
           <UserName>{name}</UserName>
