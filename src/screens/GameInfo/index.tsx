@@ -196,7 +196,6 @@ const GameInfo: React.FC = () => {
         {(gameList.length > 0) ?
           <>
             {gameList.map(user =>{
-              console.log(user.photo)
               return (<UserCard
                         key={user._id}
                         invitationId={user._id}

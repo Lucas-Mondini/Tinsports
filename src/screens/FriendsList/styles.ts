@@ -7,7 +7,8 @@ export const Container = styled.View`
   flex: 1;
 `;
 
-export const FriendsView = styled.ScrollView`
+export const FriendsView = styled.View`
+  flex: 1;
   width: 100%;
   padding: 0 3% 0% 3%;
 `;

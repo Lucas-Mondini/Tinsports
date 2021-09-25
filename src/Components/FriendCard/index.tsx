@@ -113,7 +113,7 @@ const FriendCard: React.FC<UserCardProps> = ({_id, user_ID, disableButtons, relo
         <View>
           <UserName>{name}</UserName>
           <ReputationView>
-            <ReputationText>Reputação: </ReputationText>
+            <ReputationText>Rep.: </ReputationText>
             <Metric reputation={reputation} size={15}/>
           </ReputationView>
         </View>

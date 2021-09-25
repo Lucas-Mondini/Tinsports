@@ -90,7 +90,7 @@ const Profile: React.FC = () => {
 
       <UserInfo>
         <UserImageContainer>
-          <UserImage source={user.photo && !params ? ({uri: user.photo} || photo) : ({uri: friend?.photo} || photo)}/>
+          <UserImage source={!params ? (user.photo ? {uri: user.photo} : photo) : (friend?.photo ? {uri: friend?.photo} : photo)}/>
           {!friend && <EditProfileButton onPress={setUserPhotoModal}>
             <Icon name="pen" size={23} color="#686868"/>
           </EditProfileButton>}

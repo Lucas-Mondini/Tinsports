@@ -16,6 +16,7 @@ const Friends: React.FC = () => {
   const params = useRoute().params as Params;
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<"friends" | "invite">("friends");
   const navigation = useNavigation<any>();
 
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -39,6 +40,69 @@ const Friends: React.FC = () => {
     }
   }
 
+
+  function renderLists(data: Friend[], params: Params, invite: boolean = false)
+  {
+    let component, title = "", text = "";
+    if (loading) {
+      component = <Loading
+                    styles={{flex: 0, marginTop: 15, marginBottom: 20}}
+                  />
+    } else {
+
+      if (!params) {
+        title = invite ? "Convites de amizade" : "Lista de amigos";
+        text = "Você ainda não possui \nconvites de amizade";
+      } else if (params && params.id) {
+        title = `Amigos de ${string}`
+        text = `${string} ainda não \npossui amigos`;
+      } else {
+        text = "Você ainda não \npossui amigos";
+      }
+
+      if (!data || data.length === 0) {
+        component = <NoContent
+                      style={{marginTop:15, marginBottom:20}}
+                      text={text}
+                    />
+      } else {
+        component = (
+          <>
+            <FlatList
+              data={data}
+              renderItem={({item}: {item: Friend}) => (
+                <FriendCard
+                  user_ID={item.user_ID}
+                  reloadFunction={getFriends}
+                  photo={item.photo || photo}
+                  name={item.name}
+                  _id={item._id}
+                  reputation={item.reputation}
+                  invite={invite}
+                  disableButtons={!params ? false : true}
+                />)}
+                keyExtractor={invite => invite._id}
+                refreshControl={<RefreshControl refreshing={loading} onRefresh={getFriends}/>}
+            />
+          </>
+        );
+      }
+    }
+
+    return (
+      <>
+        <Title>{title}</Title>
+        <FriendsView>{component}</FriendsView>
+      </>
+    );
+  }
+
+  function renderTab()
+  {
+    if (tab === "friends") return renderLists(friends, params);
+    else if (tab === "invite" && !params) return renderLists(invites, params, true);
+  }
+
   useEffect(() => {
     if (isFocused) getFriends();
   }, [isFocused]);
@@ -47,72 +111,7 @@ const Friends: React.FC = () => {
     <Container>
       <Header />
       <View style={{marginTop: 35}} />
-      {!params &&
-      <>
-        <Title>Convites de amizade</Title>
-        {loading ? <Loading  styles={{flex: 0, marginTop: 15, marginBottom: 20}}/> :
-          <FriendsView>
-              {!invites || invites.length === 0
-                ?
-                <NoContent
-                  style={{marginTop:15, marginBottom:20}}
-                  text="Você ainda não convites de amizade"/>
-                :
-                <>
-                  <FlatList
-                    data={invites}
-                    renderItem={({item}: {item: Friend}) => (
-                      <FriendCard
-                        user_ID={item.user_ID}
-                        reloadFunction={getFriends}
-                        photo={item.photo || photo}
-                        name={item.name}
-                        _id={item._id}
-                        reputation={item.reputation}
-                        invite
-                      />)}
-                      keyExtractor={invite => invite._id}
-                      refreshControl={<RefreshControl refreshing={loading} onRefresh={getFriends}/>}
-                  />
-                </>
-              }
-            </FriendsView>
-          }
-        </>
-      }
-
-      <Title>{params && params.id ? `Amigos de ${string}` : "Lista de amigos"}</Title>
-      {loading ? <Loading styles={{flex: 0, marginTop: 15, marginBottom: 20}}/> :
-
-          !friends || friends.length === 0
-              ?
-              <NoContent
-                style={{marginTop:15, marginBottom:20}}
-                text={
-                  params && params.id
-                  ? `${string} ainda não possui amigos`
-                  :"Você ainda não possui amigos"
-                }
-              />
-              :
-              <FlatList
-                data={friends}
-                renderItem={({item}: {item: Friend}) => (
-                  <FriendCard
-                    user_ID={item.user_ID}
-                    reloadFunction={getFriends}
-                    key={item._id}
-                    photo={item.photo || photo}
-                    name={item.name}
-                    _id={item._id}
-                    reputation={item.reputation}
-                    disableButtons={!params ? false : true}
-                  />)}
-                  keyExtractor={friend => friend._id}
-                  refreshControl={<RefreshControl refreshing={loading} onRefresh={getFriends}/>}
-              />
-        }
-
+      {renderTab()}
     </Container>
   );
 
