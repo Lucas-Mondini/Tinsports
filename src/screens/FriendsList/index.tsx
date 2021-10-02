@@ -5,6 +5,7 @@ import FriendCard from '../../Components/FriendCard';
 import Header from '../../Components/Header';
 import Loading from '../../Components/Loading';
 import NoContent from '../../Components/NoContent';
+import Tab from '../../Components/Tab';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import { Friend, Params } from '../../utils/types';
@@ -39,7 +40,6 @@ const Friends: React.FC = () => {
       navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
     }
   }
-
 
   function renderLists(data: Friend[], params: Params, invite: boolean = false)
   {
@@ -110,6 +110,14 @@ const Friends: React.FC = () => {
   return (
     <Container>
       <Header />
+      <Tab
+        setState={setTab}
+        options={[
+          {title: "Amigos", state: "friends"},
+          {title: "Convites", state: "invite"}
+        ]}
+      />
+
       <View style={{marginTop: 35}} />
       {renderTab()}
     </Container>

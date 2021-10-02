@@ -18,7 +18,6 @@ export const Title = styled.Text`
   color: #686868;
   text-align: center;
   padding-bottom: 10px;
-  padding-top: 15px;
   font-family: "Poppins-Regular";
   line-height: 35px;
   width: 100%;

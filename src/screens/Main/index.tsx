@@ -7,6 +7,7 @@ import GameCard from "../../Components/GameCard";
 import Header from "../../Components/Header";
 import Loading from "../../Components/Loading";
 import NoContent from "../../Components/NoContent";
+import Tab from "../../Components/Tab";
 import { useAuth } from "../../Contexts/Auth";
 import api from "../../services/api";
 import { Game, Params } from "../../utils/types";
@@ -34,6 +35,7 @@ const Main: React.FC = () => {
   const [userGames, setUserGames] = useState<Game[]>();
   const [friendsGames, setFriendsGames] = useState<Game[]>();
   const [invitedGames, setInvitedGames] = useState<Game[]>();
+  const [tab, setTab] = useState<"user" | "invite" | "friends">("user");
   const {signOut, user, string} = useAuth();
 
   async function getGames() {
@@ -113,10 +115,64 @@ const Main: React.FC = () => {
     </>);
   }
 
+  function renderGamesTab()
+  {
+      let component, title = "";
+
+      if (loading) return <Loading styles={{marginTop: 25}}/>;
+
+      const noContent = (text: string) => <NoContent text={text} />;
+
+      if (tab === "user") {
+        title = !params
+                ? "Seus jogos"
+                : `Jogos de ${string}`;
+
+        if (userGames && userGames.length > 0) {
+          component = mapGames(userGames);
+        } else {
+          const noContentText = !params
+                                ? "Você ainda não criou nenhum jogo"
+                                : `${string} ainda não criou nenhum jogo`;
+          component = noContent(noContentText);
+        }
+      } else if (tab === "friends") {
+        title = "Jogos de amigos";
+
+        if (friendsGames && friendsGames.length > 0) {
+          component = mapGames(friendsGames);
+        } else {
+          component = noContent("Seus amigos anda não criaram nenhum jogo");
+        }
+      } else {
+        title = "Convites de jogos";
+
+        if (invitedGames && invitedGames.length > 0) {
+          component = mapGames(invitedGames);
+        } else {
+          component = noContent("Você ainda não tem convites \n de jogos");
+        }
+      }
+
+      return (<>
+        <GameTitleContainer>
+          <GameTitle>{title}</GameTitle>
+        </GameTitleContainer>
+
+        <GameContainer>
+          {component}
+        </GameContainer>
+      </>);
+  }
+
   return (
     <Container style={{paddingTop : params ? 50 : 0}}>
       {params && params.id && <Header />}
-      <Games refreshControl={<RefreshControl refreshing={loading} onRefresh={getGames}/>}>
+      <Games
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={getGames}/>
+        }
+      >
         {!params && <View style={{marginTop: 20}}/>}
 
         <TopImage>
@@ -124,46 +180,18 @@ const Main: React.FC = () => {
         </TopImage>
 
         {!params &&
-          <GameContainer>
-            <GameTitleContainer>
-              <GameTitle>Jogos marcados por amigos</GameTitle>
-            </GameTitleContainer>
+          <View style={{borderBottomWidth: 1, borderBottomColor: "#f6f6f6", marginBottom: 15}}>
+            <Tab
+              options={[
+                {title: "Seus", state: "user"},
+                {title: "Amigos", state: "friends"},
+                {title: "Convites", state: "invites"}
+              ]}
+              setState={setTab}
+            />
+          </View>}
 
-            {
-              loading ? <Loading styles={{marginTop: 25}}/> :
-              friendsGames && friendsGames.length > 0 ? mapGames(friendsGames) : <NoContent text="Seus amigos anda não criaram nenhum jogo" />
-            }
-
-          </GameContainer>
-        }
-
-        <GameContainer>
-          <GameTitleContainer>
-            <GameTitle>{!params ? "Seus Jogos" : `Jogos de ${string}`}</GameTitle>
-          </GameTitleContainer>
-
-          {
-            loading ? <Loading styles={{marginTop: 25}}/> :
-            userGames && userGames.length > 0 ? mapGames(userGames) : <NoContent text={!params
-                                                                                        ? "Você ainda não criou nenhum jogo"
-                                                                                        : `${string} ainda não criou nenhum jogo`
-                                                                                      } />
-          }
-        </GameContainer>
-
-        {!params &&
-          <GameContainer>
-            <GameTitleContainer>
-              <GameTitle>Convites de jogos</GameTitle>
-            </GameTitleContainer>
-
-              {
-                loading ? <Loading styles={{marginTop: 25}}/> :
-                invitedGames && invitedGames.length > 0 ? mapGames(invitedGames) : <NoContent text="Você ainda não tem convites de jogos" />
-              }
-
-          </GameContainer>
-        }
+        {renderGamesTab()}
 
         <View style={{marginBottom: 20}}/>
       </Games>
