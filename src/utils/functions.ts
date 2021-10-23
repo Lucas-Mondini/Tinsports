@@ -52,7 +52,7 @@ export function stringToDate(date: string, hour: string): Date {
 
 export function toDateString(date: Date): string {
   const day = date.getDate() <= 9 ? `0${date.getDate()}` : `${date.getDate()}`;
-  const month = date.getMonth() <= 9 ? `0${date.getMonth() + 1}` : `${date.getMonth() + 1}`;
+  const month = date.getMonth() + 1 <= 9 ? `0${date.getMonth() + 1}` : `${date.getMonth() + 1}`;
 
   return `${day}/${month}/${date.getFullYear()}`;
 }

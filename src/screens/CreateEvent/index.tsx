@@ -60,10 +60,10 @@ const CreateEvent: React.FC = ()=>{
 
       setDisableButton(true);
       navigation.reset({index: 0, routes: [{name: "Main"}]});
-    } catch(err) {
+    } catch(err: any) {
       setDisableButton(true);
 
-      if (err.response && err.response.status === 401) {
+      if (err.response && err.response.status === 403) {
         Alert.alert(
           "Você ainda não é premium",
           "Somente usuários premium podem inserir mais de 5 jogos",

@@ -52,16 +52,14 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
             }, {headers: {auth_token: user.auth_token}});
           }
 
-          await api.post(`/games/${gameId}/delete`, {
-            host_ID: user._id
-          }, {headers: {auth_token: user.auth_token}});
+          await api.delete(`/games/${gameId}`, {headers: {auth_token: user.auth_token}});
 
           setLoading(false);
           setModal();
 
           navigation.reset({index: 0, routes: [{name: "Main"}]});
         } catch (err) {
-          navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
+          navigation.reset({index: 0, routes: [{name: "Main"}]});
         }
       }
     }, {text: "Não"}]);

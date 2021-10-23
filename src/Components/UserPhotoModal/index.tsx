@@ -27,8 +27,6 @@ interface PhotoType {
   uri: string | undefined
 }
 
-const photo = require('../../../assets/photos/photo.jpg');
-
 type ModalProps = {
   visible: boolean;
   setModal: () => void;
@@ -71,6 +69,8 @@ const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction
   async function sendImage()
   {
     try {
+      setLoading(true);
+
       if (!user) return signOut();
 
       const reference = storage().ref(`PICTURES_DIRECTORY/${user._id}`);
@@ -89,9 +89,11 @@ const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction
         photoUrl: await reference.getDownloadURL()
       }, {headers: {auth_token: user.auth_token}});
 
+      setLoading(false);
       reloadFunction();
       setModal();
     } catch (err: any) {
+      setLoading(false);
       setModal();
     }
   }
@@ -108,7 +110,8 @@ const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction
       <ModalBackground>
         <ModalContent>
 
-          <ContentView>
+          {loading ? <Loading/> :
+          <><ContentView>
             <PhotoView>
               {!photo?.uri
                ? <NoContent text="Sem foto para enviar"/>
@@ -153,7 +156,8 @@ const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction
             }}>
               <CancelText>Cancelar</CancelText>
             </CancelButton>
-          </Footer>
+          </Footer></>
+          }
         </ModalContent>
       </ModalBackground>
     </Modal>

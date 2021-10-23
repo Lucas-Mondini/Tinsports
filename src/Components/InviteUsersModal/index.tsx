@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dimensions, Modal } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
-import { Friend, GameList } from '../../utils/types';
+import { Friend } from '../../utils/types';
 import Loading from '../Loading';
 import NoContent from '../NoContent';
 import UserCard from './components/UserCard';
@@ -15,7 +15,6 @@ import {
   FriendsView,
   ModalBackground,
   ModalContent,
-  NoFriendsText,
   NoFriendsView
 } from './styles';
 

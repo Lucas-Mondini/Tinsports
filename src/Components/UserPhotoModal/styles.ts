@@ -61,6 +61,7 @@ export const CancelText = styled.Text`
 
 export const PhotoButtonsView = styled.View`
   width: 100%;
+  padding-top: 40px;
   align-items: center;
   justify-content: center;
 `;

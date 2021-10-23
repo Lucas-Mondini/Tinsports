@@ -44,6 +44,7 @@ const Friends: React.FC = () => {
   function renderLists(data: Friend[], params: Params, invite: boolean = false)
   {
     let component, title = "", text = "";
+
     if (loading) {
       component = <Loading
                     styles={{flex: 0, marginTop: 15, marginBottom: 20}}
@@ -110,13 +111,13 @@ const Friends: React.FC = () => {
   return (
     <Container>
       <Header />
-      <Tab
+      {!params && <Tab
         setState={setTab}
         options={[
           {title: "Amigos", state: "friends"},
           {title: "Convites", state: "invite"}
         ]}
-      />
+      />}
 
       <View style={{marginTop: 35}} />
       {renderTab()}

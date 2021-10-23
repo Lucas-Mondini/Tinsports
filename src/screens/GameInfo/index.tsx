@@ -170,6 +170,8 @@ const GameInfo: React.FC = () => {
 
         <UsersTitle>Lista de participantes</UsersTitle>
 
+        {(gameList.length > 0 || game.finished) ? null : <EmptyText>Ainda não há convidados</EmptyText>}
+
         {
           (game.finished && game.host_ID === user?._id)
             ?
@@ -186,7 +188,6 @@ const GameInfo: React.FC = () => {
             <>
               {user && game.host_ID === user._id && !game.finished && (
                 <>
-                  {gameList.length > 0 ? null : <EmptyText>Ainda não há convidados</EmptyText>}
                   <InviteButton onPress={handleModal}><ButtonText>Convide amigos</ButtonText></InviteButton>
                 </>
               )}
