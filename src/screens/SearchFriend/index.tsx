@@ -68,9 +68,12 @@ const SearchFriend: React.FC = () => {
           users?.map(user => {
             return (
               <UserCard
+                _id={user._id}
+                disableButtons={false}
+                buttonsType="AddFriend"
                 reputation={user.reputation}
                 key={user._id}
-                id={user._id}
+                user_ID={user._id}
                 name={user.name}
                 photo={user.photo || photo}
                 addFriend

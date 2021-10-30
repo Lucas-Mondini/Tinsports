@@ -1,35 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { ImageSourcePropType, View } from 'react-native';
-import { Evaluation } from '../../../../utils/types';
-import Metric from '../../../Metric';
+
 import {
   ButtonsView,
   ButtonText,
-  ConfirmationButton,
-  ReputationText,
-  ReputationView,
-  User,
-  UserInfo,
-  UserName,
-  UserPhoto
+  ConfirmationButton
 } from './styles';
 
-interface UserCardProps {
-  name: string;
-  reputation: number;
-  photo: ImageSourcePropType;
+interface EvaluationButtonsProps {
   user_ID: string;
-  evaluationList: Evaluation[];
-  setEvaluationList: (value: Evaluation[]) => void;
+  evaluationList?: any[];
+  setEvaluationList?: (value: any[]) => void;
 }
 
-const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, user_ID, evaluationList, setEvaluationList}) => {
-
+const EvaluationButtons: React.FC<EvaluationButtonsProps> = ({user_ID, evaluationList, setEvaluationList}) =>
+{
   const [paid, setPaid] = useState(false);
   const [participated, setParticipated] = useState(false);
 
   function handleEvaluation() {
-    const userEvaluation = evaluationList.filter(evaluation => evaluation.user_ID !== user_ID);
+    const userEvaluation = evaluationList ? evaluationList.filter(evaluation => evaluation.user_ID !== user_ID) : [];
     const user = {
       user_ID,
       paid,
@@ -38,7 +27,7 @@ const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, user_
 
     userEvaluation.push(user);
 
-    setEvaluationList(userEvaluation);
+    if (setEvaluationList) setEvaluationList(userEvaluation);
   }
 
   function handleParticipated() {
@@ -54,19 +43,7 @@ const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, user_
   }, [paid, participated]);
 
   return (
-    <User>
-      <UserPhoto source={typeof photo === 'string' ? {uri: photo} : photo} />
-      <UserInfo>
-        <View>
-          <UserName>{name}</UserName>
-          <ReputationView>
-            <ReputationText>Rep.: </ReputationText>
-            <Metric reputation={reputation} size={15}/>
-          </ReputationView>
-        </View>
-
         <ButtonsView>
-
           <ConfirmationButton
             style={{backgroundColor: participated ? "#268E01": "#C50000"}}
             onPress={handleParticipated}
@@ -82,9 +59,7 @@ const EvaluationCard: React.FC<UserCardProps> = ({name, reputation, photo, user_
           </ConfirmationButton>
 
         </ButtonsView>
-      </UserInfo>
-    </User>
   );
 }
 
-export default EvaluationCard;
+export default EvaluationButtons;

@@ -198,14 +198,16 @@ const GameInfo: React.FC = () => {
           <>
             {gameList.map(user =>{
               return (<UserCard
+                        buttonsType="GameInviteText"
                         key={user._id}
-                        invitationId={user._id}
-                        id={user.user_ID}
+                        _id={user.user_ID}
+                        user_ID={user.user_ID}
                         photo={user.photo || photo}
                         name={user.name}
                         reputation={user.reputation}
                         confirmation={user.confirmed}
-                        handleLongPress={deleteInvitation}
+                        handleLongPress={() => deleteInvitation(user._id)}
+                        disableButtons={false}
                       />)
             })}
           </>

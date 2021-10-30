@@ -1,12 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Modal } from 'react-native';
+import { Alert } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
 import { Evaluation, GameList } from '../../utils/types';
-import Loading from '../Loading';
+import DefaultModal from '../DefaultModal';
 import NoContent from '../NoContent';
-import UserCard from './components/UserCard';
+import UserCard from '../UserCard';
 import {
   ButtonText,
   CancelButton,
@@ -14,8 +14,6 @@ import {
   ConfirmButton,
   Footer,
   FriendsView,
-  ModalBackground,
-  ModalContent,
   NoFriendsView
 } from './styles';
 
@@ -84,45 +82,44 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
 
   useEffect(() => {
     if (visible) fillEvaluationArray();
-  }, [visible])
+  }, [visible]);
 
   return (
-    <Modal transparent onRequestClose={setModal} visible={visible} animationType="fade">
-      <ModalBackground>
-        <ModalContent>
-          {loading ? <Loading styles={{backgroundColor: "#f6f6f6"}}/> :
-          <FriendsView>
-            {
-              invitedUsers.length === 0 ?
-              <NoFriendsView key={1}>
-                <NoContent text="Não há jogadores para avaliar"/>
-              </NoFriendsView> :
-              invitedUsers.map(friend =>
-                <UserCard
-                  evaluationList={evaluationList}
-                  setEvaluationList={setEvaluationList}
-                  key={friend._id}
-                  name={friend.name}
-                  photo={friend.photo || photo}
-                  reputation={friend.reputation}
-                  user_ID={friend.user_ID}
-                />
-              )
-            }
-          </FriendsView>}
+    <DefaultModal loading={loading} setModal={setModal} visible={visible} animationType="fade">
+      <FriendsView>
+        {
+          invitedUsers.length === 0 ?
+          <NoFriendsView key={1}>
+            <NoContent text="Não há jogadores para avaliar"/>
+          </NoFriendsView> :
+          invitedUsers.map(friend =>
+            <UserCard
+              buttonsType="Evaluation"
+              _id=""
+              disableButtons={false}
+              usersArray={evaluationList}
+              setUsersArray={setEvaluationList}
+              key={friend._id}
+              name={friend.name}
+              photo={friend.photo || photo}
+              reputation={friend.reputation}
+              user_ID={friend.user_ID}
+              disableNavigation
+            />
+          )
+        }
+      </FriendsView>
 
-          <Footer>
-            <ConfirmButton onPress={sendEvaluations}>
-              <ButtonText>Confirmar</ButtonText>
-            </ConfirmButton>
+      <Footer>
+        <ConfirmButton onPress={sendEvaluations}>
+          <ButtonText>Confirmar</ButtonText>
+        </ConfirmButton>
 
-            <CancelButton onPress={setModal}>
-              <CancelText>Cancelar</CancelText>
-            </CancelButton>
-          </Footer>
-        </ModalContent>
-      </ModalBackground>
-    </Modal>
+        <CancelButton onPress={setModal}>
+          <CancelText>Cancelar</CancelText>
+        </CancelButton>
+      </Footer>
+    </DefaultModal>
   );
 }
 

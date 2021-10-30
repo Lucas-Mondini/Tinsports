@@ -1,9 +1,9 @@
 import React, {  useEffect, useState } from 'react';
-import { Alert, Dimensions, Modal, View } from 'react-native';
+import { Alert, Dimensions, View } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
 import api from '../../services/api';
+import DefaultModal from '../DefaultModal';
 import Input from '../Input';
-import Loading from '../Loading';
 
 import {
   ButtonText,
@@ -12,9 +12,7 @@ import {
   ChangePasswordText,
   ConfirmButton,
   Footer,
-  ModalBackground,
   ModalContainer,
-  ModalContent
 } from './styles';
 
 type ModalProps = {
@@ -81,83 +79,77 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
   }, [visible, userInfo]);
 
   return (
-    <Modal transparent onRequestClose={setModal} visible={visible} animationType="slide">
-      <ModalBackground>
-        <ModalContent>
-          {loading ? <Loading /> :
-            <ModalContainer>
-              <Input
-                style={{marginLeft: '3%', marginRight: '3%'}}
-                label="Nome"
-                icon="user"
-                size={28}
-                value={userInfo.name}
-                autoCapitalize="words"
-                setValue={value => setUserInfo({...userInfo, name: value})}
-              />
-              <Input
-                style={{marginLeft: '3%', marginRight: '3%'}}
-                label="Email"
-                value={userInfo.email}
-                icon="at"
-                size={28}
-                setValue={value => setUserInfo({...userInfo, email: value})}
-              />
+    <DefaultModal loading={loading} setModal={setModal} visible={visible} animationType="slide">
+      <ModalContainer>
+        <Input
+          style={{marginLeft: '3%', marginRight: '3%'}}
+          label="Nome"
+          icon="user"
+          size={28}
+          value={userInfo.name}
+          autoCapitalize="words"
+          setValue={value => setUserInfo({...userInfo, name: value})}
+        />
+        <Input
+          style={{marginLeft: '3%', marginRight: '3%'}}
+          label="Email"
+          value={userInfo.email}
+          icon="at"
+          size={28}
+          setValue={value => setUserInfo({...userInfo, email: value})}
+        />
 
-              <Input
-                style={{marginLeft: '3%', marginRight: '3%'}}
-                label="Sua senha atual"
-                value={userInfo.password}
-                icon="unlock"
-                size={27}
-                secureTextEntry
-                setValue={value => setUserInfo({...userInfo, password: value})}
-              />
+        <Input
+          style={{marginLeft: '3%', marginRight: '3%'}}
+          label="Sua senha atual"
+          value={userInfo.password}
+          icon="unlock"
+          size={27}
+          secureTextEntry
+          setValue={value => setUserInfo({...userInfo, password: value})}
+        />
 
-              <ChangePasswordText>Mudar senha?</ChangePasswordText>
-              <Input
-                style={{marginLeft: '3%', marginRight: '3%'}}
-                label="Nova senha"
-                value={userInfo.newPassword}
-                icon="lock"
-                size={28}
-                secureTextEntry
-                setValue={value => setUserInfo({...userInfo, newPassword: value})}
-              />
-              <Input
-                style={{marginLeft: '3%', marginRight: '3%', paddingBottom: 50}}
-                label="Confirme a nova senha"
-                value={userInfo.confirmNewPassword}
-                icon="unlock-alt"
-                size={28}
-                secureTextEntry
-                setValue={value => setUserInfo({...userInfo, confirmNewPassword: value})}
-              />
+        <ChangePasswordText>Mudar senha?</ChangePasswordText>
+        <Input
+          style={{marginLeft: '3%', marginRight: '3%'}}
+          label="Nova senha"
+          value={userInfo.newPassword}
+          icon="lock"
+          size={28}
+          secureTextEntry
+          setValue={value => setUserInfo({...userInfo, newPassword: value})}
+        />
+        <Input
+          style={{marginLeft: '3%', marginRight: '3%', paddingBottom: 50}}
+          label="Confirme a nova senha"
+          value={userInfo.confirmNewPassword}
+          icon="unlock-alt"
+          size={28}
+          secureTextEntry
+          setValue={value => setUserInfo({...userInfo, confirmNewPassword: value})}
+        />
 
-            </ModalContainer>
-          }
+      </ModalContainer>
 
-          <View style={{marginTop: 30}}/>
+      <View style={{marginTop: 30}}/>
 
-          <Footer>
-            <ConfirmButton
-              onPress={updateUser}
-              style={{
-                backgroundColor: disableButton ? '#686868' : "#2FB400",
-                height: Dimensions.get("window").width <= 320 ? 30 : 40,
-                width: Dimensions.get("window").width <= 320 ? 130 : 150
-              }}
-            >
-              <ButtonText>Confirmar</ButtonText>
-            </ConfirmButton>
+      <Footer>
+        <ConfirmButton
+          onPress={updateUser}
+          style={{
+            backgroundColor: disableButton ? '#686868' : "#2FB400",
+            height: Dimensions.get("window").width <= 320 ? 30 : 40,
+            width: Dimensions.get("window").width <= 320 ? 130 : 150
+          }}
+        >
+          <ButtonText>Confirmar</ButtonText>
+        </ConfirmButton>
 
-            <CancelButton onPress={setModal}>
-              <CancelText>Cancelar</CancelText>
-            </CancelButton>
-          </Footer>
-        </ModalContent>
-      </ModalBackground>
-    </Modal>
+        <CancelButton onPress={setModal}>
+          <CancelText>Cancelar</CancelText>
+        </CancelButton>
+      </Footer>
+    </DefaultModal>
   );
 }
 

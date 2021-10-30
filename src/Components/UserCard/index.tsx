@@ -1,86 +1,90 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Alert, Dimensions, ImageSourcePropType, View } from 'react-native';
-import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
+import { Dimensions, ImageSourcePropType, View } from 'react-native';
 import { splitText } from '../../utils/functions';
 import Metric from '../Metric';
+import AddFriendButtons from './FriendButtons/AddFriendButtons';
+import DeleteFriendButtons from './FriendButtons/DeleteFriendButtons';
+import InviteButtons from './FriendButtons/InviteButtons';
+import GameInviteText from './GameInviteText';
+import InviteFriendButton from './InviteFriendButton';
+import EvaluationButtons from './EvaluationButtons';
 import {
-  UnconfirmedText,
   User,
   UserInfo,
   UserName,
   UserPhoto,
   ReputationText,
-  ReputationView,
-  ConfirmedText,
-  AddFriendButton,
-  AddFriendButtonText
+  ReputationView
 } from './styles';
 
 interface UserCardProps{
   name: string;
-  id: string;
-  invitationId?: string;
+  _id: string;
+  user_ID: string;
+  buttonsType: "AddFriend" | "DeleteFriend" | "Invite" | "GameInviteText" | "GameInvite" | "Evaluation";
+  disableButtons: boolean;
   reputation: number;
   photo: ImageSourcePropType | string;
   confirmation?: boolean;
   addFriend?: boolean;
-  handleLongPress?: (id: string) => void;
+  handleLongPress?: () => void;
   reloadFunction?: () => void;
+  usersArray?: any[];
+  setUsersArray?: (value: any[]) => void;
+  disableNavigation?: boolean;
 }
 
 const UserCard: React.FC<UserCardProps> = ({
-    name, id, photo, invitationId, reputation, confirmation, addFriend,
-    handleLongPress, reloadFunction
+    name, _id, user_ID, photo, disableButtons, buttonsType, reputation, confirmation, disableNavigation,
+    handleLongPress, reloadFunction, usersArray, setUsersArray
   }) => {
 
-  const navigation = useNavigation();
-  const { user, signOut } = useAuth();
+  const navigation = useNavigation<any>();
 
   const userName = Dimensions.get('window').width < 480 ? splitText(name, 10) : splitText(name, 18);
 
-  function accessProfile(){
-    navigation.navigate("Profile", {id});
+  function accessProfile()
+  {
+    if (!disableNavigation) navigation.push("Profile", {id: user_ID});
   }
 
-  async function handleAddFriend() {
-    if (!user) return signOut();
-
-    try {
-      await api.post('/friend', {
-        user_ID: user._id,
-        friend_ID: id
-      }, {headers: {
-        auth_token: user.auth_token
-      }});
-
-      if (reloadFunction) reloadFunction();
-    } catch(err: any) {
-      if (err.response && err.response.status === 401) {
-        Alert.alert("Amigos", "Você já enviou convite de amizade para esse usuário ou vocês já são amigos");
-      }
+  function handleButtons() {
+    switch (buttonsType) {
+      case "AddFriend":
+        return <AddFriendButtons _id={user_ID} reloadFunction={reloadFunction ? reloadFunction : ()=>{}}/>
+        break;
+      case "DeleteFriend":
+        return <DeleteFriendButtons _id={_id} disableButtons={disableButtons} reloadFunction={reloadFunction ? reloadFunction : ()=>{}}/>
+        break;
+      case "Invite":
+        return <InviteButtons _id={_id} disableButtons={disableButtons} reloadFunction={reloadFunction ? reloadFunction : ()=>{}}/>
+        break;
+      case "GameInviteText":
+        return <GameInviteText confirmation={confirmation} />
+        break;
+      case "GameInvite":
+        return <InviteFriendButton user_ID={user_ID} inviteList={usersArray} setInviteList={setUsersArray} />
+        break;
+      case "Evaluation":
+        return <EvaluationButtons user_ID={user_ID} evaluationList={usersArray} setEvaluationList={setUsersArray} />
+        break;
     }
   }
 
-  let addFriendButton = <AddFriendButton onPress={handleAddFriend}><AddFriendButtonText>Adicionar</AddFriendButtonText></AddFriendButton>;
-
-  let confirmed = <ConfirmedText>Confirmado</ConfirmedText>
-  if (!confirmation) confirmed = <UnconfirmedText>Não confirmado</UnconfirmedText>
-
   return (
-    <User onPress={accessProfile} onLongPress={handleLongPress && invitationId ? () => handleLongPress(invitationId) : () =>{}}>
+    <User onPress={accessProfile} activeOpacity={!disableNavigation ? 0.8 : 1} onLongPress={handleLongPress ? handleLongPress : ()=>{}}>
       <UserPhoto source={typeof photo === 'string' ? {uri: photo} : photo} />
       <UserInfo>
         <View>
-          <UserName>{userName}</UserName>
+          <UserName>{name}</UserName>
           <ReputationView>
             <ReputationText>Rep.: </ReputationText>
             <Metric reputation={reputation} size={15}/>
           </ReputationView>
         </View>
 
-        {addFriend ? addFriendButton : confirmed}
+        {handleButtons()}
       </UserInfo>
     </User>
   );

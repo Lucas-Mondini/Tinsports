@@ -22,6 +22,7 @@ import {
   PhotoButtonsView,
   SendPhotoButton
 } from './styles';
+import DefaultModal from '../DefaultModal';
 
 interface PhotoType {
   uri: string | undefined
@@ -103,64 +104,58 @@ const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction
   }, [visible]);
 
   return (
-    <Modal transparent onRequestClose={() => {
+    <DefaultModal loading={loading} setModal={() => {
         setPhoto({uri: ""});
         setModal();
       }} visible={visible} animationType="fade">
-      <ModalBackground>
-        <ModalContent>
 
-          {loading ? <Loading/> :
-          <><ContentView>
-            <PhotoView>
-              {!photo?.uri
-               ? <NoContent text="Sem foto para enviar"/>
-               : <Image style={{
-                    width: '100%',
-                    height: Dimensions.get('window').width * 3/4,
-                    resizeMode: 'center'
-                  }}
-                  source={{uri: photo.uri}}
-                />}
-            </PhotoView>
-
-            <PhotoButtonsView>
-              <SendPhotoButton onPress={takePhoto}>
-                <Icon name="camera" size={15} color="#fff" style={{marginRight: 5}}/>
-                <ButtonText>Tirar foto</ButtonText>
-              </SendPhotoButton>
-
-              <SendPhotoButton onPress={pickPhoto}>
-                <Icon name="photo" size={15} color="#fff" style={{marginRight: 5}}/>
-                <ButtonText>Enviar foto</ButtonText>
-              </SendPhotoButton>
-            </PhotoButtonsView>
-          </ContentView>
-
-          <Footer>
-            <ConfirmButton
-              onPress={sendImage}
-              disabled={disableButton}
-              style={{
-                backgroundColor: disableButton ? "#686868" : '#2FB400',
-                height: Dimensions.get("window").width <= 320 ? 30 : 40,
-                width: Dimensions.get("window").width <= 320 ? 130 : 150
+      <ContentView>
+        <PhotoView>
+          {!photo?.uri
+            ? <NoContent text="Sem foto para enviar"/>
+            : <Image style={{
+                width: '100%',
+                height: Dimensions.get('window').width * 3/4,
+                resizeMode: 'center'
               }}
-            >
-              <ButtonText>Enviar</ButtonText>
-            </ConfirmButton>
+              source={{uri: photo.uri}}
+            />}
+        </PhotoView>
 
-            <CancelButton onPress={() => {
-              setPhoto({uri: ""});
-              setModal();
-            }}>
-              <CancelText>Cancelar</CancelText>
-            </CancelButton>
-          </Footer></>
-          }
-        </ModalContent>
-      </ModalBackground>
-    </Modal>
+        <PhotoButtonsView>
+          <SendPhotoButton onPress={takePhoto}>
+            <Icon name="camera" size={15} color="#fff" style={{marginRight: 5}}/>
+            <ButtonText>Tirar foto</ButtonText>
+          </SendPhotoButton>
+
+          <SendPhotoButton onPress={pickPhoto}>
+            <Icon name="photo" size={15} color="#fff" style={{marginRight: 5}}/>
+            <ButtonText>Enviar foto</ButtonText>
+          </SendPhotoButton>
+        </PhotoButtonsView>
+      </ContentView>
+
+      <Footer>
+        <ConfirmButton
+          onPress={sendImage}
+          disabled={disableButton}
+          style={{
+            backgroundColor: disableButton ? "#686868" : '#2FB400',
+            height: Dimensions.get("window").width <= 320 ? 30 : 40,
+            width: Dimensions.get("window").width <= 320 ? 130 : 150
+          }}
+        >
+          <ButtonText>Enviar</ButtonText>
+        </ConfirmButton>
+
+        <CancelButton onPress={() => {
+          setPhoto({uri: ""});
+          setModal();
+        }}>
+          <CancelText>Cancelar</CancelText>
+        </CancelButton>
+      </Footer>
+    </DefaultModal>
   );
 }
 

@@ -1,7 +1,7 @@
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
-import FriendCard from '../../Components/FriendCard';
+import UserCard from '../../Components/UserCard';
 import Header from '../../Components/Header';
 import Loading from '../../Components/Loading';
 import NoContent from '../../Components/NoContent';
@@ -72,15 +72,15 @@ const Friends: React.FC = () => {
             <FlatList
               data={data}
               renderItem={({item}: {item: Friend}) => (
-                <FriendCard
+                <UserCard
+                  buttonsType={invite ? "Invite" : "DeleteFriend"}
                   user_ID={item.user_ID}
                   reloadFunction={getFriends}
                   photo={item.photo || photo}
                   name={item.name}
                   _id={item._id}
                   reputation={item.reputation}
-                  invite={invite}
-                  disableButtons={!params ? false : true}
+                  disableButtons={params ? true : false}
                 />)}
                 keyExtractor={invite => invite._id}
                 refreshControl={<RefreshControl refreshing={loading} onRefresh={getFriends}/>}

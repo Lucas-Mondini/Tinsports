@@ -42,7 +42,9 @@ const CreateEvent: React.FC = ()=>{
 
   const {user, signOut} = useAuth();
 
-  async function sendData() {
+  async function sendData()
+  {
+    setDisableButton(true);
 
     if (!user) return signOut();
     const data = {
@@ -58,7 +60,6 @@ const CreateEvent: React.FC = ()=>{
         },
       });
 
-      setDisableButton(true);
       navigation.reset({index: 0, routes: [{name: "Main"}]});
     } catch(err: any) {
       setDisableButton(true);
