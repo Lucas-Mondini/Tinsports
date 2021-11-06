@@ -9,7 +9,7 @@ import Loading from "../../Components/Loading";
 import NoContent from "../../Components/NoContent";
 import Tab from "../../Components/Tab";
 import { useAuth } from "../../Contexts/Auth";
-import api from "../../services/api";
+import { useRequest } from "../../Contexts/Request";
 import { Game, Params } from "../../utils/types";
 
 import {
@@ -37,30 +37,23 @@ const Main: React.FC = () => {
   const [invitedGames, setInvitedGames] = useState<Game[]>();
   const [tab, setTab] = useState<"user" | "invite" | "friends">("user");
   const {signOut, user, string} = useAuth();
+  const {get} = useRequest();
 
   async function getGames() {
-    setLoading(true);
-
-    if(!user) return signOut();
-
     try{
-      const result = await api.get(`/games/home?_id=${params && params.id ? params.id : ""}&friendGames=${params ? "true" : ''}`, {
-        headers: {auth_token: user.auth_token}
-      });
+      const result = await get(`/games/home?_id=${params && params.id ? params.id : ""}&friendGames=${params ? "true" : ''}`, setLoading);
 
       if (!params) {
-        setInvitedGames(result.data.invitedGames);
-        setFriendsGames(result.data.friendsGames);
+        setInvitedGames(result.invitedGames);
+        setFriendsGames(result.friendsGames);
       }
 
-      if (result.data.userGames.length < 5) {
+      if (result.userGames.length < 5) {
         setDisableAddButton(false);
       }
 
-      setUserGames(result.data.userGames);
-      setLoading(false);
+      setUserGames(result.userGames);
     } catch(err) {
-      setLoading(false);
       signOut();
     }
   }
@@ -142,7 +135,7 @@ const Main: React.FC = () => {
         if (friendsGames && friendsGames.length > 0) {
           component = mapGames(friendsGames);
         } else {
-          component = noContent("Seus amigos anda não criaram nenhum jogo");
+          component = noContent("Seus amigos ainda não criaram nenhum jogo");
         }
       } else {
         title = "Convites de jogos";

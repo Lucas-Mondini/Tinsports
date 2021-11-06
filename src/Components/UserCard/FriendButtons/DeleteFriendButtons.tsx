@@ -3,7 +3,8 @@ import React from 'react';
 import { Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../../../Contexts/Auth';
-import api from '../../../services/api';
+import { useRequest } from '../../../Contexts/Request';
+
 import {
   ButtonsView,
   Button
@@ -15,8 +16,11 @@ interface UserCardProps {
   disableButtons?: boolean;
 }
 
-const FriendButtons: React.FC<UserCardProps> = ({_id, disableButtons, reloadFunction}) => {
+const FriendButtons: React.FC<UserCardProps> = ({_id, disableButtons, reloadFunction}) =>
+{
   const {user, signOut} = useAuth();
+  const { destroy } = useRequest();
+
   const navigation = useNavigation<any>();
 
   function handleDeleteFriend()
@@ -27,15 +31,7 @@ const FriendButtons: React.FC<UserCardProps> = ({_id, disableButtons, reloadFunc
                   text: "Sim",
                   async onPress() {
                     try {
-                      if (!user) return signOut();
-
-                      await api.delete(`/friend/${_id}`, {
-                        headers: {
-                          auth_token: user.auth_token,
-                        }
-                      });
-
-                      reloadFunction();
+                      await destroy(`/friend/${_id}`, reloadFunction);
                     } catch (error) {
                       navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
                     }

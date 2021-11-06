@@ -3,7 +3,8 @@ import React from 'react';
 import { Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../../../Contexts/Auth';
-import api from '../../../services/api';
+import { useRequest } from '../../../Contexts/Request';
+
 import {
   ButtonsView,
   Button
@@ -17,6 +18,8 @@ interface FriendsButtonsProps {
 
 const InviteButtons: React.FC<FriendsButtonsProps> = ({_id, disableButtons, reloadFunction}) => {
   const {user, signOut} = useAuth();
+  const { destroy, post } = useRequest();
+
   const navigation = useNavigation<any>();
 
   function handleDeleteFriend()
@@ -27,15 +30,7 @@ const InviteButtons: React.FC<FriendsButtonsProps> = ({_id, disableButtons, relo
                 text: "Sim",
                 async onPress() {
                   try {
-                    if (!user) return signOut();
-
-                    await api.delete(`/friend/${_id}`, {
-                      headers: {
-                        auth_token: user.auth_token,
-                      }
-                    });
-
-                    reloadFunction();
+                    await destroy(`/friend/${_id}`, reloadFunction);
                   } catch (error) {
                     navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
                   }
@@ -47,11 +42,7 @@ const InviteButtons: React.FC<FriendsButtonsProps> = ({_id, disableButtons, relo
     try {
       if (!user) return signOut();
 
-      await api.post(`/friend/confirm/${_id}`, {}, {
-        headers: {
-          auth_token: user.auth_token,
-        }
-      });
+      await post(`/friend/confirm/${_id}`, ()=>{}, {});
 
       reloadFunction();
     } catch (error) {

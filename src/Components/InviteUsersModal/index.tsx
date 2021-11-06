@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
-import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
+import { useRequest } from '../../Contexts/Request';
 import { Friend } from '../../utils/types';
 import DefaultModal from '../DefaultModal';
 import NoContent from '../NoContent';
@@ -25,29 +24,26 @@ type ModalProps = {
   reloadFunction: () => void;
 }
 
-const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, reloadFunction}) => {
+const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, reloadFunction}) =>
+{
   const [loading, setLoading] = useState(false);
 
   const [friends, setFriends] = useState<Friend[]>([]);
-  const { user, signOut} = useAuth();
+  const {get, post} = useRequest();
 
   const [inviteList, setInviteList] = useState([] as string[]);
 
-  async function sendInvites() {
-    setLoading(true);
-
+  async function sendInvites()
+  {
     try {
-      if (!user) return signOut();
-
       for (const invite of inviteList) {
-        await api.post('/game-list', {
+        await post('/game-list', setLoading, {
           user_ID: invite,
           game_ID: gameId
-        }, {headers: {auth_token: user.auth_token}});
+        });
       }
 
       setFriends([]);
-      setLoading(false);
       setModal();
       reloadFunction();
     } catch (err) {
@@ -55,17 +51,12 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
     }
   }
 
-  async function getFriends() {
-    setLoading(true);
-
-    if (!user) return signOut();
-
+  async function getFriends()
+  {
     try {
-      const response = await api.get(`/friend/gameList/${gameId}`,
-        {headers: {auth_token: user.auth_token}});
+      const response = await get(`/friend/gameList/${gameId}`, setLoading);
 
-      setFriends(response.data);
-      setLoading(false);
+      setFriends(response);
     } catch(err) {
       setModal();
     }

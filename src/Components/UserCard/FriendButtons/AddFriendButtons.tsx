@@ -1,30 +1,31 @@
 import React from 'react';
 import { Alert } from 'react-native';
 import { useAuth } from '../../../Contexts/Auth';
-import api from '../../../services/api';
+import { useRequest } from '../../../Contexts/Request';
 import {
   AddFriendButton,
   AddFriendButtonText
 } from './styles';
 
-interface AddFriendButtonsProps{
+interface AddFriendButtonsProps  {
   _id: string;
   reloadFunction?: () => void;
 }
 
-const AddFriendButtons: React.FC<AddFriendButtonsProps> = ({_id, reloadFunction}) => {
+const AddFriendButtons: React.FC<AddFriendButtonsProps> = ({_id, reloadFunction}) =>
+{
   const { user, signOut } = useAuth();
+  const {post} = useRequest();
 
-  async function handleAddFriend() {
+  async function handleAddFriend()
+  {
     if (!user) return signOut();
 
     try {
-      await api.post('/friend', {
+      await post('/friend', () => {}, {
         user_ID: user._id,
         friend_ID: _id
-      }, {headers: {
-        auth_token: user.auth_token
-      }});
+      });
 
       if (reloadFunction) reloadFunction();
     } catch(err: any) {

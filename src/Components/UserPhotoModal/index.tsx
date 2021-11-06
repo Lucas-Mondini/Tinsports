@@ -23,10 +23,8 @@ import {
   SendPhotoButton
 } from './styles';
 import DefaultModal from '../DefaultModal';
-
-interface PhotoType {
-  uri: string | undefined
-}
+import { useRequest } from '../../Contexts/Request';
+import { PhotoType } from '../../utils/types';
 
 type ModalProps = {
   visible: boolean;
@@ -34,12 +32,15 @@ type ModalProps = {
   reloadFunction: () => void;
 }
 
-const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction}) => {
+const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction}) =>
+{
+  const { user, signOut} = useAuth();
+  const {put, uploadPhoto} = useRequest();
+
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState<PhotoType>();
   const [disableButton, setDisableButton] = useState(true);
 
-  const { user, signOut} = useAuth();
 
   function takePhoto()
   {
@@ -70,27 +71,12 @@ const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction
   async function sendImage()
   {
     try {
-      setLoading(true);
+      const photoUrl = await uploadPhoto(`PICTURES_DIRECTORY/${user?._id}`, setLoading, photo);
 
-      if (!user) return signOut();
+      await put("/register/photo", setLoading, {
+        photoUrl
+      });
 
-      const reference = storage().ref(`PICTURES_DIRECTORY/${user._id}`);
-
-      try {
-        await reference.delete();
-      } catch (err) {}
-
-      if (!photo || !photo.uri) return;
-
-      const pathToFile = photo.uri;
-
-      await reference.putFile(pathToFile);
-
-      await api.put("/register/photo", {
-        photoUrl: await reference.getDownloadURL()
-      }, {headers: {auth_token: user.auth_token}});
-
-      setLoading(false);
       reloadFunction();
       setModal();
     } catch (err: any) {

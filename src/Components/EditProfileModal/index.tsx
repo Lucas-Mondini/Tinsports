@@ -1,7 +1,7 @@
 import React, {  useEffect, useState } from 'react';
 import { Alert, Dimensions, View } from 'react-native';
 import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
+import { useRequest } from '../../Contexts/Request';
 import DefaultModal from '../DefaultModal';
 import Input from '../Input';
 
@@ -23,10 +23,12 @@ type ModalProps = {
 
 const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction}) =>
 {
+  const { user, signOut } = useAuth();
+  const {put} = useRequest();
+
   const [loading, setLoading] = useState(false);
   const [disableButton, setDisableButton] = useState(true);
 
-  const { user, signOut } = useAuth();
   const [userInfo, setUserInfo] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -37,22 +39,17 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
 
   async function updateUser() {
     try {
-      if (!user) return signOut();
-
       if (userInfo.newPassword !== userInfo.confirmNewPassword) {
         return Alert.alert("Senhas diferentes", "As senhas que você digitou são diferentes, tente novamente");
       }
 
-      setLoading(true);
-
-      await api.put(`/register/user`, {
+      await put(`/register/user`, setLoading, {
         newName: userInfo.name,
         newEmail: userInfo.email,
         newPass: userInfo.newPassword,
         pass: userInfo.password
-      }, {headers: {auth_token: user.auth_token}});
+      });
 
-      setLoading(false);
       setModal();
       setUserInfo({...userInfo, password: ""});
       reloadFunction();

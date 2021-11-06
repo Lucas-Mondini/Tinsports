@@ -63,3 +63,7 @@ export type Evaluation = {
   paid: boolean;
   participated: boolean;
 }
+
+export type PhotoType = {
+  uri: string | undefined
+}

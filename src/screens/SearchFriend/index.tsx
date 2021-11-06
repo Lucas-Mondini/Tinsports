@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 
-import api from '../../services/api';
 import { useAuth } from '../../Contexts/Auth';
 import { User } from '../../utils/types';
 
@@ -10,11 +9,14 @@ import Input from '../../Components/Input';
 import UserCard from '../../Components/UserCard';
 
 import { FriendsArea, MainView, SearchArea, SearchFriendText } from './styles';
+import { useRequest } from '../../Contexts/Request';
 
 const photo = require('../../../assets/photos/photo.jpg');
 
-const SearchFriend: React.FC = () => {
-  const { signOut, user } = useAuth();
+const SearchFriend: React.FC = () =>
+{
+  const {signOut, user} = useAuth();
+  const {get} = useRequest();
   const navigation = useNavigation();
 
   const [name, setName] = useState('');
@@ -22,20 +24,18 @@ const SearchFriend: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [friendSearchText, setFriendSearchText] = useState("Busque por um amigo");
 
-  async function getUsers() {
+  async function getUsers()
+  {
     setLoading(true);
 
     try {
       if (!name.trim()) return setFriendSearchText("Busque por um amigo");
       if (!user) return signOut();
 
-      const response = await api.get(`/register/user/${name}`, {headers: {auth_token: user.auth_token}});
+      const response = await get(`/register/user/${name}`, setLoading);
 
-      setUsers(response.data.filter((searchUser: User) => searchUser._id !== user._id));
-      setLoading(false);
-      setFriendSearchText("Envie um convite de amizade!");
-
-      if (users && users.length === 0) return setFriendSearchText("Nenhum amigo encontrado");
+      setUsers(response.filter((searchUser: User) => searchUser._id !== user._id));
+      setFriendSearchText(response.length > 0 ? "Envie um convite de amizade!" : "Nenhum amigo encontrado");
     } catch (err) {
       navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
     }

@@ -3,7 +3,7 @@ import React from 'react';
 import { Alert, Dimensions, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
+import { useRequest } from '../../Contexts/Request';
 import { splitText } from '../../utils/functions';
 import{Game, GameInfo, GameTitle, LocationText, TimeText} from './styles';
 
@@ -21,6 +21,7 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
 
   const navigation = useNavigation();
   const {signOut, user} = useAuth();
+  const {destroy} = useRequest();
 
   const gameTitle = Dimensions.get('window').width < 480 ? splitText(title, 10) : splitText(title, 18);
 
@@ -64,15 +65,7 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
         text: 'Sim',
         async onPress() {
           try {
-            if (!user) return signOut();
-
-            await api.delete(`/games/${_id}`, {
-              headers: {
-                auth_token: user.auth_token,
-              }
-            });
-
-            setGames();
+            await destroy(`/games/${_id}`, setGames);
           } catch (error) {
             navigation.reset({index: 0, routes: [{name: "Main"}]});
           }

@@ -1,9 +1,8 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Platform, TouchableOpacity, View} from "react-native";
+import { Alert, TouchableOpacity, View} from "react-native";
 import Input from '../../Components/Input';
 import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
 import DateTimePicker, {Event} from "@react-native-community/datetimepicker";
 
 import { Checkbox,
@@ -27,8 +26,10 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../../Components/Header';
 import { Game } from '../../utils/types';
+import { useRequest } from '../../Contexts/Request';
 
-const CreateEvent: React.FC = ()=>{
+const CreateEvent: React.FC = () =>
+{
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
@@ -41,11 +42,10 @@ const CreateEvent: React.FC = ()=>{
   const [hour, setHour] = useState(new Date());
 
   const {user, signOut} = useAuth();
+  const {post} = useRequest();
 
   async function sendData()
   {
-    setDisableButton(true);
-
     if (!user) return signOut();
     const data = {
       name: game.name, type: game.type, location: game.location, description: game.description,
@@ -54,11 +54,7 @@ const CreateEvent: React.FC = ()=>{
     }
 
     try{
-      await api.post(`/games`, data,{
-        headers: {
-          auth_token: user.auth_token
-        },
-      });
+      await post(`/games`, setDisableButton, data);
 
       navigation.reset({index: 0, routes: [{name: "Main"}]});
     } catch(err: any) {
@@ -78,11 +74,13 @@ const CreateEvent: React.FC = ()=>{
     }
   }
 
-  function handleCheckbox() {
+  function handleCheckbox()
+  {
     setPaid(!paid);
   }
 
-  function enableButton() {
+  function enableButton()
+  {
     if ((game.name && game.name.trim() !== '')
         && (game.type && game.type.trim() !== '')
         && (game.location && game.location.trim() !== '')

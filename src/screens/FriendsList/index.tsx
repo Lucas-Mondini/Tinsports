@@ -7,13 +7,17 @@ import Loading from '../../Components/Loading';
 import NoContent from '../../Components/NoContent';
 import Tab from '../../Components/Tab';
 import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
 import { Friend, Params } from '../../utils/types';
 import { Container, FriendsView, Title } from './styles';
+import { useRequest } from '../../Contexts/Request';
 
 const photo = require('../../../assets/photos/photo.jpg');
 
-const Friends: React.FC = () => {
+const Friends: React.FC = () =>
+{
+  const { string } = useAuth();
+  const { get } = useRequest();
+
   const params = useRoute().params as Params;
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
@@ -22,20 +26,14 @@ const Friends: React.FC = () => {
 
   const [friends, setFriends] = useState<Friend[]>([]);
   const [invites, setInvites] = useState<Friend[]>([]);
-  const { user, signOut, string } = useAuth();
 
-  async function getFriends() {
-    setLoading(true);
-
-    if (!user) return signOut();
-
+  async function getFriends()
+  {
     try {
-      const response = await api.get(`/friend?_id=${params && params.id ? params.id + "&friendFriends=true" : ""}`,
-      {headers: {auth_token: user.auth_token}});
+      const response = await get(`/friend?_id=${params && params.id ? params.id + "&friendFriends=true" : ""}`, setLoading);
 
-      setFriends(response.data.friends);
-      setInvites(response.data.friendInvites);
-      setLoading(false);
+      setFriends(response.friends);
+      setInvites(response.friendInvites);
     } catch(err) {
       navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
     }

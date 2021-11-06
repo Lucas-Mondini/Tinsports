@@ -9,7 +9,7 @@ import Metric from '../../Components/Metric';
 import Option from '../../Components/Option';
 import UserPhotoModal from '../../Components/UserPhotoModal';
 import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
+import { useRequest } from '../../Contexts/Request';
 import { getFirstName } from '../../utils/functions';
 import { Params, User } from '../../utils/types';
 import {
@@ -24,56 +24,60 @@ import {
 
 const photo = require('../../../assets/photos/photo.jpg');
 
-const Profile: React.FC = () => {
+const Profile: React.FC = () =>
+{
+  const { user, signOut, checkLogin, setString, string } = useAuth();
+  const {get} = useRequest();
 
   const navigation = useNavigation<any>();
   const isFocused = useIsFocused();
   const route = useRoute();
   const params = route.params as Params;
 
-  const { user, signOut, checkLogin, setString, string } = useAuth();
   const [ friend, setFriend ] = useState<User>();
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ photoModal, setPhotoModal ] = useState(false);
   const [ loading, setLoading ] = useState(false);
 
-  function handleGoToFriendsList() {
+  function handleGoToFriendsList()
+  {
     if (!params) navigation.navigate('FriendsList');
     else navigation.push('FriendsList', {id: params.id});
   }
 
-  function handleGoToInvitesList() {
+  function handleGoToInvitesList()
+  {
     navigation.navigate('InviteList');
   }
 
-  function setModal() {
+  function setModal()
+  {
     setModalVisible(!modalVisible);
   }
 
-  function setUserPhotoModal() {
+  function setUserPhotoModal()
+  {
     setPhotoModal(!photoModal);
   }
 
-  async function getUser() {
+  async function getUser()
+  {
     if (params) setLoading(true);
 
     try {
-      if (!user) return signOut();
-
       if (params) {
-        const response = await api.get(`/user/${params.id}`, {headers: {auth_token: user.auth_token}});
+        const response = await get(`/user/${params.id}`, setLoading);
 
-        setFriend(response.data);
-        setString(getFirstName(response.data.name));
+        setFriend(response);
+        setString(getFirstName(response.name));
       } else checkLogin();
-
-      if (params) setLoading(false);
     } catch (err) {
       navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
     }
   }
 
-  function goToFriendHome() {
+  function goToFriendHome()
+  {
     navigation.push("Main", {id: params.id});
   }
 

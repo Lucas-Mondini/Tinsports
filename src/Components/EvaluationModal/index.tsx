@@ -1,8 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
+import { useRequest } from '../../Contexts/Request';
 import { Evaluation, GameList } from '../../utils/types';
 import DefaultModal from '../DefaultModal';
 import NoContent from '../NoContent';
@@ -27,8 +26,10 @@ type ModalProps = {
   invitedUsers: GameList[];
 }
 
-const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, invitedUsers}) => {
-  const {user, signOut} = useAuth();
+const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, invitedUsers}) =>
+{
+  const {post, destroy} = useRequest();
+
   const navigation = useNavigation();
   const [evaluationList, setEvaluationList] = useState<Evaluation[]>([]);
   const [loading, setLoading] = useState(false);
@@ -36,24 +37,18 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
   function sendEvaluations() {
     Alert.alert("Avaliar usuários?", "Essa ação não poderá ser revertida",[{
       text: "Sim",
-      onPress: async () => {
-
+      onPress: async () =>
+      {
         try {
-          setLoading(true);
-          if (!user) return signOut();
-
           for (const evaluation of evaluationList) {
-            await api.post('/register/user/update-reputation', {
+            await post('/register/user/update-reputation', setLoading,{
               user_ID: evaluation.user_ID,
               paid: evaluation.paid,
               participated: evaluation.participated
-            }, {headers: {auth_token: user.auth_token}});
+            });
           }
 
-          await api.delete(`/games/${gameId}`, {headers: {auth_token: user.auth_token}});
-
-          setLoading(false);
-          setModal();
+          await destroy(`/games/${gameId}`, setModal, setLoading);
 
           navigation.reset({index: 0, routes: [{name: "Main"}]});
         } catch (err) {

@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Alert, RefreshControl, View } from "react-native";
 import Badge from "../../Components/Badge";
 import UserCard from "../../Components/UserCard";
-import api from "../../services/api";
 import {
   BadgeContainer,
   ButtonText,
@@ -25,6 +24,7 @@ import Loading from "../../Components/Loading";
 import EvaluationModal from "../../Components/EvaluationModal";
 import Header from "../../Components/Header";
 import { Game, GameList, Params } from "../../utils/types";
+import { useRequest } from "../../Contexts/Request";
 
 const photo = require('../../../assets/photos/photo.jpg');
 
@@ -41,36 +41,21 @@ const GameInfo: React.FC = () => {
   const [game, setGame] = useState<Game>();
   const [gameList, setGameList] = useState<GameList[]>();
   const {user, signOut} = useAuth();
+  const {get, destroy} = useRequest();
 
   async function getGameInfo() {
-    setLoading(true);
-
-    if(!user) return signOut();
-
     try{
-      const token = user.auth_token
+      const result = await get(`/games/${params.id}`, setLoading);
 
-      const result = await api.get(`/games/${params.id}`, {
-        headers: {
-          auth_token: token
-        }
-      });
-
-      if(result.status == 401 || !token){
-        signOut();
-      }
-
-      if (game?.finished && game.host_ID !== user._id) {
+      if (result?.finished && result.host_ID !== user?._id) {
         return navigation.reset({
           index: 0,
           routes: [{name: "Main"}]
         });
       }
 
-      setLoading(false);
-      setGame(result.data);
-      setGameList(result.data.gameList);
-      setLoading(false);
+      setGame(result);
+      setGameList(result.gameList);
     } catch(err){
       return navigation.reset({
         index: 0,
@@ -86,11 +71,8 @@ const GameInfo: React.FC = () => {
     Alert.alert("Excluir convite", "Deseja realmente excluir o convite?", [
       {
         text: "Sim", async onPress() {
-          if (!user) return signOut();
-
           try {
-            await api.delete(`/game-list/${inviteId}`, {headers: {auth_token: user.auth_token}});
-            getGameInfo();
+            await destroy(`/game-list/${inviteId}`, getGameInfo);
           } catch(err) {
             navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
           }
