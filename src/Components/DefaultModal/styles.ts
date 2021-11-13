@@ -12,6 +12,5 @@ export const ModalBackground = styled.View`
 export const ModalContent = styled.View`
   background-color: #f6f6f6;
   margin: 10% 3%;
-  flex: 1;
   border-radius: 8px;
 `;

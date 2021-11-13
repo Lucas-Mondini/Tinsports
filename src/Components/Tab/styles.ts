@@ -9,5 +9,6 @@ export const TabElement = styled.TouchableOpacity``;
 
 export const TabText = styled.Text`
   color: #686868;
-  font-size: 20px;
+  font-size: 18px;
+  font-family: 'Poppins-Regular';
 `;

@@ -234,9 +234,9 @@ const CreateEvent: React.FC = () =>
 
         <SubmitButtonView>
           <SubmitButton
-            disabled={disableButton ? true : false}
+            disabled={disableButton}
             style={{backgroundColor: disableButton ? "#686868" : "#007E33"}}
-            onPress={sendData}>
+            onPress={!disableButton ? sendData : () => {}}>
             <SubmitButtonText>Cadastrar</SubmitButtonText>
           </SubmitButton>
         </SubmitButtonView>

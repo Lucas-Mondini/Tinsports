@@ -6,6 +6,7 @@ import Icon2 from "react-native-vector-icons/FontAwesome5";
 import GameCard from "../../Components/GameCard";
 import Header from "../../Components/Header";
 import Loading from "../../Components/Loading";
+import MessageModal from "../../Components/MessageModal";
 import NoContent from "../../Components/NoContent";
 import Tab from "../../Components/Tab";
 import { useAuth } from "../../Contexts/Auth";
@@ -26,18 +27,22 @@ import {
 const goal = require('../../../assets/images/goal.png');
 
 const Main: React.FC = () => {
+  const {signOut, string} = useAuth();
+  const {get, destroy} = useRequest();
+
   const params = useRoute().params as Params;
   const isFocused = useIsFocused();
   const navigation = useNavigation();
 
   const [loading, setLoading] = useState(false);
+  const [modal, setModal] = useState<any>(null);
   const [disableAddButton, setDisableAddButton] = useState(true);
   const [userGames, setUserGames] = useState<Game[]>();
   const [friendsGames, setFriendsGames] = useState<Game[]>();
   const [invitedGames, setInvitedGames] = useState<Game[]>();
   const [tab, setTab] = useState<"user" | "invite" | "friends">("user");
-  const {signOut, user, string} = useAuth();
-  const {get} = useRequest();
+
+  const [gameId, setGameId] = useState("");
 
   async function getGames() {
     try{
@@ -60,9 +65,7 @@ const Main: React.FC = () => {
 
   function handleNavigateToCreateEvent() {
     if (disableAddButton) {
-      Alert.alert(
-        "Você ainda não é premium",
-        "Somente usuários premium podem inserir mais de 5 jogos");
+      showModal("Premium");
     } else {
       navigation.navigate('CreateEvent');
     }
@@ -77,11 +80,11 @@ const Main: React.FC = () => {
   }
 
   function handleNavigateToConfiguration() {
-    Alert.alert("Não disponível", "A Função de configurações não está disponível na beta");
+    showModal("Configuration");
   }
 
   function handleNavigateToPremium() {
-    Alert.alert("Não disponível", "Assinatura Premium não está disponível na beta");
+    showModal("PremiumSubmit");
   }
 
   useEffect(() => {
@@ -95,7 +98,8 @@ const Main: React.FC = () => {
           <View key={game._id}>
             <GameCard
               host_ID={game.host_ID}
-              setGames={getGames}
+              setGameId={setGameId}
+              deleteGame={() => showModal("DeleteGame")}
               _id={game._id}
               title={game.name}
               location={game.location}
@@ -158,9 +162,66 @@ const Main: React.FC = () => {
       </>);
   }
 
+  function showModal(type: "Premium" | "DeleteGame" | "Configuration" | "PremiumSubmit")
+  {
+    let modalInfo: any = {message:{title: "Você ainda não é premium!",
+                                   message: "Somente usuários premium podem inserir mais de 5 jogos"}};
+
+    switch (type) {
+      case "Premium":
+        modalInfo = modalInfo;
+        break;
+      case "Configuration":
+        modalInfo = {message:{title: "Não disponível",
+                              message: "A Função de configurações não está disponível na beta"}};
+        break;
+      case "PremiumSubmit":
+        modalInfo = {message:{title: "Não disponível",
+                              message: "Assinatura Premium não está disponível na beta"}};
+        break;
+      case "DeleteGame":
+        modalInfo = {message:{title: "Excluir jogo?",
+                              message: "Deseja realmente excluir o jogo?"},
+                     buttons: [
+                       {text: "Sim", color: "green", function: async () => {
+                          try {
+                            await destroy(`/games/${gameId}`, getGames);
+                            setModal(null);
+                          } catch (error) {
+                            navigation.reset({index: 0, routes: [{name: "Main"}]});
+                            setModal(null);
+                          }
+                       }},
+                       {text: "Não", color: "red", function: () => setModal(null)},
+                     ]};
+        break;
+    }
+
+    setModal(
+      <MessageModal
+        visible={true}
+        loading={loading}
+        setModal={() => setModal(null)}
+        message={modalInfo.message}
+        buttons={modalInfo.buttons}
+      />
+    )
+  }
+
+  useEffect(() => {
+    if (gameId) showModal("DeleteGame");
+  }, [gameId]);
+
+  useEffect(() => {
+    if (!modal) setGameId("");
+  }, [modal]);
+
   return (
     <Container style={{paddingTop : params ? 50 : 0}}>
       {params && params.id && <Header />}
+
+      {modal && modal}
+
       <Games
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={getGames}/>

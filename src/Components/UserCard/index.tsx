@@ -30,6 +30,7 @@ interface UserCardProps{
   addFriend?: boolean;
   handleLongPress?: () => void;
   reloadFunction?: () => void;
+  setModalInfo?: (object: {id: string, action: "DeleteFriend" | "DeleteInvite"}) => void;
   usersArray?: any[];
   setUsersArray?: (value: any[]) => void;
   disableNavigation?: boolean;
@@ -37,7 +38,7 @@ interface UserCardProps{
 
 const UserCard: React.FC<UserCardProps> = ({
     name, _id, user_ID, photo, disableButtons, buttonsType, reputation, confirmation, disableNavigation,
-    handleLongPress, reloadFunction, usersArray, setUsersArray
+    handleLongPress, reloadFunction, setModalInfo, usersArray, setUsersArray
   }) => {
 
   const navigation = useNavigation<any>();
@@ -52,22 +53,44 @@ const UserCard: React.FC<UserCardProps> = ({
   function handleButtons() {
     switch (buttonsType) {
       case "AddFriend":
-        return <AddFriendButtons _id={user_ID} reloadFunction={reloadFunction ? reloadFunction : ()=>{}}/>
+        return <AddFriendButtons
+                  _id={user_ID}
+                  reloadFunction={reloadFunction ? reloadFunction : ()=>{}}
+                />
         break;
       case "DeleteFriend":
-        return <DeleteFriendButtons _id={_id} disableButtons={disableButtons} reloadFunction={reloadFunction ? reloadFunction : ()=>{}}/>
+        return <DeleteFriendButtons
+                  _id={_id}
+                  disableButtons={disableButtons}
+                  setModalInfo={setModalInfo ? setModalInfo : ()=>{}}
+                />
         break;
       case "Invite":
-        return <InviteButtons _id={_id} disableButtons={disableButtons} reloadFunction={reloadFunction ? reloadFunction : ()=>{}}/>
+        return <InviteButtons
+                  _id={_id}
+                  disableButtons={disableButtons}
+                  reloadFunction={reloadFunction ? reloadFunction : ()=>{}}
+                  setModalInfo={setModalInfo ? setModalInfo : ()=>{}}
+                />
         break;
       case "GameInviteText":
-        return <GameInviteText confirmation={confirmation} />
+        return <GameInviteText
+                  confirmation={confirmation}
+               />
         break;
       case "GameInvite":
-        return <InviteFriendButton user_ID={user_ID} inviteList={usersArray} setInviteList={setUsersArray} />
+        return <InviteFriendButton
+                  user_ID={user_ID}
+                  inviteList={usersArray}
+                  setInviteList={setUsersArray}
+                />
         break;
       case "Evaluation":
-        return <EvaluationButtons user_ID={user_ID} evaluationList={usersArray} setEvaluationList={setUsersArray} />
+        return <EvaluationButtons
+                  user_ID={user_ID}
+                  evaluationList={usersArray}
+                  setEvaluationList={setUsersArray}
+                />
         break;
     }
   }

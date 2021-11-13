@@ -1,6 +1,6 @@
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { Alert, FlatList, RefreshControl, View } from 'react-native';
 import UserCard from '../../Components/UserCard';
 import Header from '../../Components/Header';
 import Loading from '../../Components/Loading';
@@ -10,13 +10,14 @@ import { useAuth } from '../../Contexts/Auth';
 import { Friend, Params } from '../../utils/types';
 import { Container, FriendsView, Title } from './styles';
 import { useRequest } from '../../Contexts/Request';
+import MessageModal from '../../Components/MessageModal';
 
 const photo = require('../../../assets/photos/photo.jpg');
 
 const Friends: React.FC = () =>
 {
   const { string } = useAuth();
-  const { get } = useRequest();
+  const { get, destroy } = useRequest();
 
   const params = useRoute().params as Params;
   const isFocused = useIsFocused();
@@ -26,6 +27,8 @@ const Friends: React.FC = () =>
 
   const [friends, setFriends] = useState<Friend[]>([]);
   const [invites, setInvites] = useState<Friend[]>([]);
+  const [modalInfo, setModalInfo] = useState<{id: string, action: "DeleteFriend" | "DeleteInvite"}>({id: "", action: "DeleteFriend"});
+  const [modal, setModal] = useState<any>(null);
 
   async function getFriends()
   {
@@ -39,6 +42,55 @@ const Friends: React.FC = () =>
     }
   }
 
+  async function handleDeleteFriend()
+  {
+    try {
+      await destroy(`/friend/${modalInfo.id}`, getFriends);
+      setModal(null);
+    } catch (error) {
+      navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
+      setModal(null);
+    }
+  }
+
+  function showModal(type: "DeleteFriend" | "DeleteInvite")
+  {
+    let modalInfo: any;
+
+    switch (type) {
+      case "DeleteInvite":
+        modalInfo = {message:{title: "Excluir convite de amizade",
+                              message: "Tem certeza que deseja excluir o convite de amizade"},
+                     buttons: [
+                       {text: "Sim", color: "green", function: async () => {
+                           await handleDeleteFriend();
+                       }},
+                       {text: "Não", color: "red", function: () => setModal(null)},
+                     ]};
+        break;
+      case "DeleteFriend":
+        modalInfo = {message:{title: "Excluir amigo?",
+                              message: "Tem certeza que deseja excluir o amigo?"},
+                     buttons: [
+                       {text: "Sim", color: "green", function: async () => {
+                          await handleDeleteFriend();
+                       }},
+                       {text: "Não", color: "red", function: () => setModal(null)},
+                     ]};
+        break;
+    }
+
+    setModal(
+      <MessageModal
+        visible={true}
+        loading={loading}
+        setModal={() => setModal(null)}
+        message={modalInfo.message}
+        buttons={modalInfo.buttons}
+      />
+    )
+  }
+
   function renderLists(data: Friend[], params: Params, invite: boolean = false)
   {
     let component, title = "", text = "";
@@ -48,7 +100,6 @@ const Friends: React.FC = () =>
                     styles={{flex: 0, marginTop: 15, marginBottom: 20}}
                   />
     } else {
-
       if (!params) {
         title = invite ? "Convites de amizade" : "Lista de amigos";
         text = "Você ainda não possui \nconvites de amizade";
@@ -73,6 +124,7 @@ const Friends: React.FC = () =>
                 <UserCard
                   buttonsType={invite ? "Invite" : "DeleteFriend"}
                   user_ID={item.user_ID}
+                  setModalInfo={setModalInfo}
                   reloadFunction={getFriends}
                   photo={item.photo || photo}
                   name={item.name}
@@ -106,9 +158,20 @@ const Friends: React.FC = () =>
     if (isFocused) getFriends();
   }, [isFocused]);
 
+  useEffect(() => {
+    if (modalInfo.id) showModal(modalInfo.action);
+  }, [modalInfo]);
+
+  useEffect(() => {
+    if (!modal) setModalInfo({id: "", action: "DeleteFriend"});
+  }, [modal]);
+
   return (
     <Container>
       <Header />
+
+      {modal && modal}
+
       {!params && <Tab
         setState={setTab}
         options={[
@@ -121,7 +184,6 @@ const Friends: React.FC = () =>
       {renderTab()}
     </Container>
   );
-
 }
 
 export default Friends;

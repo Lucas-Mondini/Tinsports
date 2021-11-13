@@ -13,15 +13,15 @@ interface GameCardProps{
   time: string;
   _id: string;
   host_ID: string;
-  setGames: () => void;
   finished: boolean;
+  setGameId: (_id: string) => void;
+  deleteGame: () => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, setGames, finished}) => {
+const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, finished, setGameId, deleteGame}) => {
 
   const navigation = useNavigation();
   const {signOut, user} = useAuth();
-  const {destroy} = useRequest();
 
   const gameTitle = Dimensions.get('window').width < 480 ? splitText(title, 10) : splitText(title, 18);
 
@@ -59,26 +59,13 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
     return <View />
   }
 
-  async function handleDelete() {
-    Alert.alert('Excluir o jogo', "Deseja realmente excluir esse jogo?",[
-      {
-        text: 'Sim',
-        async onPress() {
-          try {
-            await destroy(`/games/${_id}`, setGames);
-          } catch (error) {
-            navigation.reset({index: 0, routes: [{name: "Main"}]});
-          }
-        }
-      },
-      {
-        text: 'Não'
-      }
-    ]);
-  }
-
   return (
-    <Game onPress={handleGame} onLongPress={host_ID === user._id ? handleDelete : () => {}} key={_id}>
+    <Game onPress={handleGame}
+      onLongPress={host_ID === user._id ? () => {
+        setGameId(_id);
+        deleteGame();
+      } : () => {}}
+    >
       <Icon name={gameIconRandom()} size={51} color="#686868"/>
       <GameInfo>
         <View>

@@ -1,6 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../../../Contexts/Auth';
 import { useRequest } from '../../../Contexts/Request';
@@ -13,30 +12,15 @@ import {
 interface FriendsButtonsProps {
   _id: string;
   reloadFunction: () => void;
+  setModalInfo?: (object: {id: string, action: "DeleteFriend" | "DeleteInvite"}) => void;
   disableButtons?: boolean;
 }
 
-const InviteButtons: React.FC<FriendsButtonsProps> = ({_id, disableButtons, reloadFunction}) => {
+const InviteButtons: React.FC<FriendsButtonsProps> = ({_id, disableButtons, reloadFunction, setModalInfo}) => {
   const {user, signOut} = useAuth();
-  const { destroy, post } = useRequest();
+  const { post } = useRequest();
 
   const navigation = useNavigation<any>();
-
-  function handleDeleteFriend()
-  {
-    Alert.alert("Excluir convite de amizade",
-                "Tem certeza que deseja excluir o convite de amizade",
-                [{
-                text: "Sim",
-                async onPress() {
-                  try {
-                    await destroy(`/friend/${_id}`, reloadFunction);
-                  } catch (error) {
-                    navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
-                  }
-                }
-              }, {text: "Não"}]);
-  }
 
   async function handleConfirmInvite() {
     try {
@@ -57,7 +41,7 @@ const InviteButtons: React.FC<FriendsButtonsProps> = ({_id, disableButtons, relo
       <Button onPress={handleConfirmInvite} style={{marginRight: 5, backgroundColor: "#268e01"}}>
         <Icon name="check-square-o" color="#fff" size={25}/>
       </Button>
-      <Button onPress={handleDeleteFriend}  style={{backgroundColor: "#c50000"}}>
+      <Button onPress={setModalInfo ? () => setModalInfo({id: _id, action: "DeleteInvite"}) : ()=>{}}  style={{backgroundColor: "#c50000"}}>
         <Icon name="trash" color="#fff" size={25}/>
       </Button>
     </ButtonsView>

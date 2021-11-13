@@ -23,7 +23,7 @@ type ModalProps = {
 
 const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction}) =>
 {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const {put} = useRequest();
 
   const [loading, setLoading] = useState(false);
