@@ -11,7 +11,7 @@ interface InputProps{
   numeric?: boolean;
   value: string;
   maxLength?: number;
-  setValue: (value: string) => void;
+  setValue?: (value: string) => void;
   style?: object;
   secureTextEntry?: boolean;
   callback?: () => void;

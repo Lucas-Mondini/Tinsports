@@ -1,6 +1,7 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+import moment from 'moment-timezone';
 import React, { useEffect, useState } from 'react';
-import { Alert, TouchableOpacity, View} from "react-native";
+import { TouchableOpacity, View} from "react-native";
 import Input from '../../Components/Input';
 import { useAuth } from '../../Contexts/Auth';
 import DateTimePicker, {Event} from "@react-native-community/datetimepicker";
@@ -17,16 +18,13 @@ import { Checkbox,
 } from './styles';
 
 import {
-  formatDate,
-  formatHour,
-  formatMoney,
-  hourToString,
-  toDateString
+  formatMoney
 } from '../../utils/functions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../../Components/Header';
 import { Game } from '../../utils/types';
 import { useRequest } from '../../Contexts/Request';
+import MessageModal from '../../Components/MessageModal';
 
 const CreateEvent: React.FC = () =>
 {
@@ -40,6 +38,7 @@ const CreateEvent: React.FC = () =>
   const [disableButton, setDisableButton] = useState(true);
   const [date, setDate] = useState(new Date());
   const [hour, setHour] = useState(new Date());
+  const [modal, setModal] = useState<any>();
 
   const {user, signOut} = useAuth();
   const {post} = useRequest();
@@ -60,17 +59,27 @@ const CreateEvent: React.FC = () =>
     } catch(err: any) {
       setDisableButton(true);
 
-      if (err.response && err.response.status === 403) {
-        Alert.alert(
-          "Você ainda não é premium",
-          "Somente usuários premium podem inserir mais de 5 jogos",
-          [{
-            text: "OK",
-            onPress: () => navigation.reset({index: 0, routes: [{name: "Main"}]})
-          }]);
-      } else {
-        navigation.reset({index: 0, routes: [{name: "Main"}]});
+      const modalInfo: any = {
+        403: {title: "Você ainda não é premium!",
+              message: "Somente usuários premium podem inserir mais de 5 jogos"},
+        401: {title: "Data do evento menor que atual!",
+              message: "A data do evento não pode ser menor que a atual"},
+        "default": {title: "Ocorreu um erro!",
+                    message: "Ocorreu um erro em nossos servidores, sentimos muito. \nTente novamente!"}
       }
+
+      let errorMessage = modalInfo[err.response.status] || modalInfo['default'];
+
+      setModal(
+        <MessageModal
+          visible={true}
+          loading={false}
+          setModal={() => {
+            setModal(null);
+          }}
+          message={errorMessage}
+        />
+      );
     }
   }
 
@@ -100,7 +109,7 @@ const CreateEvent: React.FC = () =>
                        onChange={(_: Event, date?: Date) => {
                             setDatePicker(false);
                             setDate(date || new Date());
-                            setGame({...game, date: date ? toDateString(date) : ""});
+                            setGame({...game, date: date ? moment(date).format("DD/MM/YYYY") : ""});
                           }
                        }
                        mode="date"
@@ -116,7 +125,7 @@ const CreateEvent: React.FC = () =>
                        onChange={(_: Event, date?: Date) => {
                             setHourPicker(false);
                             setHour(date || new Date());
-                            setGame({...game, hour: date ? hourToString(date) : ""});
+                            setGame({...game, hour: date ? moment(date).format("HH:mm") : ""});
                           }
                        }
                        mode="time"
@@ -135,6 +144,7 @@ const CreateEvent: React.FC = () =>
 
       {datePicker && datePickerComponent()}
       {hourPicker && hourPickerComponent()}
+      {modal && modal}
 
       <GameInfo>
         <Input
@@ -171,7 +181,6 @@ const CreateEvent: React.FC = () =>
                 style={{flex:1, marginRight: 15}}
                 maxLength={10}
                 disabled={false}
-                setValue={date => setGame({...game, date: formatDate(date)})}
                 />
               </View>
             </TouchableOpacity>
@@ -187,7 +196,6 @@ const CreateEvent: React.FC = () =>
                   style={{flex:1}}
                   maxLength={5}
                   disabled={false}
-                  setValue={hour => setGame({...game, hour: formatHour(hour)})}
                   />
               </View>
             </TouchableOpacity>
