@@ -4,6 +4,7 @@ import { useAuth } from '../../Contexts/Auth';
 import { useRequest } from '../../Contexts/Request';
 import DefaultModal from '../DefaultModal';
 import Input from '../Input';
+import MessageModal from '../MessageModal';
 
 import {
   ButtonText,
@@ -28,6 +29,7 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
 
   const [loading, setLoading] = useState(false);
   const [disableButton, setDisableButton] = useState(true);
+  const [messageModal, setMessageModal] = useState<any>(null);
 
   const [userInfo, setUserInfo] = useState({
     name: user?.name || "",
@@ -37,10 +39,11 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
     confirmNewPassword: ""
   });
 
-  async function updateUser() {
+  async function updateUser()
+  {
     try {
       if (userInfo.newPassword !== userInfo.confirmNewPassword) {
-        return Alert.alert("Senhas diferentes", "As senhas que você digitou são diferentes, tente novamente");
+        return showModal("PasswordsDontMatch");
       }
 
       await put(`/register/user`, setLoading, {
@@ -57,7 +60,7 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
       setLoading(false);
 
       if (err.response && err.response.status === 401)
-        Alert.alert("Senha incorreta", "Parece que você digitou sua senha incorretamente");
+        return showModal("IncorrectPassword");
     }
   }
 
@@ -71,12 +74,41 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
         } else setDisableButton(true);
   }
 
+  function showModal(type: "IncorrectPassword" | "PasswordsDontMatch")
+  {
+    let modalInfo: any = {message:{title: "Senha incorreta",
+                                   message: "Parece que você digitou sua senha incorretamente"}};
+
+    switch (type) {
+      case "IncorrectPassword":
+        modalInfo = modalInfo;
+        break;
+      case "PasswordsDontMatch":
+        modalInfo = {message:{title: "Senhas diferentes",
+                              message: "As senhas que você digitou são diferentes, tente novamente"}};
+        break;
+    }
+
+    setMessageModal(
+      <MessageModal
+        visible={true}
+        loading={loading}
+        setModal={() => setMessageModal(null)}
+        message={modalInfo.message}
+        buttons={modalInfo.buttons}
+      />
+    );
+  }
+
   useEffect(() => {
     if (visible) enableButton();
   }, [visible, userInfo]);
 
   return (
     <DefaultModal loading={loading} setModal={setModal} visible={visible} animationType="slide">
+
+      {messageModal && messageModal}
+
       <ModalContainer>
         <Input
           style={{marginLeft: '3%', marginRight: '3%'}}

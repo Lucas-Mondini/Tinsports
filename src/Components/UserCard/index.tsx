@@ -27,10 +27,9 @@ interface UserCardProps{
   reputation: number;
   photo: ImageSourcePropType | string;
   confirmation?: boolean;
-  addFriend?: boolean;
   handleLongPress?: () => void;
   reloadFunction?: () => void;
-  setModalInfo?: (object: {id: string, action: "DeleteFriend" | "DeleteInvite"}) => void;
+  callback?: () => void;
   usersArray?: any[];
   setUsersArray?: (value: any[]) => void;
   disableNavigation?: boolean;
@@ -38,7 +37,7 @@ interface UserCardProps{
 
 const UserCard: React.FC<UserCardProps> = ({
     name, _id, user_ID, photo, disableButtons, buttonsType, reputation, confirmation, disableNavigation,
-    handleLongPress, reloadFunction, setModalInfo, usersArray, setUsersArray
+    handleLongPress, reloadFunction, callback, usersArray, setUsersArray
   }) => {
 
   const navigation = useNavigation<any>();
@@ -50,49 +49,40 @@ const UserCard: React.FC<UserCardProps> = ({
     if (!disableNavigation) navigation.push("Profile", {id: user_ID});
   }
 
-  function handleButtons() {
-    switch (buttonsType) {
-      case "AddFriend":
-        return <AddFriendButtons
-                  _id={user_ID}
-                  reloadFunction={reloadFunction ? reloadFunction : ()=>{}}
-                />
-        break;
-      case "DeleteFriend":
-        return <DeleteFriendButtons
-                  _id={_id}
-                  disableButtons={disableButtons}
-                  setModalInfo={setModalInfo ? setModalInfo : ()=>{}}
-                />
-        break;
-      case "Invite":
-        return <InviteButtons
+  function handleButtons()
+  {
+    const buttons = {
+      "AddFriend": <AddFriendButtons
+                      _id={user_ID}
+                      reloadFunction={reloadFunction ? reloadFunction : ()=>{}}
+                   />,
+      "DeleteFriend": <DeleteFriendButtons
+                        _id={_id}
+                        disableButtons={disableButtons}
+                        callback={callback ? callback : ()=>{}}
+                      />,
+      "Invite": <InviteButtons
                   _id={_id}
                   disableButtons={disableButtons}
                   reloadFunction={reloadFunction ? reloadFunction : ()=>{}}
-                  setModalInfo={setModalInfo ? setModalInfo : ()=>{}}
-                />
-        break;
-      case "GameInviteText":
-        return <GameInviteText
-                  confirmation={confirmation}
-               />
-        break;
-      case "GameInvite":
-        return <InviteFriendButton
-                  user_ID={user_ID}
-                  inviteList={usersArray}
-                  setInviteList={setUsersArray}
-                />
-        break;
-      case "Evaluation":
-        return <EvaluationButtons
-                  user_ID={user_ID}
-                  evaluationList={usersArray}
-                  setEvaluationList={setUsersArray}
-                />
-        break;
+                  callback={callback ? callback : ()=>{}}
+                />,
+      "GameInviteText": <GameInviteText
+                            confirmation={confirmation}
+                        />,
+      "GameInvite": <InviteFriendButton
+                      user_ID={user_ID}
+                      inviteList={usersArray}
+                      setInviteList={setUsersArray}
+                    />,
+      "Evaluation": <EvaluationButtons
+                      user_ID={user_ID}
+                      evaluationList={usersArray}
+                      setEvaluationList={setUsersArray}
+                    />
     }
+
+    return buttons[buttonsType];
   }
 
   return (

@@ -16,10 +16,14 @@ interface InviteCardProps{
   date: string;
   hour: string;
   location: string;
-  reloadFunction: () => void;
+  setInviteId: ({}: InviteId) => void;
 }
 
-const InviteCard: React.FC<InviteCardProps> = ({_id, host_ID, game_ID, date, location, hour, hostName, gameName, reloadFunction}) => {
+interface InviteId {
+  id: string, action: "Delete" | "Confirm"
+}
+
+const InviteCard: React.FC<InviteCardProps> = ({_id, host_ID, game_ID, date, location, hour, hostName, gameName, setInviteId}) => {
 
   const navigation = useNavigation<any>();
   const {signOut, user} = useAuth();
@@ -40,61 +44,6 @@ const InviteCard: React.FC<InviteCardProps> = ({_id, host_ID, game_ID, date, loc
     return <View />
   }
 
-  async function handleDelete() {
-    Alert.alert('Excluir o convite', "Deseja realmente excluir esse convite de jogo?",[
-      {
-        text: 'Sim',
-        async onPress() {
-          try {
-            if (!user) return signOut();
-
-            await api.delete(`/game-list/${_id}/delete`, {
-              headers: {
-                auth_token: user.auth_token,
-              }
-            });
-
-            reloadFunction();
-          } catch (error) {
-            navigation.reset({index: 0, routes: [{name: "Main"}]});
-          }
-        }
-      },
-      {
-        text: 'Não'
-      }
-    ]);
-  }
-
-  async function handleConfirm() {
-    Alert.alert('Confirmar participação', "Deseja realmente confirmar sua participação nesse jogo?", [
-      {
-        text: 'Sim',
-        async onPress() {
-          try {
-            if (!user) return signOut();
-
-            await api.post(`/game-list/invite-confirmation`, {
-              _id,
-              user_ID: user._id
-            },{
-              headers: {
-                auth_token: user.auth_token,
-              }
-            });
-
-            reloadFunction();
-          } catch (error) {
-            navigation.reset({index: 0, routes: [{name: "Main"}]});
-          }
-        }
-      },
-      {
-        text: 'Não'
-      }
-    ]);
-  }
-
   return (
     <Invite onPress={goToGameInfo} onLongPress={goToUserProfile}>
       <Icon name="soccer-ball-o" size={51} color="#686868"/>
@@ -108,14 +57,14 @@ const InviteCard: React.FC<InviteCardProps> = ({_id, host_ID, game_ID, date, loc
 
         <ButtonsView>
           <Button
-            onPress={handleDelete}
+            onPress={() => setInviteId({id: _id, action: "Delete"})}
             style={{backgroundColor: "#c50000"}}
           >
             <Icon name="close" size={25} color="#fff"/>
           </Button>
 
           <Button
-            onPress={handleConfirm}
+            onPress={() => setInviteId({id: _id, action: "Confirm"})}
             style={{backgroundColor: "#268e01"}}
           >
             <Icon name="check" size={25} color="#fff"/>

@@ -1,6 +1,6 @@
 import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Alert, Image, TouchableOpacity, View, RefreshControl, Dimensions } from "react-native";
+import { Image, TouchableOpacity, View, RefreshControl, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/FontAwesome5";
 import GameCard from "../../Components/GameCard";
@@ -98,8 +98,7 @@ const Main: React.FC = () => {
           <View key={game._id}>
             <GameCard
               host_ID={game.host_ID}
-              setGameId={setGameId}
-              deleteGame={() => showModal("DeleteGame")}
+              deleteGame={() => showModal("DeleteGame", game._id)}
               _id={game._id}
               title={game.name}
               location={game.location}
@@ -162,50 +161,40 @@ const Main: React.FC = () => {
       </>);
   }
 
-  function showModal(type: "Premium" | "DeleteGame" | "Configuration" | "PremiumSubmit")
+  function showModal(type: "Premium" | "DeleteGame" | "Configuration" | "PremiumSubmit", gameId?: string)
   {
-    let modalInfo: any = {message:{title: "Você ainda não é premium!",
-                                   message: "Somente usuários premium podem inserir mais de 5 jogos"}};
-
-    switch (type) {
-      case "Premium":
-        modalInfo = modalInfo;
-        break;
-      case "Configuration":
-        modalInfo = {message:{title: "Não disponível",
-                              message: "A Função de configurações não está disponível na beta"}};
-        break;
-      case "PremiumSubmit":
-        modalInfo = {message:{title: "Não disponível",
-                              message: "Assinatura Premium não está disponível na beta"}};
-        break;
-      case "DeleteGame":
-        modalInfo = {message:{title: "Excluir jogo?",
+    let modalInfo: any = {
+      "Premium": {message:{title: "Você ainda não é premium!",
+                                   message: "Somente usuários premium podem inserir mais de 5 jogos"}},
+      "Configuration": {message:{title: "Não disponível",
+                                 message: "A Função de configurações não está disponível na beta"}},
+      "PremiumSubmit": {message:{title: "Não disponível",
+                                 message: "Assinatura Premium não está disponível na beta"}},
+      "DeleteGame": {message:{title: "Excluir jogo?",
                               message: "Deseja realmente excluir o jogo?"},
                      buttons: [
-                       {text: "Sim", color: "green", function: async () => {
-                          try {
-                            await destroy(`/games/${gameId}`, getGames);
-                            setModal(null);
-                          } catch (error) {
-                            navigation.reset({index: 0, routes: [{name: "Main"}]});
-                            setModal(null);
-                          }
-                       }},
-                       {text: "Não", color: "red", function: () => setModal(null)},
-                     ]};
-        break;
-    }
+                     {text: "Sim", color: "green", function: async () => {
+                       try {
+                         await destroy(`/games/${gameId}`, getGames);
+                         setModal(null);
+                       } catch (error) {
+                         setModal(null);
+                         navigation.reset({index: 0, routes: [{name: "Main"}]});
+                       }
+                     }},
+                     {text: "Não", color: "red", function: () => setModal(null)},
+                     ]}
+    };
 
     setModal(
       <MessageModal
         visible={true}
         loading={loading}
         setModal={() => setModal(null)}
-        message={modalInfo.message}
-        buttons={modalInfo.buttons}
+        message={modalInfo[type].message}
+        buttons={modalInfo[type].buttons}
       />
-    )
+    );
   }
 
   useEffect(() => {

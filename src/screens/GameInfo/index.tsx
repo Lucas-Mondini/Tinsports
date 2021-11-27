@@ -1,6 +1,6 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, RefreshControl, View } from "react-native";
+import { RefreshControl, View } from "react-native";
 import Badge from "../../Components/Badge";
 import UserCard from "../../Components/UserCard";
 import {
@@ -25,6 +25,7 @@ import EvaluationModal from "../../Components/EvaluationModal";
 import Header from "../../Components/Header";
 import { Game, GameList, Params } from "../../utils/types";
 import { useRequest } from "../../Contexts/Request";
+import MessageModal from "../../Components/MessageModal";
 
 const photo = require('../../../assets/photos/photo.jpg');
 
@@ -36,12 +37,14 @@ const GameInfo: React.FC = () => {
   const isFocused = useIsFocused();
   const mountedRef = useRef(true);
 
+  const {user} = useAuth();
+  const {get, destroy} = useRequest();
+
   const [loading, setLoading] = useState(false);
   const [modalOpened, setModalOpened] = useState(false);
   const [game, setGame] = useState<Game>();
   const [gameList, setGameList] = useState<GameList[]>();
-  const {user, signOut} = useAuth();
-  const {get, destroy} = useRequest();
+  const [modal, setModal] = useState<any>();
 
   async function getGameInfo() {
     try{
@@ -64,24 +67,34 @@ const GameInfo: React.FC = () => {
     }
   }
 
-  function deleteInvitation(inviteId: string) {
-
+  function deleteInvitation(inviteId: string)
+  {
     if (game?.host_ID !== user?._id) return;
 
-    Alert.alert("Excluir convite", "Deseja realmente excluir o convite?", [
-      {
-        text: "Sim", async onPress() {
-          try {
-            await destroy(`/game-list/${inviteId}`, getGameInfo);
-          } catch(err) {
-            navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
-          }
-        }
-      },
-      {
-        text: "Não"
-      }
-    ]);
+    let modalInfo: any = {message:{title: "Excluir convite?",
+                                   message: "Deseja realmente excluir o convite?"},
+                          buttons: [
+                            {text: "Sim", color: "green", function: async () => {
+                                try {
+                                  await destroy(`/game-list/${inviteId}`, getGameInfo);
+                                  setModal(null);
+                                } catch (error) {
+                                  setModal(null);
+                                  navigation.reset({index: 0, routes: [{name: "Main"}]});
+                                }
+                            }},
+                            {text: "Não", color: "red", function: () => setModal(null)},
+                          ]};
+
+    setModal(
+      <MessageModal
+        visible={true}
+        loading={loading}
+        setModal={() => setModal(null)}
+        message={modalInfo.message}
+        buttons={modalInfo.buttons}
+      />
+    );
   }
 
   function handleModal() {
@@ -104,6 +117,7 @@ const GameInfo: React.FC = () => {
   return (
     <Container>
       <Header visible={!modalOpened}/>
+      {modal && modal}
 
       {user && game.host_ID === user._id ?
         game.finished ?

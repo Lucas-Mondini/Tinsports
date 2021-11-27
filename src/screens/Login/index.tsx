@@ -1,26 +1,21 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import Loading from '../../Components/Loading';
+import MessageModal from '../../Components/MessageModal';
 import { useAuth } from '../../Contexts/Auth';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
 
 const Login: React.FC = () =>
 {
-  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
+  const [modal, setModal] = useState<any>();
   const [disableButton, setDisableButton] = useState(true);
-  const {signIn, loading, setLoading} = useAuth();
+  const {signIn, loading} = useAuth();
 
   async function handleSignIn() {
-    try {
-      await signIn(email, pass);
-    } catch (err) {
-      Alert.alert("Email ou senha incorreto", "Certifique-se que digitou seu e-mail e senha corretamente");
-      return navigation.navigate("Login");
-    }
+    await signIn(email, pass, showModal);
   }
 
   function enableButton() {
@@ -32,12 +27,29 @@ const Login: React.FC = () =>
         } else setDisableButton(true);
   }
 
+  function showModal()
+  {
+    let modalInfo: any = {message:{title: "Email ou senha incorreto",
+                                   message: "Certifique-se que digitou seu e-mail e senha corretamente"}};
+
+    setModal(
+      <MessageModal
+        visible={true}
+        loading={loading}
+        setModal={() => setModal(null)}
+        message={modalInfo.message}
+        buttons={modalInfo.buttons}
+      />
+    );
+  }
+
   useEffect(() => {
     enableButton();
   }, [email, pass]);
 
   function load() {
-    if (loading) return <Loading />
+    if (loading) return <Loading />;
+    else if (modal) return modal;
     else {
       return (
         <Container>

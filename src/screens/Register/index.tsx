@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import Loading from '../../Components/Loading';
+import MessageModal from '../../Components/MessageModal';
 import { useAuth } from '../../Contexts/Auth';
 
 import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} from './styles';
@@ -15,13 +16,38 @@ const Register: React.FC = () =>
   const [confPass, setConfPass] = useState('');
   const {register, loading} = useAuth();
   const [disableButton, setDisableButton] = useState(true);
+  const [modal, setModal] = useState<any>();
 
   async function handleRegister() {
     try {
-      await register(name, email, pass, confPass);
+      await register(name, email, pass, confPass, showModal);
     } catch (err) {
       navigation.navigate("Register");
     }
+  }
+
+  function showModal(status: number)
+  {
+    let modalInfo: any = {message:{title: "Ocorreu um erro",
+                                   message: "Ocorreu um erro interno do servidor, sentimos muito. \nTente novamente"}};
+
+    if (status == 400) {
+      modalInfo = {message:{title: "E-mail já cadastrado",
+                            message: "O e-mail utilizado já foi cadastrado"}};
+    } else if (status == 401) {
+      modalInfo = {message:{title: "Senhas diferentes",
+                            message: "Você digitou senhas diferentes"}};
+    }
+
+    setModal(
+      <MessageModal
+        visible={true}
+        loading={loading}
+        setModal={() => setModal(null)}
+        message={modalInfo.message}
+        buttons={modalInfo.buttons}
+      />
+    );
   }
 
   function enableButton() {
@@ -40,7 +66,8 @@ const Register: React.FC = () =>
   }, [name, email, pass, confPass]);
 
   function loadPage() {
-    if (loading) return <Loading />
+    if (loading) return <Loading />;
+    else if (modal) return modal;
     else {
       return (
         <Container>

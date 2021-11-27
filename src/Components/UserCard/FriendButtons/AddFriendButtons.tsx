@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Alert } from 'react-native';
 import { useAuth } from '../../../Contexts/Auth';
@@ -16,6 +17,7 @@ const AddFriendButtons: React.FC<AddFriendButtonsProps> = ({_id, reloadFunction}
 {
   const { user, signOut } = useAuth();
   const {post} = useRequest();
+  const navigation = useNavigation();
 
   async function handleAddFriend()
   {
@@ -29,9 +31,7 @@ const AddFriendButtons: React.FC<AddFriendButtonsProps> = ({_id, reloadFunction}
 
       if (reloadFunction) reloadFunction();
     } catch(err: any) {
-      if (err.response && err.response.status === 401) {
-        Alert.alert("Amigos", "Você já enviou convite de amizade para esse usuário ou vocês já são amigos");
-      }
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
     }
   }
 

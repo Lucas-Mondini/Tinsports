@@ -1,6 +1,6 @@
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, RefreshControl, View } from 'react-native';
+import { FlatList, RefreshControl, ScrollView, View } from 'react-native';
 import UserCard from '../../Components/UserCard';
 import Header from '../../Components/Header';
 import Loading from '../../Components/Loading';
@@ -42,10 +42,10 @@ const Friends: React.FC = () =>
     }
   }
 
-  async function handleDeleteFriend()
+  async function handleDeleteFriend(friendId?: string)
   {
     try {
-      await destroy(`/friend/${modalInfo.id}`, getFriends);
+      await destroy(`/friend/${friendId}`, getFriends);
       setModal(null);
     } catch (error) {
       navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
@@ -53,7 +53,7 @@ const Friends: React.FC = () =>
     }
   }
 
-  function showModal(type: "DeleteFriend" | "DeleteInvite")
+  function showModal(type: "DeleteFriend" | "DeleteInvite", friendId?: string)
   {
     let modalInfo: any;
 
@@ -63,7 +63,7 @@ const Friends: React.FC = () =>
                               message: "Tem certeza que deseja excluir o convite de amizade"},
                      buttons: [
                        {text: "Sim", color: "green", function: async () => {
-                           await handleDeleteFriend();
+                           await handleDeleteFriend(friendId);
                        }},
                        {text: "Não", color: "red", function: () => setModal(null)},
                      ]};
@@ -73,7 +73,7 @@ const Friends: React.FC = () =>
                               message: "Tem certeza que deseja excluir o amigo?"},
                      buttons: [
                        {text: "Sim", color: "green", function: async () => {
-                          await handleDeleteFriend();
+                          await handleDeleteFriend(friendId);
                        }},
                        {text: "Não", color: "red", function: () => setModal(null)},
                      ]};
@@ -111,10 +111,12 @@ const Friends: React.FC = () =>
       }
 
       if (!data || data.length === 0) {
-        component = <NoContent
-                      style={{marginTop:15, marginBottom:20}}
-                      text={text}
-                    />
+        component = <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={getFriends}/>}>
+                      <NoContent
+                        style={{marginTop:"40%", marginBottom:20}}
+                        text={text}
+                      />
+                    </ScrollView>
       } else {
         component = (
           <>
@@ -124,7 +126,7 @@ const Friends: React.FC = () =>
                 <UserCard
                   buttonsType={invite ? "Invite" : "DeleteFriend"}
                   user_ID={item.user_ID}
-                  setModalInfo={setModalInfo}
+                  callback={() => showModal(invite ? "DeleteInvite" : "DeleteFriend", item._id)}
                   reloadFunction={getFriends}
                   photo={item.photo || photo}
                   name={item.name}
@@ -157,14 +159,6 @@ const Friends: React.FC = () =>
   useEffect(() => {
     if (isFocused) getFriends();
   }, [isFocused]);
-
-  useEffect(() => {
-    if (modalInfo.id) showModal(modalInfo.action);
-  }, [modalInfo]);
-
-  useEffect(() => {
-    if (!modal) setModalInfo({id: "", action: "DeleteFriend"});
-  }, [modal]);
 
   return (
     <Container>

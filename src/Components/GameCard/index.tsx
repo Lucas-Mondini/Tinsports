@@ -14,11 +14,10 @@ interface GameCardProps{
   _id: string;
   host_ID: string;
   finished: boolean;
-  setGameId: (_id: string) => void;
   deleteGame: () => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, finished, setGameId, deleteGame}) => {
+const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, finished, deleteGame}) => {
 
   const navigation = useNavigation();
   const {signOut, user} = useAuth();
@@ -62,7 +61,6 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
   return (
     <Game onPress={handleGame}
       onLongPress={host_ID === user._id ? () => {
-        setGameId(_id);
         deleteGame();
       } : () => {}}
     >

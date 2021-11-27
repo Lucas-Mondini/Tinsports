@@ -4,6 +4,7 @@ import { Alert } from 'react-native';
 import { useRequest } from '../../Contexts/Request';
 import { Evaluation, GameList } from '../../utils/types';
 import DefaultModal from '../DefaultModal';
+import MessageModal from '../MessageModal';
 import NoContent from '../NoContent';
 import UserCard from '../UserCard';
 import {
@@ -33,29 +34,44 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
   const navigation = useNavigation();
   const [evaluationList, setEvaluationList] = useState<Evaluation[]>([]);
   const [loading, setLoading] = useState(false);
+  const [messageModal, setMessageModal] = useState<any>();
 
-  function sendEvaluations() {
-    Alert.alert("Avaliar usuários?", "Essa ação não poderá ser revertida",[{
-      text: "Sim",
-      onPress: async () =>
-      {
-        try {
-          for (const evaluation of evaluationList) {
-            await post('/register/user/update-reputation', setLoading,{
-              user_ID: evaluation.user_ID,
-              paid: evaluation.paid,
-              participated: evaluation.participated
-            });
-          }
+  function sendEvaluations()
+  {
+    let modalInfo: any = {message:{title: "Avaliar usuários?",
+                                   message: "Essa ação não poderá ser revertida"},
+                          buttons: [
+                            {text: "Sim", color: "green", function: async () => {
+                                try {
+                                  for (const evaluation of evaluationList) {
+                                    await post('/register/user/update-reputation', setLoading,{
+                                      user_ID: evaluation.user_ID,
+                                      paid: evaluation.paid,
+                                      participated: evaluation.participated
+                                    });
+                                  }
 
-          await destroy(`/games/${gameId}`, setModal, setLoading);
+                                  await destroy(`/games/${gameId}`, setModal, setLoading);
 
-          navigation.reset({index: 0, routes: [{name: "Main"}]});
-        } catch (err) {
-          navigation.reset({index: 0, routes: [{name: "Main"}]});
-        }
-      }
-    }, {text: "Não"}]);
+                                  setMessageModal(null);
+                                  navigation.reset({index: 0, routes: [{name: "Main"}]});
+                                } catch (error) {
+                                  setMessageModal(null);
+                                  navigation.reset({index: 0, routes: [{name: "Main"}]});
+                                }
+                            }},
+                            {text: "Não", color: "red", function: () => setMessageModal(null)},
+                          ]};
+
+    setMessageModal(
+      <MessageModal
+        visible={true}
+        loading={loading}
+        setModal={() => setMessageModal(null)}
+        message={modalInfo.message}
+        buttons={modalInfo.buttons}
+      />
+    );
   }
 
   function fillEvaluationArray() {
@@ -81,6 +97,9 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
 
   return (
     <DefaultModal loading={loading} setModal={setModal} visible={visible} animationType="fade">
+
+      {messageModal && messageModal}
+
       <FriendsView>
         {
           invitedUsers.length === 0 ?

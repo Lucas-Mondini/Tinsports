@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { Alert } from 'react-native';
 import api from '../services/api';
 import { User } from '../utils/types';
 
@@ -10,8 +9,8 @@ type AuthData = {
   user: User | null;
   loading: boolean;
   setLoading: (value: boolean) => void;
-  signIn: (email: string, pass: string) => void;
-  register: (name: string, email: string, pass: string, confPass: string) => void;
+  signIn: (email: string, pass: string, errorCallback: Function) => void;
+  register: (name: string, email: string, pass: string, confPass: string, errorCallback: Function) => void;
   signOut: () => void;
   checkLogin: () => void;
   string: string;
@@ -49,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>
     }
   }
 
-  async function signIn(email: string, pass: string) {
+  async function signIn(email: string, pass: string, errorCallback: Function) {
     try {
       setLoading(true);
 
@@ -64,16 +63,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>
     } catch (err) {
       signOut();
       setLoading(false);
+      errorCallback();
     }
   }
 
-  async function register(name: string, email: string, pass: string, confPass: string) {
+  async function register(name: string, email: string, pass: string, confPass: string, errorCallback: Function) {
     try {
       setLoading(true);
 
       if (pass !== confPass) {
         setLoading(false);
-        return Alert.alert("Senhas diferentes", "A senha e a confirmação de senha são diferentes");
+        return errorCallback(401);
       }
 
       const response = await api.post(`/register/user`,{
@@ -87,12 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>
     } catch (err: any) {
       signOut();
       setLoading(false);
-
-      if (err.response.data.status == 400) {
-        Alert.alert("E-mail já cadastrado", "O e-mail utilizado já foi cadastrado");
-      } else if (err.response.data.status) {
-        Alert.alert("Senhas diferente", "As senhas digitadas não são iguais");
-      } else Alert.alert("Ocorreu um erro", "Ocorreu um erro interno do servidor, sentimos muito. Tente novamente");
+      errorCallback(err.response.data.status);
     }
   }
 

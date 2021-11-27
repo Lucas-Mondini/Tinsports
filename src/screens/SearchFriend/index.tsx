@@ -76,7 +76,6 @@ const SearchFriend: React.FC = () =>
                 user_ID={user._id}
                 name={user.name}
                 photo={user.photo || photo}
-                addFriend
                 reloadFunction={getUsers}
               />
             )

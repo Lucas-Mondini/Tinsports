@@ -12,11 +12,11 @@ import {
 interface FriendsButtonsProps {
   _id: string;
   reloadFunction: () => void;
-  setModalInfo?: (object: {id: string, action: "DeleteFriend" | "DeleteInvite"}) => void;
+  callback?: () => void;
   disableButtons?: boolean;
 }
 
-const InviteButtons: React.FC<FriendsButtonsProps> = ({_id, disableButtons, reloadFunction, setModalInfo}) => {
+const InviteButtons: React.FC<FriendsButtonsProps> = ({_id, disableButtons, reloadFunction, callback}) => {
   const {user, signOut} = useAuth();
   const { post } = useRequest();
 
@@ -41,7 +41,7 @@ const InviteButtons: React.FC<FriendsButtonsProps> = ({_id, disableButtons, relo
       <Button onPress={handleConfirmInvite} style={{marginRight: 5, backgroundColor: "#268e01"}}>
         <Icon name="check-square-o" color="#fff" size={25}/>
       </Button>
-      <Button onPress={setModalInfo ? () => setModalInfo({id: _id, action: "DeleteInvite"}) : ()=>{}}  style={{backgroundColor: "#c50000"}}>
+      <Button onPress={callback ? () => callback() : ()=>{}}  style={{backgroundColor: "#c50000"}}>
         <Icon name="trash" color="#fff" size={25}/>
       </Button>
     </ButtonsView>
