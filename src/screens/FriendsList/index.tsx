@@ -27,7 +27,6 @@ const Friends: React.FC = () =>
 
   const [friends, setFriends] = useState<Friend[]>([]);
   const [invites, setInvites] = useState<Friend[]>([]);
-  const [modalInfo, setModalInfo] = useState<{id: string, action: "DeleteFriend" | "DeleteInvite"}>({id: "", action: "DeleteFriend"});
   const [modal, setModal] = useState<any>(null);
 
   async function getFriends()

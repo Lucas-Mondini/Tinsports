@@ -87,7 +87,6 @@ const Profile: React.FC = () =>
 
   if(!user) return null;
   if(loading) return <Loading />;
-
   return (
     <Container>
       <Header visible={!modalVisible}/>

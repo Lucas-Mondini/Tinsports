@@ -22,7 +22,6 @@ const InviteList: React.FC = () => {
 
   const [invites, setInvites] = useState<Invite[]>([]);
   const [modal, setModal] = useState<any>();
-  const [inviteId, setInviteId] = useState<{id: string, action: "Delete" | "Confirm"}>({id: '', action: "Confirm"});
 
   async function getInvites() {
     setLoading(true);
@@ -39,63 +38,49 @@ const InviteList: React.FC = () => {
     }
   }
 
-  function showModal(type: "Confirm" | "Delete")
+  function showModal(type: "Confirm" | "Delete", inviteId: string)
   {
     let modalInfo: any;
 
-    switch (type) {
-      case "Confirm":
-        modalInfo = {message:{title: "Confirmar participação",
+    modalInfo = {"Confirm" : {message:{title: "Confirmar participação",
                               message: "Deseja realmente confirmar sua participação nesse jogo?"},
                               buttons: [
                                 {text: "Sim", color: "green", function: async () => {
-                                   try {
-                                     await post(`/game-list/invite-confirmation`, getInvites, {_id: inviteId.id});
-                                     setModal(null);
-                                   } catch (error) {
-                                     setModal(null);
-                                     navigation.reset({index: 0, routes: [{name: "Main"}]});
-                                   }
+                                    try {
+                                      await post(`/game-list/invite-confirmation`, getInvites, {_id: inviteId});
+                                      setModal(null);
+                                    } catch (error) {
+                                      setModal(null);
+                                      navigation.reset({index: 0, routes: [{name: "Main"}]});
+                                    }
                                 }},
                                 {text: "Não", color: "red", function: () => setModal(null)},
-                              ]};
-        break;
-      case "Delete":
-        modalInfo = {message:{title: "Excluir o convite",
-                              message: "Deseja realmente excluir esse convite de jogo?"},
-                     buttons: [
-                       {text: "Sim", color: "green", function: async () => {
-                          try {
-                            await destroy(`/game-list/${inviteId.id}`, getInvites);
-                            setModal(null);
-                          } catch (error: any) {
-                            setModal(null);
-                            navigation.reset({index: 0, routes: [{name: "Main"}]});
-                          }
-                       }},
-                       {text: "Não", color: "red", function: () => setModal(null)},
-                     ]};
-        break;
-    }
+                              ]},
+                "Delete": {message:{title: "Excluir o convite",
+                          message: "Deseja realmente excluir esse convite de jogo?"},
+                          buttons: [
+                            {text: "Sim", color: "green", function: async () => {
+                              try {
+                                await destroy(`/game-list/${inviteId}`, getInvites);
+                                setModal(null);
+                              } catch (error: any) {
+                                setModal(null);
+                                navigation.reset({index: 0, routes: [{name: "Main"}]});
+                              }
+                            }},
+                            {text: "Não", color: "red", function: () => setModal(null)},
+                          ]}};
 
     setModal(
       <MessageModal
         visible={true}
         loading={loading}
         setModal={() => setModal(null)}
-        message={modalInfo.message}
-        buttons={modalInfo.buttons}
+        message={modalInfo[type].message}
+        buttons={modalInfo[type].buttons}
       />
     )
   }
-
-  useEffect(() => {
-    if (inviteId.id) showModal(inviteId.action);
-  }, [inviteId]);
-
-  useEffect(() => {
-    if (!modal) setInviteId({...inviteId, id: ""});
-  }, [modal]);
 
   useEffect(() => {
     if (isFocused) getInvites();
@@ -113,7 +98,7 @@ const InviteList: React.FC = () => {
         <Title>Convites de jogos</Title>
         {loading ? <Loading /> :
           <FriendsView refreshControl={<RefreshControl refreshing={loading} onRefresh={getInvites}/>}>
-              {!invites || invites.length === 0 ? <NoContent text="Você não possui convites de jogos"/> :
+              {!invites || invites.length === 0 ? <NoContent style={{marginTop: "45%"}} text="Você não possui convites de jogos"/> :
                 <>
                   {invites.map(invite => (
                     <InviteCard
@@ -123,7 +108,8 @@ const InviteList: React.FC = () => {
                       game_ID={invite.game_ID}
                       hostName={invite.hostName}
                       gameName={invite.gameName}
-                      setInviteId={setInviteId}
+                      deleteInvite={() => showModal("Delete", invite._id)}
+                      confirmInvite={() => showModal("Confirm", invite._id)}
                       date={invite.date}
                       hour={invite.hour}
                       location={invite.location}

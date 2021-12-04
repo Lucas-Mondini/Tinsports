@@ -1,9 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Alert, Dimensions, View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../../Contexts/Auth';
-import api from '../../services/api';
 import { getFirstName, splitText } from '../../utils/functions';
 import{Button, ButtonsView, GameNameText, Invite, InviteInfo, InviteTitle, LocationText, TimeText} from './styles';
 
@@ -16,14 +15,15 @@ interface InviteCardProps{
   date: string;
   hour: string;
   location: string;
-  setInviteId: ({}: InviteId) => void;
+  confirmInvite: () => void;
+  deleteInvite: () => void;
 }
 
 interface InviteId {
   id: string, action: "Delete" | "Confirm"
 }
 
-const InviteCard: React.FC<InviteCardProps> = ({_id, host_ID, game_ID, date, location, hour, hostName, gameName, setInviteId}) => {
+const InviteCard: React.FC<InviteCardProps> = ({_id, host_ID, game_ID, date, location, hour, hostName, gameName, confirmInvite, deleteInvite}) => {
 
   const navigation = useNavigation<any>();
   const {signOut, user} = useAuth();
@@ -57,14 +57,14 @@ const InviteCard: React.FC<InviteCardProps> = ({_id, host_ID, game_ID, date, loc
 
         <ButtonsView>
           <Button
-            onPress={() => setInviteId({id: _id, action: "Delete"})}
+            onPress={deleteInvite}
             style={{backgroundColor: "#c50000"}}
           >
             <Icon name="close" size={25} color="#fff"/>
           </Button>
 
           <Button
-            onPress={() => setInviteId({id: _id, action: "Confirm"})}
+            onPress={confirmInvite}
             style={{backgroundColor: "#268e01"}}
           >
             <Icon name="check" size={25} color="#fff"/>

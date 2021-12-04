@@ -47,45 +47,40 @@ const Login: React.FC = () =>
     enableButton();
   }, [email, pass]);
 
-  function load() {
-    if (loading) return <Loading />;
-    else if (modal) return modal;
-    else {
-      return (
-        <Container>
-          <ScrollView>
-            <Label>Email</Label>
-            <Input
-              autoCompleteType="email"
-              placeholder="Digite seu email"
-              placeholderTextColor="#b1b1b1"
-              value={email}
-              onChangeText={setEmail}/>
+  if (loading) return <Loading />;
 
-            <Label>Senha</Label>
-            <Input
-              placeholder="Digite sua senha"
-              placeholderTextColor="#b1b1b1"
-              secureTextEntry
-              value={pass}
-              onChangeText={setPass}/>
+  return (
+    <Container>
+      {modal && modal}
+      <ScrollView>
+        <Label>Email</Label>
+        <Input
+          autoCompleteType="email"
+          placeholder="Digite seu email"
+          placeholderTextColor="#b1b1b1"
+          value={email}
+          onChangeText={setEmail}/>
 
-            <ButtonView>
-              <SignInButton
-                disabled={disableButton}
-                style={{backgroundColor: disableButton ? "#686868" : '#007e33'}}
-                onPress={handleSignIn}
-              >
-                <SignInButtonText>Entrar</SignInButtonText>
-              </SignInButton>
-            </ButtonView>
-          </ScrollView>
-        </Container>
-      )
-    }
-  }
+        <Label>Senha</Label>
+        <Input
+          placeholder="Digite sua senha"
+          placeholderTextColor="#b1b1b1"
+          secureTextEntry
+          value={pass}
+          onChangeText={setPass}/>
 
-  return load();
+        <ButtonView>
+          <SignInButton
+            disabled={disableButton}
+            style={{backgroundColor: disableButton ? "#686868" : '#007e33'}}
+            onPress={handleSignIn}
+          >
+            <SignInButtonText>Entrar</SignInButtonText>
+          </SignInButton>
+        </ButtonView>
+      </ScrollView>
+    </Container>
+  );
 };
 
 export default Login;

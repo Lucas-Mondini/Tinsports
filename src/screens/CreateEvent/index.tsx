@@ -25,6 +25,7 @@ import Header from '../../Components/Header';
 import { Game } from '../../utils/types';
 import { useRequest } from '../../Contexts/Request';
 import MessageModal from '../../Components/MessageModal';
+import Loading from '../../Components/Loading';
 
 const CreateEvent: React.FC = () =>
 {
@@ -40,6 +41,8 @@ const CreateEvent: React.FC = () =>
   const [hour, setHour] = useState(new Date());
   const [modal, setModal] = useState<any>();
 
+  const [loading, setLoading] = useState(false);
+
   const {user, signOut} = useAuth();
   const {post} = useRequest();
 
@@ -53,7 +56,8 @@ const CreateEvent: React.FC = () =>
     }
 
     try{
-      await post(`/games`, setDisableButton, data);
+      setDisableButton(true);
+      await post(`/games`, setLoading, data);
 
       navigation.reset({index: 0, routes: [{name: "Main"}]});
     } catch(err: any) {
@@ -138,6 +142,7 @@ const CreateEvent: React.FC = () =>
     if (isFocused) enableButton();
   }, [game, paid, isFocused]);
 
+  if (loading) return <Loading />
   return (
     <Container>
       <Header />

@@ -42,11 +42,27 @@ const UserCard: React.FC<UserCardProps> = ({
 
   const navigation = useNavigation<any>();
 
-  const userName = Dimensions.get('window').width < 480 ? splitText(name, 10) : splitText(name, 18);
+  const userName = (minLength: number, maxLength: number) => Dimensions.get('window').width < 480
+                                                             ? splitText(name, minLength)
+                                                             : splitText(name, maxLength);
 
   function accessProfile()
   {
     if (!disableNavigation) navigation.push("Profile", {id: user_ID});
+  }
+
+  function handleName()
+  {
+    const name = {
+      "AddFriend": userName(12, 20),
+      "DeleteFriend": userName(15, 20),
+      "Invite": userName(12, 20),
+      "GameInviteText": userName(12, 20),
+      "GameInvite": userName(18, 20),
+      "Evaluation": userName(12, 20)
+    }
+
+    return name[buttonsType];
   }
 
   function handleButtons()
@@ -90,7 +106,7 @@ const UserCard: React.FC<UserCardProps> = ({
       <UserPhoto source={typeof photo === 'string' ? {uri: photo} : photo} />
       <UserInfo>
         <View>
-          <UserName>{name}</UserName>
+          <UserName>{handleName()}</UserName>
           <ReputationView>
             <ReputationText>Rep.: </ReputationText>
             <Metric reputation={reputation} size={15}/>
