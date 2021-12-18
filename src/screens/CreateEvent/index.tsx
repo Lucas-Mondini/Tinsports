@@ -52,7 +52,7 @@ const CreateEvent: React.FC = () =>
     const data = {
       name: game.name, type: game.type, location: game.location, description: game.description,
       hour: game.hour, date: game.date, value: game.value,
-      host_ID: user._id
+      host_ID: user._id, recurrence: false
     }
 
     try{

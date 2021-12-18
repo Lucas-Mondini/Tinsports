@@ -7,6 +7,7 @@ export const User = styled.TouchableOpacity`
   align-items: center;
   padding-left: 10px;
   width: 100%;
+  background-color: #fff
 `;
 
 export const UserPhoto = styled.Image`

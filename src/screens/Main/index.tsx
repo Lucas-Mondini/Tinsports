@@ -28,7 +28,7 @@ const goal = require('../../../assets/images/goal.png');
 
 const Main: React.FC = () => {
   const {signOut, string} = useAuth();
-  const {get, destroy} = useRequest();
+  const {get, destroy, post} = useRequest();
 
   const params = useRoute().params as Params;
   const isFocused = useIsFocused();
@@ -59,7 +59,7 @@ const Main: React.FC = () => {
 
       setUserGames(result.userGames);
     } catch(err) {
-      signOut();
+      //signOut();
     }
   }
 
@@ -91,14 +91,18 @@ const Main: React.FC = () => {
     if (isFocused) getGames();
   }, [isFocused]);
 
-  function mapGames(games: Game[]) {
+  function mapGames(games: Game[], type: "User" | "Friends" | "Invites") {
     return (<>
       {
         games.map(game => (
           <View key={game._id}>
             <GameCard
+              type={type}
               host_ID={game.host_ID}
               deleteGame={() => showModal("DeleteGame", game._id)}
+              cancelInvite={() => showModal("CancelInvite", game.inviteId)}
+              confirmInvite={() => showModal("ConfirmInvite", game.inviteId)}
+              editGame={() => editGame(game._id)}
               _id={game._id}
               title={game.name}
               location={game.location}
@@ -109,6 +113,11 @@ const Main: React.FC = () => {
         ))
       }
     </>);
+  }
+
+  function editGame(gameId: string)
+  {
+    navigation.navigate('CreateEvent', {_id: gameId});
   }
 
   function renderGamesTab()
@@ -125,7 +134,7 @@ const Main: React.FC = () => {
                 : `Jogos de ${string}`;
 
         if (userGames && userGames.length > 0) {
-          component = mapGames(userGames);
+          component = mapGames(userGames, "User");
         } else {
           const noContentText = !params
                                 ? "Você ainda não criou nenhum jogo"
@@ -136,7 +145,7 @@ const Main: React.FC = () => {
         title = "Jogos de amigos";
 
         if (friendsGames && friendsGames.length > 0) {
-          component = mapGames(friendsGames);
+          component = mapGames(friendsGames, "Friends");
         } else {
           component = noContent("Seus amigos ainda não criaram nenhum jogo");
         }
@@ -144,7 +153,7 @@ const Main: React.FC = () => {
         title = "Convites de jogos";
 
         if (invitedGames && invitedGames.length > 0) {
-          component = mapGames(invitedGames);
+          component = mapGames(invitedGames, "Invites");
         } else {
           component = noContent("Você ainda não tem convites \n de jogos");
         }
@@ -161,7 +170,7 @@ const Main: React.FC = () => {
       </>);
   }
 
-  function showModal(type: "Premium" | "DeleteGame" | "Configuration" | "PremiumSubmit", gameId?: string)
+  function showModal(type: "Premium" | "DeleteGame" | "Configuration" | "PremiumSubmit" | "ConfirmInvite" | "CancelInvite", uuid?: string)
   {
     let modalInfo: any = {
       "Premium": {message:{title: "Você ainda não é premium!",
@@ -175,7 +184,35 @@ const Main: React.FC = () => {
                      buttons: [
                      {text: "Sim", color: "green", function: async () => {
                        try {
-                         await destroy(`/games/${gameId}`, getGames);
+                         await destroy(`/games/${uuid}`, getGames);
+                         setModal(null);
+                       } catch (error) {
+                         setModal(null);
+                         navigation.reset({index: 0, routes: [{name: "Main"}]});
+                       }
+                     }},
+                     {text: "Não", color: "red", function: () => setModal(null)},
+                     ]},
+      "ConfirmInvite": {message:{title: "Confirmar Participação?",
+                              message: "Deseja confirmar sua participação nesse jogo?"},
+                     buttons: [
+                     {text: "Sim", color: "green", function: async () => {
+                       try {
+                         await post(`/game-list/invite-confirmation`, getGames, {_id: uuid});
+                         setModal(null);
+                       } catch (error) {
+                         setModal(null);
+                         navigation.reset({index: 0, routes: [{name: "Main"}]});
+                       }
+                     }},
+                     {text: "Não", color: "red", function: () => setModal(null)},
+                     ]},
+      "CancelInvite": {message:{title: "Excluir convite?",
+                              message: "Deseja realmente excluir o convite desse jogo?"},
+                     buttons: [
+                     {text: "Sim", color: "green", function: async () => {
+                       try {
+                         await destroy(`/game-list/${uuid}`, getGames);
                          setModal(null);
                        } catch (error) {
                          setModal(null);

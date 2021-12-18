@@ -1,10 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Alert, Dimensions, View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../../Contexts/Auth';
-import { useRequest } from '../../Contexts/Request';
 import { splitText } from '../../utils/functions';
+import Gesture from '../Gesture';
 import{Game, GameInfo, GameTitle, LocationText, TimeText} from './styles';
 
 interface GameCardProps{
@@ -14,11 +14,18 @@ interface GameCardProps{
   _id: string;
   host_ID: string;
   finished: boolean;
-  deleteGame: () => void;
+  type: "User" | "Friends" | "Invites";
+  deleteGame?: () => void;
+  editGame?: () => void;
+  confirmInvite?: () => void;
+  cancelInvite?: () => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time, finished, deleteGame}) => {
-
+const GameCard: React.FC<GameCardProps> = ({
+  _id, host_ID, title, location, time, finished, type,
+  deleteGame, editGame, confirmInvite, cancelInvite
+  }) =>
+{
   const navigation = useNavigation();
   const {signOut, user} = useAuth();
 
@@ -49,6 +56,24 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
     return icon;
   }
 
+  function typeActions(): Array<any>
+  {
+    switch(type) {
+      case "User":
+        return [
+          {type: 'Delete', function: deleteGame},
+          {type: 'Edit', function: editGame},
+        ];
+      case "Friends":
+        return [];
+      case "Invites":
+        return [
+          {type: 'Confirm', function: confirmInvite},
+          {type: 'Cancel', function: cancelInvite}
+        ];
+    }
+  }
+
   function handleGame() {
     navigation.navigate('GameInfo', {id: _id});
   }
@@ -59,20 +84,20 @@ const GameCard: React.FC<GameCardProps> = ({_id, host_ID, title, location, time,
   }
 
   return (
-    <Game onPress={handleGame}
-      onLongPress={host_ID === user._id ? () => {
-        deleteGame();
-      } : () => {}}
-    >
-      <Icon name={gameIconRandom()} size={51} color="#686868"/>
-      <GameInfo>
-        <View>
-          <GameTitle>{gameTitle}</GameTitle>
-          {finished ? <LocationText>Avalie os jogadores</LocationText> : <LocationText>Local: {splitText(location, 10)}</LocationText>}
-        </View>
-        <TimeText style={{color: finished ? "#C50000": "#686868"}}>{finished ? 'Finalizado' : time}</TimeText>
-      </GameInfo>
-    </Game>
+    <Gesture buttons={typeActions()}>
+      <Game
+        onPress={handleGame}
+      >
+        <Icon name={gameIconRandom()} size={51} color="#686868"/>
+        <GameInfo>
+          <View>
+            <GameTitle>{gameTitle}</GameTitle>
+            {finished ? <LocationText>Avalie os jogadores</LocationText> : <LocationText>Local: {splitText(location, 10)}</LocationText>}
+          </View>
+          <TimeText style={{color: finished ? "#C50000": "#686868"}}>{finished ? 'Finalizado' : time}</TimeText>
+        </GameInfo>
+      </Game>
+    </Gesture>
   );
 }
 

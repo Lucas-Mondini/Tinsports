@@ -38,7 +38,7 @@ const GameInfo: React.FC = () => {
   const mountedRef = useRef(true);
 
   const {user} = useAuth();
-  const {get, destroy} = useRequest();
+  const {get, destroy, post} = useRequest();
 
   const [loading, setLoading] = useState(false);
   const [modalOpened, setModalOpened] = useState(false);
@@ -67,32 +67,45 @@ const GameInfo: React.FC = () => {
     }
   }
 
-  function deleteInvitation(inviteId: string)
+  function handleInvitation(inviteId: string, type: "Delete" | "Confirm")
   {
-    if (game?.host_ID !== user?._id) return;
-
-    let modalInfo: any = {message:{title: "Excluir convite?",
-                                   message: "Deseja realmente excluir o convite?"},
-                          buttons: [
-                            {text: "Sim", color: "green", function: async () => {
+    let modalInfo: any = {"Delete": {message:{title: "Excluir convite?",
+                                     message: "Deseja realmente excluir o convite?"},
+                                     buttons: [
+                                       {text: "Sim", color: "green", function: async () => {
+                                           try {
+                                             await destroy(`/game-list/${inviteId}`, getGameInfo);
+                                             setModal(null);
+                                           } catch (error) {
+                                             setModal(null);
+                                             navigation.reset({index: 0, routes: [{name: "Main"}]});
+                                           }
+                                     }},
+                            {text: "Não", color: "red", function: () => setModal(null)},
+                          ]},
+                          "Confirm": {message:{title: "Confirmar Participação?",
+                              message: "Deseja confirmar sua participação nesse jogo?"},
+                              buttons: [
+                              {text: "Sim", color: "green", function: async () => {
                                 try {
-                                  await destroy(`/game-list/${inviteId}`, getGameInfo);
+                                  await post(`/game-list/invite-confirmation`, getGameInfo, {_id: inviteId});
                                   setModal(null);
                                 } catch (error) {
                                   setModal(null);
                                   navigation.reset({index: 0, routes: [{name: "Main"}]});
                                 }
-                            }},
-                            {text: "Não", color: "red", function: () => setModal(null)},
-                          ]};
+                              }},
+                              {text: "Não", color: "red", function: () => setModal(null)},
+                              ]}
+                         };
 
     setModal(
       <MessageModal
         visible={true}
         loading={loading}
         setModal={() => setModal(null)}
-        message={modalInfo.message}
-        buttons={modalInfo.buttons}
+        message={modalInfo[type].message}
+        buttons={modalInfo[type].buttons}
       />
     );
   }
@@ -192,18 +205,19 @@ const GameInfo: React.FC = () => {
 
         {(gameList.length > 0) ?
           <>
-            {gameList.map(user =>{
+            {gameList.map(gameList =>{
               return (<UserCard
                         buttonsType="GameInviteText"
-                        key={user._id}
-                        _id={user.user_ID}
-                        user_ID={user.user_ID}
-                        photo={user.photo || photo}
-                        name={user.name}
-                        reputation={user.reputation}
-                        confirmation={user.confirmed}
-                        handleLongPress={() => deleteInvitation(user._id)}
-                        disableButtons={false}
+                        key={gameList._id}
+                        _id={gameList.user_ID}
+                        user_ID={gameList.user_ID}
+                        photo={gameList.photo || photo}
+                        name={gameList.name}
+                        reputation={gameList.reputation}
+                        confirmation={gameList.confirmed}
+                        callback={() => handleInvitation(gameList._id, "Delete")}
+                        callback2={(gameList.user_ID === user?._id) && !gameList.confirmed ? () => handleInvitation(gameList._id, "Confirm") : undefined}
+                        disableButtons={(game.host_ID === user?._id) ? false : (gameList.user_ID !== user?._id)}
                       />)
             })}
           </>

@@ -17,6 +17,7 @@ import {
   ReputationText,
   ReputationView
 } from './styles';
+import Gesture from '../Gesture';
 
 interface UserCardProps{
   name: string;
@@ -27,9 +28,9 @@ interface UserCardProps{
   reputation: number;
   photo: ImageSourcePropType | string;
   confirmation?: boolean;
-  handleLongPress?: () => void;
   reloadFunction?: () => void;
   callback?: () => void;
+  callback2?: () => void;
   usersArray?: any[];
   setUsersArray?: (value: any[]) => void;
   disableNavigation?: boolean;
@@ -37,9 +38,8 @@ interface UserCardProps{
 
 const UserCard: React.FC<UserCardProps> = ({
     name, _id, user_ID, photo, disableButtons, buttonsType, reputation, confirmation, disableNavigation,
-    handleLongPress, reloadFunction, callback, usersArray, setUsersArray
+    reloadFunction, callback, callback2, usersArray, setUsersArray
   }) => {
-
   const navigation = useNavigation<any>();
 
   const userName = (minLength: number, maxLength: number) => Dimensions.get('window').width < 480
@@ -101,22 +101,42 @@ const UserCard: React.FC<UserCardProps> = ({
     return buttons[buttonsType];
   }
 
-  return (
-    <User onPress={accessProfile} activeOpacity={!disableNavigation ? 0.8 : 1} onLongPress={handleLongPress ? handleLongPress : ()=>{}}>
-      <UserPhoto source={typeof photo === 'string' ? {uri: photo} : photo} />
-      <UserInfo>
-        <View>
-          <UserName>{handleName()}</UserName>
-          <ReputationView>
-            <ReputationText>Rep.: </ReputationText>
-            <Metric reputation={reputation} size={15}/>
-          </ReputationView>
-        </View>
+  function renderCard()
+  {
+    return (
+      <User onPress={accessProfile} activeOpacity={!disableNavigation ? 0.8 : 1}>
+        <UserPhoto source={typeof photo === 'string' ? {uri: photo} : photo} />
+        <UserInfo>
+          <View>
+            <UserName>{handleName()}</UserName>
+            <ReputationView>
+              <ReputationText>Rep.: </ReputationText>
+              <Metric reputation={reputation} size={15}/>
+            </ReputationView>
+          </View>
 
-        {handleButtons()}
-      </UserInfo>
-    </User>
-  );
+          {handleButtons()}
+        </UserInfo>
+      </User>
+    )
+  }
+
+  if (buttonsType == "GameInviteText" && !disableButtons) {
+    const buttons: any = [{type: "Cancel", function: callback}];
+
+    if (callback2) {
+      buttons.push({type: "Confirm", function: callback2});
+    }
+
+    return (
+      <Gesture
+        buttons={buttons}
+      >
+        {renderCard()}
+      </Gesture>
+    );
+  }
+  else return renderCard();
 }
 
 export default UserCard;

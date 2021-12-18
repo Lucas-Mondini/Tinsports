@@ -11,6 +11,7 @@ export type Game = {
   finished: boolean;
   hostName: string;
   hostEmail: string;
+  inviteId: string;
 }
 
 export type GameList = {
