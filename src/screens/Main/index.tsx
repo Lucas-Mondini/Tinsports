@@ -117,7 +117,7 @@ const Main: React.FC = () => {
 
   function editGame(gameId: string)
   {
-    navigation.navigate('CreateEvent', {_id: gameId});
+    navigation.navigate('CreateEvent', {id: gameId});
   }
 
   function renderGamesTab()
@@ -233,14 +233,6 @@ const Main: React.FC = () => {
       />
     );
   }
-
-  useEffect(() => {
-    if (gameId) showModal("DeleteGame");
-  }, [gameId]);
-
-  useEffect(() => {
-    if (!modal) setGameId("");
-  }, [modal]);
 
   return (
     <Container style={{paddingTop : params ? 50 : 0}}>

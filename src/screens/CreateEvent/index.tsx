@@ -1,4 +1,4 @@
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import moment from 'moment-timezone';
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, View} from "react-native";
@@ -22,7 +22,7 @@ import {
 } from '../../utils/functions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../../Components/Header';
-import { Game } from '../../utils/types';
+import { Game, Params } from '../../utils/types';
 import { useRequest } from '../../Contexts/Request';
 import MessageModal from '../../Components/MessageModal';
 import Loading from '../../Components/Loading';
@@ -32,6 +32,7 @@ const CreateEvent: React.FC = () =>
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
+  const params = useRoute().params as Params;
   const [game, setGame] = useState({} as Game);
   const [paid, setPaid] = useState(false);
   const [datePicker, setDatePicker] = useState(false);
@@ -44,20 +45,33 @@ const CreateEvent: React.FC = () =>
   const [loading, setLoading] = useState(false);
 
   const {user, signOut} = useAuth();
-  const {post} = useRequest();
+  const {post, get, put} = useRequest();
+
+  async function getGameData()
+  {
+    if (params && params.id) {
+      try {
+        const gameData = await get(`/games/${params.id}`, setLoading);
+        setGame(gameData);
+      } catch (err){}
+    }
+  }
 
   async function sendData()
   {
     if (!user) return signOut();
     const data = {
-      name: game.name, type: game.type, location: game.location, description: game.description,
-      hour: game.hour, date: game.date, value: game.value,
-      host_ID: user._id, recurrence: false
+      ...game, recurrence: false
     }
 
     try{
       setDisableButton(true);
-      await post(`/games`, setLoading, data);
+
+      if (params && params.id) {
+        await put(`/games/${params.id}`, setLoading, data);
+      } else {
+        await post(`/games`, setLoading, data);
+      }
 
       navigation.reset({index: 0, routes: [{name: "Main"}]});
     } catch(err: any) {
@@ -137,6 +151,10 @@ const CreateEvent: React.FC = () =>
 
     return datePicker;
   }
+
+  useEffect(() => {
+    if (isFocused) getGameData();
+  }, [isFocused]);
 
   useEffect(() => {
     if (isFocused) enableButton();

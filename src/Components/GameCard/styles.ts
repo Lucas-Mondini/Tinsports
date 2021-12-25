@@ -6,6 +6,7 @@ export const Game = styled.TouchableOpacity`
   justify-content: space-between;
   align-items: center;
   padding-left: 10px;
+  background-color: #fff;
 `;
 
 export const GameInfo = styled.View`
