@@ -8,6 +8,7 @@ import Profile from '../screens/Profile';
 import SearchFriend from '../screens/SearchFriend';
 import FriendsList from '../screens/FriendsList';
 import InviteList from '../screens/InviteList';
+import Premium from '../screens/Premium';
 
 const App = createStackNavigator();
 
@@ -43,6 +44,10 @@ const AppRoutes: React.FC = () => {
       <App.Screen
         name="InviteList"
         component={InviteList}
+      />
+      <App.Screen
+        name="Premium"
+        component={Premium}
       />
     </App.Navigator>
   );

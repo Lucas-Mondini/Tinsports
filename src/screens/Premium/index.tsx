@@ -8,7 +8,6 @@ import Header from "../../Components/Header";
 import Loading from "../../Components/Loading";
 import MessageModal from "../../Components/MessageModal";
 import NoContent from "../../Components/NoContent";
-import SideBar from "../../Components/SideBar";
 import Tab from "../../Components/Tab";
 import { useAuth } from "../../Contexts/Auth";
 import { useRequest } from "../../Contexts/Request";
@@ -27,7 +26,7 @@ import {
 
 const goal = require('../../../assets/images/goal.png');
 
-const Main: React.FC = () => {
+const Premium: React.FC = () => {
   const {signOut, string} = useAuth();
   const {get, destroy, post} = useRequest();
 
@@ -37,7 +36,6 @@ const Main: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<any>(null);
-  const [config, setConfig] = useState(false);
   const [disableAddButton, setDisableAddButton] = useState(true);
   const [userGames, setUserGames] = useState<Game[]>();
   const [friendsGames, setFriendsGames] = useState<Game[]>();
@@ -79,16 +77,12 @@ const Main: React.FC = () => {
     navigation.navigate('SearchFriend');
   }
 
-  function handleConfiguration() {
-    setConfig(!config);
+  function handleNavigateToConfiguration() {
+    showModal("Configuration");
   }
 
   function handleNavigateToPremium() {
-    navigation.navigate('Premium');
-  }
-
-  function editGame(gameId: string) {
-    navigation.navigate('CreateEvent', {id: gameId});
+    showModal("PremiumSubmit");
   }
 
   useEffect(() => {
@@ -117,6 +111,11 @@ const Main: React.FC = () => {
         ))
       }
     </>);
+  }
+
+  function editGame(gameId: string)
+  {
+    navigation.navigate('CreateEvent', {id: gameId});
   }
 
   function renderGamesTab()
@@ -174,6 +173,10 @@ const Main: React.FC = () => {
     let modalInfo: any = {
       "Premium": {message:{title: "Você ainda não é premium!",
                                    message: "Somente usuários premium podem inserir mais de 5 jogos"}},
+      "Configuration": {message:{title: "Não disponível",
+                                 message: "A Função de configurações não está disponível na beta"}},
+      "PremiumSubmit": {message:{title: "Não disponível",
+                                 message: "Assinatura Premium não está disponível na beta"}},
       "DeleteGame": {message:{title: "Excluir jogo?",
                               message: "Deseja realmente excluir o jogo?"},
                      buttons: [
@@ -266,7 +269,7 @@ const Main: React.FC = () => {
       {!params &&
         <BottomNavbar>
           <View>
-            <TouchableOpacity onPress={handleConfiguration}>
+            <TouchableOpacity onPress={handleNavigateToConfiguration}>
               <Icon name="gear" size={Dimensions.get("window").width <= 320 ? 26 : 35} color="#686868"/>
             </TouchableOpacity>
           </View>
@@ -299,10 +302,8 @@ const Main: React.FC = () => {
           </View>
         </BottomNavbar>
       }
-
-      <SideBar visible={config} setModal={handleConfiguration}/>
     </Container>
   );
 }
 
-export default Main;
+export default Premium;

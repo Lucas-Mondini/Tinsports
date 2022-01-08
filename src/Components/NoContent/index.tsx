@@ -1,5 +1,5 @@
 import React from "react";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import Icon from "react-native-vector-icons/AntDesign";
 import { NoContentText, NoContentView} from "./styles";
 
 interface NoContentProps {
@@ -10,7 +10,7 @@ interface NoContentProps {
 const NoContent: React.FC<NoContentProps> = ({text, style}) => {
   return (
     <NoContentView style={style}>
-      <Icon name="do-not-disturb" size={35} color="#d8d8d8"/>
+      <Icon name="exclamationcircleo" size={35} color="#d8d8d8"/>
       <NoContentText>{text}</NoContentText>
     </NoContentView>
   );
