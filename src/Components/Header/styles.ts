@@ -17,6 +17,8 @@ export const HeaderContainer = styled.View`
   flex-direction: row;
   align-items: center;
   padding: 0 3%;
+  background-color: #fff;
   border-bottom-color: #f6f6f6;
   border-bottom-width: 1px;
+  z-index: 99999;
 `;

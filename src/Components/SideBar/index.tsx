@@ -23,7 +23,7 @@ const SideBar: React.FC<ModalProps> = ({visible, setModal, style}) =>
   const {signOut} = useAuth();
 
   return (
-    <Modal transparent onRequestClose={setModal} visible={visible}  style={{flexDirection: "row"}} animationType="slide">
+    <Modal transparent onRequestClose={setModal} visible={visible}  style={{flexDirection: "row"}} animationType="fade">
       <ModalBackground>
         <ModalContent style={style ? style : {flex: 1}}>
 

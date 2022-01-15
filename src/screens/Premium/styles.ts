@@ -6,54 +6,69 @@ export const Container = styled.View`
   background-color: #fff;
 `;
 
-export const Games = styled.ScrollView`
+export const Content = styled.ScrollView`
+  padding-top: 50px;
+  width: 100%;
+  height: 100%;
+`;
+
+export const PremiumContainer = styled.View`
   width: 100%;
   padding: 0 3% 0 3%;
-  margin-bottom: 88px;
 `;
 
-export const GameContainer = styled.View`
+export const CardsContainer = styled.View`
+  margin-top: 20px;
+  margin-bottom: 20px;
   width: 100%;
   padding: 0 3% 0 3%;
+  justify-content: space-between;
+  flex-direction: row;
 `;
 
-export const GameTitleContainer = styled.View`
-  width: 100%;
-  border-bottom-width: 1px;
-  border-bottom-color: #E6E6E6;
-  margin-top: 10px;
+export const Title = styled.Text`
+  margin-top: 20px;
+  font-size: 35px;
+  color: #000;
+  font-family: "Poppins-Regular";
+  line-height: 45px;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 `;
 
-export const GameTitle = styled.Text`
-  font-size: 25px;
+export const Item = styled.Text`
+  margin-top: 20px;
+  font-size: 20px;
   color: #686868;
   font-family: "Poppins-Regular";
-  line-height: 30px;
+  line-height: 25px;
 `;
 
 export const TopImage = styled.View`
+  background-color: #DBD9FF;
   align-items: center;
   padding: 15px 0;
-`;
-
-export const BottomNavbar = styled.View`
-  position: absolute;
-  bottom: 0px;
   width: 100%;
-  height: 88px;
-  background: #f9f9f9;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 5% 0 5%;
-  border-top-width: 1px;
-  border-top-color: #E6E6E6;
-  margin-top: 20px;
 `;
 
-export const AddButton = styled.TouchableOpacity`
-  background-color: #268E01;
-  border-radius: 80px;
+export const SubmitButtonView = styled.View`
+  margin-top: 25px;
+  margin-bottom: 25px;
+  align-items: center;
+`;
+
+export const SubmitButton = styled.TouchableOpacity`
+  width: 50%;
+  height: 40px;
   justify-content: center;
   align-items: center;
-`
+  border-radius: 100px;
+  background-color: #007E33;
+`;
+
+export const SubmitButtonText = styled.Text`
+  color: #fff;
+  font-size: 20px;
+  font-family: "Poppins-Regular";
+  line-height: 24px;
+`;
