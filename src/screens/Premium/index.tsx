@@ -1,11 +1,12 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { Image } from "react-native";
+import { GooglePay } from 'react-native-google-pay';
 
+import env from "../../../env";
 import Header from "../../Components/Header";
 import MessageModal from "../../Components/MessageModal";
 import PremiumCard from "../../Components/PremiumCard";
-import { useAuth } from "../../Contexts/Auth";
 
 import {
   CardsContainer,
@@ -23,8 +24,6 @@ import {
 const goal = require('../../../assets/images/premium.png');
 
 const Premium: React.FC = () => {
-  const {signOut, string} = useAuth();
-
   const navigation = useNavigation();
 
   const [modal, setModal] = useState<any>(null);
@@ -36,14 +35,60 @@ const Premium: React.FC = () => {
       return showModal("Tier");
     }
 
-    navigation.navigate("Main");
+    const allowedCardNetworks: Array<'VISA'|'MASTERCARD'> = ['VISA', 'MASTERCARD'];
+    const allowedCardAuthMethods: Array<'PAN_ONLY'|'CRYPTOGRAM_3DS'> = ['PAN_ONLY', 'CRYPTOGRAM_3DS'];
+
+    const price: any = {1: 9.99, 2: 34.99, 3: 99.99};
+
+    // Set the environment before the payment request
+    GooglePay.setEnvironment(GooglePay.ENVIRONMENT_TEST);
+
+    // Check if Google Pay is available
+    GooglePay.isReadyToPay(allowedCardNetworks, allowedCardAuthMethods)
+      .then((ready) => {
+        console.log(ready);
+        if (ready) {
+          // Request payment token
+          GooglePay.requestPayment({
+            cardPaymentMethod: {
+              tokenizationSpecification: {
+                type: 'PAYMENT_GATEWAY',
+                stripe: {
+                  publishableKey: env.publishableKey,
+                  version: '2018-11-08',
+                },
+                // other:
+                gateway: 'stripe',
+                gatewayMerchantId: env.gatewayMerchantId,
+              },
+              allowedCardNetworks,
+              allowedCardAuthMethods,
+            },
+            transaction: {
+              totalPrice: `${price[tier]}`,
+              totalPriceStatus: 'FINAL',
+              currencyCode: 'BRL',
+            },
+            merchantName: env.merchantName,
+          })
+            .then((token: string) => {
+              console.log(price[tier]);
+              console.log(token);
+            })
+            .catch((error) => console.log(error.code, error.message));
+        }
+      });
   }
 
   function showModal(type: "Tier")
   {
     let modalInfo: any = {
-      "Tier": {message:{title: "Você não escolheu um plano!",
-                                   message: "Escolha um dos três planos para prosseguir"}}
+      "Tier": {
+        message: {
+          title: "Você não escolheu um plano!",
+          message: "Escolha um dos três planos para prosseguir"
+        }
+      }
     };
 
     setModal(

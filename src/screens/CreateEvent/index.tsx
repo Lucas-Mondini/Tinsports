@@ -2,14 +2,9 @@ import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native'
 import moment from 'moment-timezone';
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, View} from "react-native";
-import Input from '../../Components/Input';
-import { useAuth } from '../../Contexts/Auth';
 import DateTimePicker, {Event} from "@react-native-community/datetimepicker";
 
-import { Checkbox,
-  CheckboxChecked,
-  CheckboxLabel,
-  CheckboxView,
+import {
   Container,
   GameInfo,
   SubmitButton,
@@ -17,15 +12,15 @@ import { Checkbox,
   SubmitButtonView
 } from './styles';
 
-import {
-  formatMoney
-} from '../../utils/functions';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Header from '../../Components/Header';
+import { useAuth } from '../../Contexts/Auth';
+import { formatMoney } from '../../utils/functions';
 import { Game, Params } from '../../utils/types';
 import { useRequest } from '../../Contexts/Request';
+import Input from '../../Components/Input';
+import Header from '../../Components/Header';
 import MessageModal from '../../Components/MessageModal';
 import Loading from '../../Components/Loading';
+import Checkbox from '../../Components/Checkbox';
 
 const CreateEvent: React.FC = () =>
 {
@@ -60,17 +55,14 @@ const CreateEvent: React.FC = () =>
   async function sendData()
   {
     if (!user) return signOut();
-    const data = {
-      ...game, recurrence: false
-    }
 
     try{
       setDisableButton(true);
 
       if (params && params.id) {
-        await put(`/games/${params.id}`, setLoading, data);
+        await put(`/games/${params.id}`, setLoading, game);
       } else {
-        await post(`/games`, setLoading, data);
+        await post(`/games`, setLoading, game);
       }
 
       navigation.reset({index: 0, routes: [{name: "Main"}]});
@@ -99,11 +91,6 @@ const CreateEvent: React.FC = () =>
         />
       );
     }
-  }
-
-  function handleCheckbox()
-  {
-    setPaid(!paid);
   }
 
   function enableButton()
@@ -224,22 +211,11 @@ const CreateEvent: React.FC = () =>
             </TouchableOpacity>
           </View>
 
-          {(paid == false)
-            ?
-            <CheckboxView onPress={handleCheckbox}>
-              <Checkbox>
-                <Icon name="check" size={20} color="#686868"/>
-              </Checkbox>
-              <CheckboxLabel>Evento pago?</CheckboxLabel>
-            </CheckboxView>
-            :
-            <CheckboxView onPress={handleCheckbox}>
-              <CheckboxChecked>
-                <Icon name="check" size={20} color="#fff"/>
-              </CheckboxChecked>
-              <CheckboxLabel>Evento pago!</CheckboxLabel>
-            </CheckboxView>
-          }
+          <Checkbox
+            text={!paid ? "Evento pago?" : "Evento pago!"}
+            handleCheckbox={() => setPaid(!paid)}
+            checked={paid}
+          />
 
         {(paid == true)
             ?
@@ -262,6 +238,14 @@ const CreateEvent: React.FC = () =>
           value={game.description}
           setValue={description => setGame({...game, description})}
           />
+
+        {user?.premium &&
+          <Checkbox
+            text={!game.recurrence ? "Repetir semanalmente?" : "Ocorre toda semana"}
+            handleCheckbox={() => setGame({...game, recurrence: !game.recurrence})}
+            checked={game.recurrence}
+        />
+        }
 
         <SubmitButtonView>
           <SubmitButton

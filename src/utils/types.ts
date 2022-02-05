@@ -12,6 +12,7 @@ export type Game = {
   hostName: string;
   hostEmail: string;
   inviteId: string;
+  recurrence: boolean;
 }
 
 export type GameList = {
