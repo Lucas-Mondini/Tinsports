@@ -15,6 +15,7 @@ type AuthData = {
   checkLogin: () => void;
   string: string;
   setString: (value: string) => void;
+  setUser: (info: User) => void;
 }
 
 type AuthProviderProps = {
@@ -112,7 +113,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>
       checkLogin,
       register,
       string,
-      setString
+      setString,
+      setUser
     }}>
       {children}
     </AuthContext.Provider>

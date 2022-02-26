@@ -7,8 +7,8 @@ import { PhotoType } from '../utils/types';
 
 type RequestData = {
   get: (route: string, setLoading: Function) => any;
-  put: (route: string, setLoading: Function, data: any) => any;
-  post: (route: string, setLoading: Function, data: any) => any;
+  put: (route: string, setLoading: Function, data: any, allowNoUser?: boolean) => any;
+  post: (route: string, setLoading: Function, data: any, allowNoUser?: boolean) => any;
   destroy: (route: string, callback: Function, setLoading?: Function) => any;
   uploadPhoto: (route: string, setLoading: Function, photo: PhotoType | undefined) => any;
 }
@@ -45,32 +45,34 @@ export const RequestProvider: React.FC<RequestProviderProps> = ({children}) =>
       return result.data;
   }
 
-  async function post(route: string, setLoading: Function, data: any)
+  async function post(route: string, setLoading: Function, data: any, allowNoUser?: boolean)
   {
     setLoading(true);
 
-    if (!user) {
+    if (!user && !allowNoUser) {
       setLoading(false);
       throw new Error("User not found");
     }
 
-    await api.post(route, data, {headers: {auth_token: user.auth_token}});
+    const result = await api.post(route, data, {headers: {auth_token: !allowNoUser ? user?.auth_token : ""}});
 
     setLoading(false);
+    return result.data;
   }
 
-  async function put(route: string, setLoading: Function, data: any)
+  async function put(route: string, setLoading: Function, data: any, allowNoUser?: boolean)
   {
     setLoading(true);
 
-    if (!user) {
+    if (!user && !allowNoUser) {
       setLoading(false);
       throw new Error("User not found");
     }
 
-    await api.put(route, data, {headers: {auth_token: user.auth_token}});
+    const result = await api.put(route, data, !allowNoUser ? {headers: {auth_token: user?.auth_token}}:{});
 
     setLoading(false);
+    return result.data;
   }
 
   async function destroy(route: string, callback: Function, setLoading?: Function)

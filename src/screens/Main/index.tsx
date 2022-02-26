@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Image, TouchableOpacity, View, RefreshControl, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/FontAwesome5";
+import CodeConfirmationModal from "../../Components/CodeConfirmationModal";
 import GameCard from "../../Components/GameCard";
 import Header from "../../Components/Header";
 import Loading from "../../Components/Loading";
@@ -28,7 +29,7 @@ import {
 const goal = require('../../../assets/images/goal.png');
 
 const Main: React.FC = () => {
-  const {signOut, string} = useAuth();
+  const {user, signOut, string} = useAuth();
   const {get, destroy, post} = useRequest();
 
   const params = useRoute().params as Params;
@@ -46,6 +47,8 @@ const Main: React.FC = () => {
 
   async function getGames() {
     try{
+      setDisableAddButton(true);
+
       const result = await get(`/games/home?_id=${params && params.id ? params.id : ""}&friendGames=${params ? "true" : ''}`, setLoading);
 
       if (!params) {
@@ -64,10 +67,14 @@ const Main: React.FC = () => {
   }
 
   function handleNavigateToCreateEvent() {
-    if (disableAddButton) {
-      showModal("Premium");
-    } else {
+    if (!user?.confirmed) {
+      return showModal("NotConfirmed");
+    } else if (disableAddButton && !user?.premium && !loading) {
+      return showModal("Premium");
+    } else if (!disableAddButton) {
       navigation.navigate('CreateEvent');
+    } else {
+      return;
     }
   }
 
@@ -76,18 +83,34 @@ const Main: React.FC = () => {
   }
 
   function navigateToSearchFriends() {
+    if (!user?.confirmed) {
+      return showModal("NotConfirmed");
+    }
+
     navigation.navigate('SearchFriend');
   }
 
   function handleConfiguration() {
+    if (!user?.confirmed) {
+      return showModal("NotConfirmed");
+    }
+
     setConfig(!config);
   }
 
   function handleNavigateToPremium() {
+    if (!user?.confirmed) {
+      return showModal("NotConfirmed");
+    }
+
     navigation.navigate('Premium');
   }
 
   function editGame(gameId: string) {
+    if (!user?.confirmed) {
+      return showModal("NotConfirmed");
+    }
+
     navigation.navigate('CreateEvent', {id: gameId});
   }
 
@@ -169,11 +192,28 @@ const Main: React.FC = () => {
       </>);
   }
 
-  function showModal(type: "Premium" | "DeleteGame" | "Configuration" | "PremiumSubmit" | "ConfirmInvite" | "CancelInvite", uuid?: string)
+  function showModal(type: "NotConfirmed" | "Premium" | "DeleteGame" | "Configuration" | "PremiumSubmit" | "ConfirmInvite" | "CancelInvite", uuid?: string)
   {
+    let style = type != "NotConfirmed" ? {height: "30%"} : {height: "50%"}
+
     let modalInfo: any = {
+      "NotConfirmed": {message:{title: "Você ainda não confirmou sua conta",
+                                message: "Confirme sua conta para poder usufruir de todas as funcionalidades do aplicativo"},
+                       buttons: [
+                         {text: "Enviar email", color: "green", function: async () => {
+                           try {
+                             await post(`/resend-code`, ()=>{}, {});
+                             setModal(<CodeConfirmationModal visible={true} setModal={() => setModal(null)}/>);
+                           } catch (error) {
+                             setModal(null);
+                             navigation.reset({index: 0, routes: [{name: "Main"}]});
+                           }
+                        }},
+                        {text: "Usar código", color: "blue", function: () => {
+                          setModal(<CodeConfirmationModal visible={true} setModal={() => setModal(null)}/>);
+                        }}]},
       "Premium": {message:{title: "Você ainda não é premium!",
-                                   message: "Somente usuários premium podem inserir mais de 5 jogos"}},
+                           message: "Somente usuários premium podem inserir mais de 5 jogos"}},
       "DeleteGame": {message:{title: "Excluir jogo?",
                               message: "Deseja realmente excluir o jogo?"},
                      buttons: [
@@ -225,6 +265,7 @@ const Main: React.FC = () => {
         setModal={() => setModal(null)}
         message={modalInfo[type].message}
         buttons={modalInfo[type].buttons}
+        style={style}
       />
     );
   }

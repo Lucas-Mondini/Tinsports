@@ -34,6 +34,7 @@ export type User = {
   reputation: number;
   photo: string;
   premium: boolean | undefined;
+  confirmed: boolean
 }
 
 export type Friend = {

@@ -44,3 +44,15 @@ export const SignInButtonText = styled.Text`
   font-family: "Poppins-Regular";
   line-height: 30px;
 `;
+
+export const ForgotPassButton = styled.TouchableOpacity``;
+
+export const ForgotPassButtonText = styled.Text`
+  margin-top: 25px;
+  text-align: center;
+  color: #686868;
+  font-size: 18px;
+  text-decoration: underline;
+  font-family: "Poppins-Regular";
+  line-height: 35px;
+`;

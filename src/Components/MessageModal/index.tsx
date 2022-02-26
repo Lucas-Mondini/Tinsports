@@ -15,16 +15,17 @@ type MessageModalProps = {
   loading: boolean;
   setModal: () => void;
   buttons?: Button[]
+  style?: object
 }
 
 type Button = {
   text: string;
-  color: "green" | "red" | "yellow";
+  color: "green" | "red" | "blue";
   function: () => void;
   style?: object;
 }
 
-const MessageModal: React.FC<MessageModalProps> = ({message, visible, loading, setModal, buttons}) =>
+const MessageModal: React.FC<MessageModalProps> = ({message, visible, loading, setModal, buttons, style}) =>
 {
   function renderButtons()
   {
@@ -41,7 +42,7 @@ const MessageModal: React.FC<MessageModalProps> = ({message, visible, loading, s
       let i = 0;
 
       for (const button of buttons) {
-        const buttonColor = button.color === "green" ? "#268E01" : (button.color === "red" ? "#C50000" : "");
+        const buttonColor = button.color === "green" ? "#268E01" : (button.color === "red" ? "#C50000" : "#01728e");
 
         buttonsArray.push(
           <Button
@@ -66,7 +67,7 @@ const MessageModal: React.FC<MessageModalProps> = ({message, visible, loading, s
       loading={loading}
       visible={visible}
       animationType={"slide"}
-      style={{flex: 0, marginTop: "50%", height: "30%", paddingTop: 20}}
+      style={[{flex: 0, marginTop: "50%", paddingTop: 20}, style]}
     >
       <MessageTitle>{message.title}</MessageTitle>
 
