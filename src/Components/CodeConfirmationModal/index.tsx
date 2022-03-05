@@ -74,7 +74,7 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
         return showModal("PasswordsDontMatch");
       }
 
-      const response = await put(`/change-pass`, setLoading, {email, pass});
+      const response = await put(`/change-pass`, setLoading, {pass});
 
       setModal();
       setUser(response);
