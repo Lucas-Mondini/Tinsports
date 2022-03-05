@@ -26,7 +26,7 @@ type ModalProps = {
 
 const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChangePass, email}) =>
 {
-  const { user, checkLogin, setUser } = useAuth();
+  const { user, checkLogin, setUser, setTemporaryToken } = useAuth();
   const {put, post} = useRequest();
 
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,9 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
         await checkLogin();
         return setModal();
       } else {
-        await post(`/change-pass-code`, setLoading, {code, email}, true);
+        const response = await post(`/code`, setLoading, {code, email}, true);
+
+        setTemporaryToken(response);
         setChangePassword(true);
       }
     } catch (err: any) {
@@ -72,10 +74,11 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
         return showModal("PasswordsDontMatch");
       }
 
-      const response = await put(`/change-pass`, setLoading, {email, pass}, true);
+      const response = await put(`/change-pass`, setLoading, {email, pass});
 
       setModal();
       setUser(response);
+      setTemporaryToken("");
     } catch (err: any) {
       setLoading(false);
 

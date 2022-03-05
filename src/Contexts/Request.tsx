@@ -21,7 +21,7 @@ const RequestContext = createContext({} as RequestData);
 
 export const RequestProvider: React.FC<RequestProviderProps> = ({children}) =>
 {
-  const {user} = useAuth();
+  const {user, temporaryToken} = useAuth();
 
   async function get(route: string, setLoading: Function)
   {
@@ -54,22 +54,22 @@ export const RequestProvider: React.FC<RequestProviderProps> = ({children}) =>
       throw new Error("User not found");
     }
 
-    const result = await api.post(route, data, {headers: {auth_token: !allowNoUser ? user?.auth_token : ""}});
+    const result = await api.post(route, data, allowNoUser ? {} : {headers: {auth_token: user?.auth_token ? user?.auth_token : temporaryToken}});
 
     setLoading(false);
     return result.data;
   }
 
-  async function put(route: string, setLoading: Function, data: any, allowNoUser?: boolean)
+  async function put(route: string, setLoading: Function, data: any)
   {
     setLoading(true);
 
-    if (!user && !allowNoUser) {
+    if (!user && !temporaryToken) {
       setLoading(false);
       throw new Error("User not found");
     }
 
-    const result = await api.put(route, data, !allowNoUser ? {headers: {auth_token: user?.auth_token}}:{});
+    const result = await api.put(route, data, {headers: {auth_token: user?.auth_token ? user?.auth_token : temporaryToken}});
 
     setLoading(false);
     return result.data;

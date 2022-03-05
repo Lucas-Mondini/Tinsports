@@ -7,6 +7,7 @@ import { User } from '../utils/types';
 type AuthData = {
   signed: boolean;
   user: User | null;
+  temporaryToken: string;
   loading: boolean;
   setLoading: (value: boolean) => void;
   signIn: (email: string, pass: string, errorCallback: Function) => void;
@@ -15,6 +16,7 @@ type AuthData = {
   checkLogin: () => void;
   string: string;
   setString: (value: string) => void;
+  setTemporaryToken: (value: string) => void;
   setUser: (info: User) => void;
 }
 
@@ -29,6 +31,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [string, setString] = useState('');
+  const [temporaryToken, setTemporaryToken] = useState('');
 
   async function checkLogin() {
     try {
@@ -106,6 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>
     <AuthContext.Provider value={{
       signed: Boolean(user),
       user,
+      temporaryToken,
       loading,
       setLoading,
       signIn,
@@ -113,6 +117,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) =>
       checkLogin,
       register,
       string,
+      setTemporaryToken,
       setString,
       setUser
     }}>
