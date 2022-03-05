@@ -18,7 +18,7 @@ import { Game, Params } from '../../utils/types';
 import { useRequest } from '../../Contexts/Request';
 import Input from '../../Components/Input';
 import Header from '../../Components/Header';
-import MessageModal from '../../Components/MessageModal';
+import GenericMessageModal from '../../Components/GenericMessageModal';
 import Loading from '../../Components/Loading';
 import Checkbox from '../../Components/Checkbox';
 
@@ -69,25 +69,23 @@ const CreateEvent: React.FC = () =>
     } catch(err: any) {
       setDisableButton(true);
 
-      const modalInfo: any = {
-        403: {title: "Você ainda não é premium!",
-              message: "Somente usuários premium podem inserir mais de 5 jogos"},
-        401: {title: "Data do evento menor que atual!",
-              message: "A data do evento não pode ser menor que a atual"},
-        "default": {title: "Ocorreu um erro!",
-                    message: "Ocorreu um erro em nossos servidores, sentimos muito. \nTente novamente!"}
+      let type: any;
+
+      switch (err.response.status) {
+        case 403:
+          type = "Premium";
+          break;
+        case 401:
+          type = "EventDateLowerThanActual"
+          break;
+        default:
+          type = "default"
       }
 
-      let errorMessage = modalInfo[err.response.status] || modalInfo['default'];
-
       setModal(
-        <MessageModal
-          visible={true}
-          loading={false}
-          setModal={() => {
-            setModal(null);
-          }}
-          message={errorMessage}
+        <GenericMessageModal
+          type={type}
+          setModal={() => setModal(null)}
         />
       );
     }

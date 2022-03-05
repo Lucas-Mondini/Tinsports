@@ -4,7 +4,7 @@ import { RefreshControl, View } from 'react-native';
 import Header from '../../Components/Header';
 import InviteCard from '../../Components/InviteCard';
 import Loading from '../../Components/Loading';
-import MessageModal from '../../Components/MessageModal';
+import GenericMessageModal from '../../Components/GenericMessageModal';
 import NoContent from '../../Components/NoContent';
 import { useAuth } from '../../Contexts/Auth';
 import { useRequest } from '../../Contexts/Request';
@@ -38,46 +38,46 @@ const InviteList: React.FC = () => {
     }
   }
 
-  function showModal(type: "Confirm" | "Delete", inviteId: string)
+  async function confirmGameInvite(inviteId: string)
   {
-    let modalInfo: any;
+    try {
+      await post(`/game-list/invite-confirmation`, getInvites, {_id: inviteId});
+      setModal(null);
+    } catch (error) {
+      setModal(null);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
+    }
+  }
 
-    modalInfo = {"Confirm" : {message:{title: "Confirmar participação",
-                              message: "Deseja realmente confirmar sua participação nesse jogo?"},
-                              buttons: [
-                                {text: "Sim", color: "green", function: async () => {
-                                    try {
-                                      await post(`/game-list/invite-confirmation`, getInvites, {_id: inviteId});
-                                      setModal(null);
-                                    } catch (error) {
-                                      setModal(null);
-                                      navigation.reset({index: 0, routes: [{name: "Main"}]});
-                                    }
-                                }},
-                                {text: "Não", color: "red", function: () => setModal(null)},
-                              ]},
-                "Delete": {message:{title: "Excluir o convite",
-                          message: "Deseja realmente excluir esse convite de jogo?"},
-                          buttons: [
-                            {text: "Sim", color: "green", function: async () => {
-                              try {
-                                await destroy(`/game-list/${inviteId}`, getInvites);
-                                setModal(null);
-                              } catch (error: any) {
-                                setModal(null);
-                                navigation.reset({index: 0, routes: [{name: "Main"}]});
-                              }
-                            }},
-                            {text: "Não", color: "red", function: () => setModal(null)},
-                          ]}};
+  async function deleteGameInvite(inviteId: string)
+  {
+    try {
+      await destroy(`/game-list/${inviteId}`, getInvites);
+      setModal(null);
+    } catch (error: any) {
+      setModal(null);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
+    }
+  }
+
+  function showModal(type: any, inviteId: string)
+  {
+    let functions: any;
+
+    switch (type) {
+      case "ConfirmGameInvite":
+        functions = [() => confirmGameInvite(inviteId), () => setModal(null)]
+        break;
+      case "DeleteGameInvite":
+        functions = [() => deleteGameInvite(inviteId), () => setModal(null)]
+        break;
+    }
 
     setModal(
-      <MessageModal
-        visible={true}
-        loading={loading}
+      <GenericMessageModal
         setModal={() => setModal(null)}
-        message={modalInfo[type].message}
-        buttons={modalInfo[type].buttons}
+        type={type}
+        functions={functions}
       />
     )
   }
@@ -108,8 +108,8 @@ const InviteList: React.FC = () => {
                       game_ID={invite.game_ID}
                       hostName={invite.hostName}
                       gameName={invite.gameName}
-                      deleteInvite={() => showModal("Delete", invite._id)}
-                      confirmInvite={() => showModal("Confirm", invite._id)}
+                      deleteInvite={() => showModal("DeleteGameInvite", invite._id)}
+                      confirmInvite={() => showModal("ConfirmGameInvite", invite._id)}
                       date={invite.date}
                       hour={invite.hour}
                       location={invite.location}

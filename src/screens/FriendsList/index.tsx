@@ -10,7 +10,7 @@ import { useAuth } from '../../Contexts/Auth';
 import { Friend, Params } from '../../utils/types';
 import { Container, FriendsView, Title } from './styles';
 import { useRequest } from '../../Contexts/Request';
-import MessageModal from '../../Components/MessageModal';
+import GenericMessageModal from '../../Components/GenericMessageModal';
 
 const photo = require('../../../assets/photos/photo.jpg');
 
@@ -52,40 +52,24 @@ const Friends: React.FC = () =>
     }
   }
 
-  function showModal(type: "DeleteFriend" | "DeleteInvite", friendId?: string)
+  function showModal(type: any, friendId?: string)
   {
-    let modalInfo: any;
+    let functions: any;
 
     switch (type) {
-      case "DeleteInvite":
-        modalInfo = {message:{title: "Excluir convite de amizade",
-                              message: "Tem certeza que deseja excluir o convite de amizade"},
-                     buttons: [
-                       {text: "Sim", color: "green", function: async () => {
-                           await handleDeleteFriend(friendId);
-                       }},
-                       {text: "Não", color: "red", function: () => setModal(null)},
-                     ]};
+      case "DeleteFriendInvite":
+        functions = [() => handleDeleteFriend(friendId), () => setModal(null)];
         break;
       case "DeleteFriend":
-        modalInfo = {message:{title: "Excluir amigo?",
-                              message: "Tem certeza que deseja excluir o amigo?"},
-                     buttons: [
-                       {text: "Sim", color: "green", function: async () => {
-                          await handleDeleteFriend(friendId);
-                       }},
-                       {text: "Não", color: "red", function: () => setModal(null)},
-                     ]};
+        functions = [() => handleDeleteFriend(friendId), () => setModal(null)];
         break;
     }
 
     setModal(
-      <MessageModal
-        visible={true}
-        loading={loading}
+      <GenericMessageModal
         setModal={() => setModal(null)}
-        message={modalInfo.message}
-        buttons={modalInfo.buttons}
+        type={type}
+        functions={functions}
       />
     )
   }
@@ -125,7 +109,7 @@ const Friends: React.FC = () =>
                 <UserCard
                   buttonsType={invite ? "Invite" : "DeleteFriend"}
                   user_ID={item.user_ID}
-                  callback={() => showModal(invite ? "DeleteInvite" : "DeleteFriend", item._id)}
+                  callback={() => showModal(invite ? "DeleteFriendInvite" : "DeleteFriend", item._id)}
                   reloadFunction={getFriends}
                   photo={item.photo || photo}
                   name={item.name}

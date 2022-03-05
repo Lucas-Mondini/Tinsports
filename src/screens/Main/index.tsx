@@ -7,7 +7,7 @@ import CodeConfirmationModal from "../../Components/CodeConfirmationModal";
 import GameCard from "../../Components/GameCard";
 import Header from "../../Components/Header";
 import Loading from "../../Components/Loading";
-import MessageModal from "../../Components/MessageModal";
+import GenericMessageModal from "../../Components/GenericMessageModal";
 import NoContent from "../../Components/NoContent";
 import SideBar from "../../Components/SideBar";
 import Tab from "../../Components/Tab";
@@ -127,8 +127,8 @@ const Main: React.FC = () => {
               type={type}
               host_ID={game.host_ID}
               deleteGame={() => showModal("DeleteGame", game._id)}
-              cancelInvite={() => showModal("CancelInvite", game.inviteId)}
-              confirmInvite={() => showModal("ConfirmInvite", game.inviteId)}
+              cancelInvite={() => showModal("DeleteGameInvite", game.inviteId)}
+              confirmInvite={() => showModal("ConfirmGameInvite", game.inviteId)}
               editGame={() => editGame(game._id)}
               _id={game._id}
               title={game.name}
@@ -192,79 +192,80 @@ const Main: React.FC = () => {
       </>);
   }
 
-  function showModal(type: "NotConfirmed" | "Premium" | "DeleteGame" | "Configuration" | "PremiumSubmit" | "ConfirmInvite" | "CancelInvite", uuid?: string)
+  async function resendCode()
+  {
+    try {
+      await post(`/resend-code`, ()=>{}, {});
+      setModal(<CodeConfirmationModal visible={true} setModal={() => setModal(null)}/>);
+    } catch (error) {
+      setModal(null);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
+    }
+  }
+
+  function confirmCode()
+  {
+    setModal(<CodeConfirmationModal visible={true} setModal={() => setModal(null)}/>);
+  }
+
+  async function deleteGame(uuid?: string)
+  {
+    try {
+      await destroy(`/games/${uuid}`, getGames);
+      setModal(null);
+    } catch (error) {
+      setModal(null);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
+    }
+  }
+
+  async function confirmInvite(uuid?: string)
+  {
+    try {
+      await post(`/game-list/invite-confirmation`, getGames, {_id: uuid});
+      setModal(null);
+    } catch (error) {
+      setModal(null);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
+    }
+  }
+
+  async function cancelInvite(uuid?: string)
+  {
+    try {
+      await destroy(`/game-list/${uuid}`, getGames);
+      setModal(null);
+    } catch (error) {
+      setModal(null);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
+    }
+  }
+
+  function showModal(type: any, uuid?: string)
   {
     let style = type != "NotConfirmed" ? {height: "30%"} : {height: "50%"}
+    let functions;
 
-    let modalInfo: any = {
-      "NotConfirmed": {message:{title: "Você ainda não confirmou sua conta",
-                                message: "Confirme sua conta para poder usufruir de todas as funcionalidades do aplicativo"},
-                       buttons: [
-                         {text: "Enviar email", color: "green", function: async () => {
-                           try {
-                             await post(`/resend-code`, ()=>{}, {});
-                             setModal(<CodeConfirmationModal visible={true} setModal={() => setModal(null)}/>);
-                           } catch (error) {
-                             setModal(null);
-                             navigation.reset({index: 0, routes: [{name: "Main"}]});
-                           }
-                        }},
-                        {text: "Usar código", color: "blue", function: () => {
-                          setModal(<CodeConfirmationModal visible={true} setModal={() => setModal(null)}/>);
-                        }}]},
-      "Premium": {message:{title: "Você ainda não é premium!",
-                           message: "Somente usuários premium podem inserir mais de 5 jogos"}},
-      "DeleteGame": {message:{title: "Excluir jogo?",
-                              message: "Deseja realmente excluir o jogo?"},
-                     buttons: [
-                     {text: "Sim", color: "green", function: async () => {
-                       try {
-                         await destroy(`/games/${uuid}`, getGames);
-                         setModal(null);
-                       } catch (error) {
-                         setModal(null);
-                         navigation.reset({index: 0, routes: [{name: "Main"}]});
-                       }
-                     }},
-                     {text: "Não", color: "red", function: () => setModal(null)},
-                     ]},
-      "ConfirmInvite": {message:{title: "Confirmar Participação?",
-                              message: "Deseja confirmar sua participação nesse jogo?"},
-                     buttons: [
-                     {text: "Sim", color: "green", function: async () => {
-                       try {
-                         await post(`/game-list/invite-confirmation`, getGames, {_id: uuid});
-                         setModal(null);
-                       } catch (error) {
-                         setModal(null);
-                         navigation.reset({index: 0, routes: [{name: "Main"}]});
-                       }
-                     }},
-                     {text: "Não", color: "red", function: () => setModal(null)},
-                     ]},
-      "CancelInvite": {message:{title: "Excluir convite?",
-                              message: "Deseja realmente excluir o convite desse jogo?"},
-                     buttons: [
-                     {text: "Sim", color: "green", function: async () => {
-                       try {
-                         await destroy(`/game-list/${uuid}`, getGames);
-                         setModal(null);
-                       } catch (error) {
-                         setModal(null);
-                         navigation.reset({index: 0, routes: [{name: "Main"}]});
-                       }
-                     }},
-                     {text: "Não", color: "red", function: () => setModal(null)},
-                     ]}
-    };
+    switch (type) {
+      case "NotConfirmed":
+        functions = [resendCode, confirmCode];
+        break;
+      case "DeleteGame":
+        functions = [() => deleteGame(uuid), () => setModal(null)];
+        break;
+      case "ConfirmGameInvite":
+        functions = [() => confirmInvite(uuid), () => setModal(null)];
+        break;
+      case "DeleteGameInvite":
+        functions = [() => cancelInvite(uuid), () => setModal(null)];
+        break;
+    }
 
     setModal(
-      <MessageModal
-        visible={true}
-        loading={loading}
+      <GenericMessageModal
+        type={type}
         setModal={() => setModal(null)}
-        message={modalInfo[type].message}
-        buttons={modalInfo[type].buttons}
+        functions={functions}
         style={style}
       />
     );

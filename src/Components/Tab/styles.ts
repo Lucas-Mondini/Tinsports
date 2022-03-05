@@ -5,7 +5,9 @@ export const TabContainer = styled.View`
   justify-content: center;
 `;
 
-export const TabElement = styled.TouchableOpacity``;
+export const TabElement = styled.TouchableOpacity`
+  z-index: 1000;
+`;
 
 export const TabText = styled.Text`
   color: #686868;

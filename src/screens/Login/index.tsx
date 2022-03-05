@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
 import CodeConfirmationModal from '../../Components/CodeConfirmationModal';
 import Loading from '../../Components/Loading';
-import MessageModal from '../../Components/MessageModal';
+import GenericMessageModal from '../../Components/GenericMessageModal';
 import { useAuth } from '../../Contexts/Auth';
 import { useRequest } from '../../Contexts/Request';
 
@@ -69,16 +69,10 @@ const Login: React.FC = () =>
 
   function showModal()
   {
-    let modalInfo: any = {message:{title: "Email ou senha incorreto",
-                                   message: "Certifique-se que digitou seu e-mail e senha corretamente"}};
-
     setModal(
-      <MessageModal
-        visible={true}
-        loading={loading}
+      <GenericMessageModal
         setModal={() => setModal(null)}
-        message={modalInfo.message}
-        buttons={modalInfo.buttons}
+        type={"WrongCredentials"}
       />
     );
   }

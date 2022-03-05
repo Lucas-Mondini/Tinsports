@@ -105,15 +105,16 @@ export const RequestProvider: React.FC<RequestProviderProps> = ({children}) =>
 
       try {
         await reference.delete();
-      } catch (err) {}
+      } finally {
+        if (!photo || !photo.uri) return;
 
-      if (!photo || !photo.uri) return;
+        const pathToFile = photo.uri;
 
-      const pathToFile = photo.uri;
+        await reference.putFile(pathToFile);
 
-      await reference.putFile(pathToFile);
+        return await reference.getDownloadURL();
+      }
 
-      return await reference.getDownloadURL();
   }
 
   return (

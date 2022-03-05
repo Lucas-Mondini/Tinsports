@@ -4,7 +4,7 @@ import { useAuth } from '../../Contexts/Auth';
 import { useRequest } from '../../Contexts/Request';
 import DefaultModal from '../DefaultModal';
 import Input from '../Input';
-import MessageModal from '../MessageModal';
+import GenericMessageModal from '../GenericMessageModal';
 
 import {
   Title,
@@ -74,9 +74,8 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
 
       const response = await put(`/change-pass`, setLoading, {email, pass}, true);
 
-      setUser(response);
-      
       setModal();
+      setUser(response);
     } catch (err: any) {
       setLoading(false);
 
@@ -95,26 +94,10 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
 
   function showModal(type: "IncorrectCode" | "PasswordsDontMatch")
   {
-    let modalInfo: any = {message:{title: "Código incorreto",
-                                   message: "Parece que você digitou o código incorretamente"}};
-
-    switch (type) {
-      case "IncorrectCode":
-        modalInfo = modalInfo;
-        break;
-      case "PasswordsDontMatch":
-        modalInfo = {message:{title: "Senhas diferentes",
-                              message: "As senhas que você digitou são diferentes, tente novamente"}};
-        break;
-    }
-
     setMessageModal(
-      <MessageModal
-        visible={true}
-        loading={loading}
+      <GenericMessageModal
         setModal={() => setMessageModal(null)}
-        message={modalInfo.message}
-        buttons={modalInfo.buttons}
+        type={type}
       />
     );
   }

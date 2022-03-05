@@ -3,11 +3,7 @@ import { Dimensions, Image, Modal } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../../Contexts/Auth';
-import storage from '@react-native-firebase/storage';
-import { utils } from '@react-native-firebase/app';
-import api from '../../services/api';
 
-import Loading from '../Loading';
 import NoContent from '../NoContent';
 import {
   ButtonText,
@@ -34,7 +30,7 @@ type ModalProps = {
 
 const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction}) =>
 {
-  const { user, signOut} = useAuth();
+  const { user } = useAuth();
   const {put, uploadPhoto} = useRequest();
 
   const [loading, setLoading] = useState(false);

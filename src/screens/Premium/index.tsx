@@ -5,7 +5,7 @@ import { GooglePay } from 'react-native-google-pay';
 
 import env from "../../../env";
 import Header from "../../Components/Header";
-import MessageModal from "../../Components/MessageModal";
+import GenericMessageModal from "../../Components/GenericMessageModal";
 import PremiumCard from "../../Components/PremiumCard";
 
 import {
@@ -32,7 +32,7 @@ const Premium: React.FC = () => {
   function handleSubscription()
   {
     if (tier === 0) {
-      return showModal("Tier");
+      return showModal();
     }
 
     const allowedCardNetworks: Array<'VISA'|'MASTERCARD'> = ['VISA', 'MASTERCARD'];
@@ -80,24 +80,12 @@ const Premium: React.FC = () => {
       });
   }
 
-  function showModal(type: "Tier")
+  function showModal()
   {
-    let modalInfo: any = {
-      "Tier": {
-        message: {
-          title: "Você não escolheu um plano!",
-          message: "Escolha um dos três planos para prosseguir"
-        }
-      }
-    };
-
     setModal(
-      <MessageModal
-        visible={true}
-        loading={false}
+      <GenericMessageModal
+        type={"Tier"}
         setModal={() => setModal(null)}
-        message={modalInfo[type].message}
-        buttons={modalInfo[type].buttons}
       />
     );
   }

@@ -4,7 +4,7 @@ import { useAuth } from '../../Contexts/Auth';
 import { useRequest } from '../../Contexts/Request';
 import DefaultModal from '../DefaultModal';
 import Input from '../Input';
-import MessageModal from '../MessageModal';
+import GenericMessageModal from '../GenericMessageModal';
 
 import {
   ButtonText,
@@ -74,28 +74,12 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
         } else setDisableButton(true);
   }
 
-  function showModal(type: "IncorrectPassword" | "PasswordsDontMatch")
+  function showModal(type: any)
   {
-    let modalInfo: any = {message:{title: "Senha incorreta",
-                                   message: "Parece que você digitou sua senha incorretamente"}};
-
-    switch (type) {
-      case "IncorrectPassword":
-        modalInfo = modalInfo;
-        break;
-      case "PasswordsDontMatch":
-        modalInfo = {message:{title: "Senhas diferentes",
-                              message: "As senhas que você digitou são diferentes, tente novamente"}};
-        break;
-    }
-
     setMessageModal(
-      <MessageModal
-        visible={true}
-        loading={loading}
+      <GenericMessageModal
+        type={type}
         setModal={() => setMessageModal(null)}
-        message={modalInfo.message}
-        buttons={modalInfo.buttons}
       />
     );
   }

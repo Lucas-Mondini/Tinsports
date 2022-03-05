@@ -25,7 +25,7 @@ import EvaluationModal from "../../Components/EvaluationModal";
 import Header from "../../Components/Header";
 import { Game, GameList, Params } from "../../utils/types";
 import { useRequest } from "../../Contexts/Request";
-import MessageModal from "../../Components/MessageModal";
+import GenericMessageModal from "../../Components/GenericMessageModal";
 
 const photo = require('../../../assets/photos/photo.jpg');
 
@@ -67,45 +67,46 @@ const GameInfo: React.FC = () => {
     }
   }
 
-  function handleInvitation(inviteId: string, type: "Delete" | "Confirm")
+  async function deleteInvite(inviteId: string)
   {
-    let modalInfo: any = {"Delete": {message:{title: "Excluir convite?",
-                                     message: "Deseja realmente excluir o convite?"},
-                                     buttons: [
-                                       {text: "Sim", color: "green", function: async () => {
-                                           try {
-                                             await destroy(`/game-list/${inviteId}`, getGameInfo);
-                                             setModal(null);
-                                           } catch (error) {
-                                             setModal(null);
-                                             navigation.reset({index: 0, routes: [{name: "Main"}]});
-                                           }
-                                     }},
-                            {text: "Não", color: "red", function: () => setModal(null)},
-                          ]},
-                          "Confirm": {message:{title: "Confirmar Participação?",
-                              message: "Deseja confirmar sua participação nesse jogo?"},
-                              buttons: [
-                              {text: "Sim", color: "green", function: async () => {
-                                try {
-                                  await post(`/game-list/invite-confirmation`, getGameInfo, {_id: inviteId});
-                                  setModal(null);
-                                } catch (error) {
-                                  setModal(null);
-                                  navigation.reset({index: 0, routes: [{name: "Main"}]});
-                                }
-                              }},
-                              {text: "Não", color: "red", function: () => setModal(null)},
-                              ]}
-                         };
+    try {
+      await destroy(`/game-list/${inviteId}`, getGameInfo);
+      setModal(null);
+    } catch (error) {
+      setModal(null);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
+    }
+  }
+
+  async function confirmInvite(inviteId: string)
+  {
+    try {
+      await post(`/game-list/invite-confirmation`, getGameInfo, {_id: inviteId});
+      setModal(null);
+    } catch (error) {
+      setModal(null);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
+    }
+  }
+
+  function handleInvitation(inviteId: string, type: "DeleteGameInvite" | "ConfirmGameInvite")
+  {
+    let functions;
+
+    switch (type) {
+      case "DeleteGameInvite":
+        functions = [() => deleteInvite(inviteId), () => setModal(null)];
+        break;
+      case "ConfirmGameInvite":
+        functions = [() => confirmInvite(inviteId), () => setModal(null)]
+        break;
+    }
 
     setModal(
-      <MessageModal
-        visible={true}
-        loading={loading}
+      <GenericMessageModal
+        type={type}
         setModal={() => setModal(null)}
-        message={modalInfo[type].message}
-        buttons={modalInfo[type].buttons}
+        functions={functions}
       />
     );
   }
@@ -215,8 +216,8 @@ const GameInfo: React.FC = () => {
                         name={gameList.name}
                         reputation={gameList.reputation}
                         confirmation={gameList.confirmed}
-                        callback={() => handleInvitation(gameList._id, "Delete")}
-                        callback2={(gameList.user_ID === user?._id) && !gameList.confirmed ? () => handleInvitation(gameList._id, "Confirm") : undefined}
+                        callback={() => handleInvitation(gameList._id, "DeleteGameInvite")}
+                        callback2={(gameList.user_ID === user?._id) && !gameList.confirmed ? () => handleInvitation(gameList._id, "ConfirmGameInvite") : undefined}
                         disableButtons={(game.host_ID === user?._id) ? false : (gameList.user_ID !== user?._id)}
                       />)
             })}

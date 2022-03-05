@@ -105,7 +105,7 @@ const UserCard: React.FC<UserCardProps> = ({
   {
     return (
       <User onPress={accessProfile} activeOpacity={!disableNavigation ? 0.8 : 1}>
-        <UserPhoto source={typeof photo === 'string' ? {uri: photo} : photo} />
+        <UserPhoto source={typeof photo === 'string' ? {uri: photo, cache: "only-if-cached"} : photo} />
         <UserInfo>
           <View>
             <UserName>{handleName()}</UserName>

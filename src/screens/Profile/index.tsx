@@ -4,9 +4,9 @@ import { View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import CodeConfirmationModal from '../../Components/CodeConfirmationModal';
 import EditProfileModal from '../../Components/EditProfileModal';
+import GenericMessageModal from '../../Components/GenericMessageModal';
 import Header from '../../Components/Header';
 import Loading from '../../Components/Loading';
-import MessageModal from '../../Components/MessageModal';
 import Metric from '../../Components/Metric';
 import Option from '../../Components/Option';
 import UserPhotoModal from '../../Components/UserPhotoModal';
@@ -39,7 +39,7 @@ const Profile: React.FC = () =>
   const [ friend, setFriend ] = useState<User>();
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ photoModal, setPhotoModal ] = useState(false);
-  const [modalInfo, setModalInfo] = useState<any>(null);
+  const [ modalInfo, setModalInfo ] = useState<any>(null);
   const [ loading, setLoading ] = useState(false);
 
   function handleGoToFriendsList()
@@ -92,35 +92,31 @@ const Profile: React.FC = () =>
     navigation.push("Main", {id: params.id});
   }
 
+  async function resendCode()
+  {
+    try {
+      await post(`/resend-code`, ()=>{}, {});
+      setModalInfo(<CodeConfirmationModal visible={true} setModal={() => setModalInfo(null)}/>);
+    } catch (error) {
+      setModalInfo(null);
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
+    }
+  }
+
+  function useCode()
+  {
+    setModalInfo(<CodeConfirmationModal visible={true} setModal={() => setModalInfo(null)}/>);
+  }
+
   function showModal(type: "NotConfirmed")
   {
     let style = type != "NotConfirmed" ? {height: "30%"} : {height: "50%"}
 
-    let modalInfo: any = {
-      "NotConfirmed": {message:{title: "Você ainda não confirmou sua conta",
-                                message: "Confirme sua conta para poder usufruir de todas as funcionalidades do aplicativo"},
-                       buttons: [
-                         {text: "Enviar email", color: "green", function: async () => {
-                           try {
-                             await post(`/resend-code`, ()=>{}, {});
-                             setModalInfo(<CodeConfirmationModal visible={true} setModal={() => setModalInfo(null)}/>);
-                           } catch (error) {
-                             setModalInfo(null);
-                             navigation.reset({index: 0, routes: [{name: "Main"}]});
-                           }
-                        }},
-                        {text: "Usar código", color: "blue", function: () => {
-                          setModalInfo(<CodeConfirmationModal visible={true} setModal={() => setModalInfo(null)}/>);
-                        }}]}
-    };
-
     setModalInfo(
-      <MessageModal
-        visible={true}
-        loading={loading}
+      <GenericMessageModal
+        type={"NotConfirmed"}
+        functions={[resendCode, useCode]}
         setModal={() => setModalInfo(null)}
-        message={modalInfo[type].message}
-        buttons={modalInfo[type].buttons}
         style={style}
       />
     );
@@ -178,7 +174,7 @@ const Profile: React.FC = () =>
 
         {!friend && <>
           <EditProfileModal
-            reloadFunction={getUser}
+            reloadFunction={checkLogin}
             visible={modalVisible}
             setModal={setModal}
           />
@@ -191,7 +187,7 @@ const Profile: React.FC = () =>
 
         {!friend &&
           <UserPhotoModal
-            reloadFunction={getUser}
+            reloadFunction={checkLogin}
             visible={photoModal}
             setModal={setUserPhotoModal}
           />}

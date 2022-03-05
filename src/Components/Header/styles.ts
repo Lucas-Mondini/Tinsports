@@ -20,5 +20,5 @@ export const HeaderContainer = styled.View`
   background-color: #fff;
   border-bottom-color: #f6f6f6;
   border-bottom-width: 1px;
-  z-index: 99999;
+  z-index: 999;
 `;
