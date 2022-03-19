@@ -117,7 +117,6 @@ const Profile: React.FC = () =>
         type={"NotConfirmed"}
         functions={[resendCode, useCode]}
         setModal={() => setModalInfo(null)}
-        style={style}
       />
     );
   }

@@ -50,7 +50,7 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
   {
     try {
       if (!isChangePass) {
-        await post(`/code`, setLoading, {code});
+        await post(`/code`, setLoading, {email: user.email, code});
         await checkLogin();
         return setModal();
       } else {
@@ -115,7 +115,7 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
       {messageModal && messageModal}
 
       <Title>{!changePassword
-        ?"Enviamos um código para seu e-mail, digite-o no campo abaixo para confirmar sua conta"
+        ?"Enviamos um código para seu e-mail, digite-o no campo abaixo para confirmar sua conta. Caso não tenha recebido verifique sua caixa de SPAM"
         :"Digite sua nova senha"
       }</Title>
 
@@ -160,6 +160,7 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
       <Footer>
         <ConfirmButton
           onPress={onPressFunction}
+          disabled={disableButton}
           style={{
             backgroundColor: disableButton ? '#686868' : "#2FB400",
             height: Dimensions.get("window").width <= 320 ? 30 : 40,
