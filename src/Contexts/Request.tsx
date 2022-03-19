@@ -25,6 +25,7 @@ export const RequestProvider: React.FC<RequestProviderProps> = ({children}) =>
 
   async function get(route: string, setLoading: Function)
   {
+    try {
       setLoading(true);
 
       if (!user) {
@@ -43,50 +44,69 @@ export const RequestProvider: React.FC<RequestProviderProps> = ({children}) =>
 
       setLoading(false);
       return result.data;
+    } catch (error: any) {
+      setLoading(false);
+      throw new Error(error.response.status);
+    }
   }
 
   async function post(route: string, setLoading: Function, data: any, allowNoUser?: boolean)
   {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    if (!user && !allowNoUser) {
+      if (!user && !allowNoUser) {
+        setLoading(false);
+        throw new Error("User not found");
+      }
+
+      const result = await api.post(route, data, allowNoUser ? {} : {headers: {auth_token: user?.auth_token ? user?.auth_token : temporaryToken}});
+
       setLoading(false);
-      throw new Error("User not found");
+      return result.data;
+    } catch (error: any) {
+      setLoading(false);
+      throw new Error(error.response.status);
     }
-
-    const result = await api.post(route, data, allowNoUser ? {} : {headers: {auth_token: user?.auth_token ? user?.auth_token : temporaryToken}});
-
-    setLoading(false);
-    return result.data;
   }
 
   async function put(route: string, setLoading: Function, data: any)
   {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    if (!user && !temporaryToken) {
+      if (!user && !temporaryToken) {
+        setLoading(false);
+        throw new Error("User not found");
+      }
+
+      const result = await api.put(route, data, {headers: {auth_token: user?.auth_token ? user?.auth_token : temporaryToken}});
+
       setLoading(false);
-      throw new Error("User not found");
+      return result.data;
+    } catch (error: any) {
+      setLoading(false);
+      throw new Error(error.response.status);
     }
-
-    const result = await api.put(route, data, {headers: {auth_token: user?.auth_token ? user?.auth_token : temporaryToken}});
-
-    setLoading(false);
-    return result.data;
   }
 
   async function destroy(route: string, callback: Function, setLoading?: Function)
   {
-    if (setLoading) setLoading(true);
+    try {
+      if (setLoading) setLoading(true);
 
-    if (!user) {
-      throw new Error("User not found");
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      await api.delete(route, {headers: {auth_token: user.auth_token}});
+
+      if (setLoading) setLoading(false);
+      callback();
+    } catch (error: any) {
+      if (setLoading) setLoading(false);
+      throw new Error(error.response.status);
     }
-
-    await api.delete(route, {headers: {auth_token: user.auth_token}});
-
-    if (setLoading) setLoading(false);
-    callback();
   }
 
   async function uploadPhoto(route: string, setLoading: Function, photo: PhotoType | undefined)

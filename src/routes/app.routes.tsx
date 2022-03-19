@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
 import Main from '../screens/Main';
 import GameInfo from '../screens/GameInfo';
@@ -9,8 +10,43 @@ import SearchFriend from '../screens/SearchFriend';
 import FriendsList from '../screens/FriendsList';
 import InviteList from '../screens/InviteList';
 import Premium from '../screens/Premium';
+import { useAuth } from "../Contexts/Auth";
 
+const Drawer = createDrawerNavigator();
 const App = createStackNavigator();
+
+const SignOutButton: React.FC = () =>
+{
+  const {signOut} = useAuth();
+
+  useEffect(() => {
+    signOut();
+  });
+
+  return null;
+}
+
+const Home: React.FC = () => {
+  return (
+    <Drawer.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
+    >
+      <Drawer.Screen
+        name="Home"
+        component={Main}
+        options={{
+          drawerItemStyle: {height: 0}
+        }}
+      />
+      <Drawer.Screen
+        name="Sair"
+        component={SignOutButton}
+      />
+    </Drawer.Navigator>
+  );
+}
 
 const AppRoutes: React.FC = () => {
   return (
@@ -19,7 +55,7 @@ const AppRoutes: React.FC = () => {
     >
       <App.Screen
         name="Main"
-        component={Main}
+        component={Home}
       />
       <App.Screen
         name="GameInfo"

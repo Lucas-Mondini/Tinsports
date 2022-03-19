@@ -103,6 +103,11 @@ const GenericMessageModal: React.FC<GenericMessageModalProps> = ({type, function
           title: "Você ainda não é premium!",
           message: "Somente usuários premium podem inserir mais de 5 jogos"}
       },
+      "PremiumNotAvailable": {
+        message:{
+          title: "Premium ainda indisponível!",
+          message: "Nossa assinatura premiu estará disponível em breve 😁"}
+      },
       "DeleteGame": {
         message:{
           title: "Excluir jogo?",
@@ -131,13 +136,13 @@ const GenericMessageModal: React.FC<GenericMessageModalProps> = ({type, function
 
   return (
     <MessageModal
-        visible={true}
-        loading={false}
-        setModal={setModal}
-        message={getMessage().message}
-        buttons={getMessage().buttons}
-        style={style}
-      />
+      visible={true}
+      loading={false}
+      setModal={setModal}
+      message={getMessage().message}
+      buttons={getMessage().buttons}
+      style={style}
+    />
   );
 }
 

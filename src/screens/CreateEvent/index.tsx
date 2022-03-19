@@ -71,7 +71,7 @@ const CreateEvent: React.FC = () =>
 
       let type: any;
 
-      switch (err.response.status) {
+      switch (parseInt(err.message)) {
         case 403:
           type = "Premium";
           break;

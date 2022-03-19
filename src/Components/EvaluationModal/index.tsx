@@ -24,9 +24,10 @@ type ModalProps = {
   setModal: () => void;
   reloadFunction: () => void;
   invitedUsers: GameList[];
+  isPaid: boolean;
 }
 
-const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, invitedUsers}) =>
+const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, invitedUsers, isPaid}) =>
 {
   const {post, destroy} = useRequest();
 
@@ -72,7 +73,7 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
     for (const invited of invitedUsers) {
       const user = {
         user_ID: invited.user_ID,
-        paid: false,
+        paid: !isPaid,
         participated: false
       }
 
@@ -112,6 +113,7 @@ const EvaluationUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, 
               reputation={friend.reputation}
               user_ID={friend.user_ID}
               disableNavigation
+              isPaid={isPaid}
             />
           )
         }

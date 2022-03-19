@@ -59,7 +59,7 @@ const EditProfileModal: React.FC<ModalProps> = ({visible, setModal, reloadFuncti
     } catch (err: any) {
       setLoading(false);
 
-      if (err.response && err.response.status === 401)
+      if (err.message == 401)
         return showModal("IncorrectPassword");
     }
   }

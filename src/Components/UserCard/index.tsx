@@ -34,11 +34,12 @@ interface UserCardProps{
   usersArray?: any[];
   setUsersArray?: (value: any[]) => void;
   disableNavigation?: boolean;
+  isPaid?: boolean;
 }
 
 const UserCard: React.FC<UserCardProps> = ({
     name, _id, user_ID, photo, disableButtons, buttonsType, reputation, confirmation, disableNavigation,
-    reloadFunction, callback, callback2, usersArray, setUsersArray
+    reloadFunction, callback, callback2, usersArray, setUsersArray, isPaid
   }) => {
   const navigation = useNavigation<any>();
 
@@ -95,6 +96,7 @@ const UserCard: React.FC<UserCardProps> = ({
                       user_ID={user_ID}
                       evaluationList={usersArray}
                       setEvaluationList={setUsersArray}
+                      isPaid={isPaid}
                     />
     }
 

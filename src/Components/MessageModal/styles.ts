@@ -19,7 +19,6 @@ export const Message = styled.Text`
 export const ButtonsView = styled.View`
   width: 100%;
   justify-content: center;
-  position: absolute;
   bottom: 15px;
 `;
 

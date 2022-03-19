@@ -9,7 +9,6 @@ import Header from "../../Components/Header";
 import Loading from "../../Components/Loading";
 import GenericMessageModal from "../../Components/GenericMessageModal";
 import NoContent from "../../Components/NoContent";
-import SideBar from "../../Components/SideBar";
 import Tab from "../../Components/Tab";
 import { useAuth } from "../../Contexts/Auth";
 import { useRequest } from "../../Contexts/Request";
@@ -38,7 +37,6 @@ const Main: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<any>(null);
-  const [config, setConfig] = useState(false);
   const [disableAddButton, setDisableAddButton] = useState(true);
   const [userGames, setUserGames] = useState<Game[]>();
   const [friendsGames, setFriendsGames] = useState<Game[]>();
@@ -61,7 +59,7 @@ const Main: React.FC = () => {
       }
 
       setUserGames(result.userGames);
-    } catch(err) {
+    } catch(err: any) {
       signOut();
     }
   }
@@ -95,10 +93,13 @@ const Main: React.FC = () => {
       return showModal("NotConfirmed");
     }
 
-    setConfig(!config);
+    navigation.toggleDrawer();
   }
 
   function handleNavigateToPremium() {
+
+    return showModal("PremiumNotAvailable");
+
     if (!user?.confirmed) {
       return showModal("NotConfirmed");
     }
@@ -243,7 +244,6 @@ const Main: React.FC = () => {
 
   function showModal(type: any, uuid?: string)
   {
-    let style = type != "NotConfirmed" ? {height: "30%"} : {height: "50%"}
     let functions;
 
     switch (type) {
@@ -266,7 +266,6 @@ const Main: React.FC = () => {
         type={type}
         setModal={() => setModal(null)}
         functions={functions}
-        style={style}
       />
     );
   }
@@ -341,8 +340,6 @@ const Main: React.FC = () => {
           </View>
         </BottomNavbar>
       }
-
-      <SideBar visible={config} setModal={handleConfiguration}/>
     </Container>
   );
 }

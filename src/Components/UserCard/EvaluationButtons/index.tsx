@@ -10,11 +10,12 @@ interface EvaluationButtonsProps {
   user_ID: string;
   evaluationList?: any[];
   setEvaluationList?: (value: any[]) => void;
+  isPaid?: boolean;
 }
 
-const EvaluationButtons: React.FC<EvaluationButtonsProps> = ({user_ID, evaluationList, setEvaluationList}) =>
+const EvaluationButtons: React.FC<EvaluationButtonsProps> = ({user_ID, evaluationList, setEvaluationList, isPaid}) =>
 {
-  const [paid, setPaid] = useState(false);
+  const [paid, setPaid] = useState(!isPaid);
   const [participated, setParticipated] = useState(false);
 
   function handleEvaluation() {
@@ -51,12 +52,12 @@ const EvaluationButtons: React.FC<EvaluationButtonsProps> = ({user_ID, evaluatio
             <ButtonText>{participated ? "Participou" : "Furou"}</ButtonText>
           </ConfirmationButton>
 
-          <ConfirmationButton
+          {isPaid && <ConfirmationButton
             style={{backgroundColor: paid ? "#268E01": "#C50000"}}
             onPress={handlePaid}
           >
             <ButtonText>{paid ? "Pagou": "Caloteou"}</ButtonText>
-          </ConfirmationButton>
+          </ConfirmationButton>}
 
         </ButtonsView>
   );

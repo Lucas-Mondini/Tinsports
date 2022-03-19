@@ -141,6 +141,7 @@ const GameInfo: React.FC = () => {
             invitedUsers={gameList}
             setModal={handleModal}
             reloadFunction={getGameInfo}
+            isPaid={game.value}
           /> :
           <InviteUsersModal
             gameId={game._id}
