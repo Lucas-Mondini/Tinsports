@@ -37,12 +37,12 @@ const SearchFriend: React.FC = () =>
       setUsers(response.filter((searchUser: User) => searchUser._id !== user._id));
       setFriendSearchText(response.length > 0 ? "Envie um convite de amizade!" : "Nenhum amigo encontrado");
     } catch (err) {
-      navigation.reset({index: 0, routes: [{name: "Main"}, {name: "Profile"}]});
+      navigation.reset({index: 0, routes: [{name: "Main"}]});
     }
   }
 
   useEffect(() => {
-    getUsers();
+    setTimeout(getUsers, 500);
   }, [name]);
 
   return (
@@ -56,7 +56,7 @@ const SearchFriend: React.FC = () =>
           icon="search"
           size={25}
           autoCapitalize="words"
-          setValue={setName}
+          setValue={text => setName(text.replace(/[^\w\s]/g, ""))}
           style={{flex: 1}}
         />
       </SearchArea>

@@ -3,7 +3,7 @@ import MessageModal from '../MessageModal';
 
 type GenericMessageModalProps = {
   type: "IncorrectCode" | "PasswordsDontMatch" | "SendEvaluations" | "default" | "DeleteFriendInvite" | "DeleteFriend" | "DeleteGameInvite"
-        | "ConfirmGameInvite" | "WrongCredentials" | "NotConfirmed" | "Premium" | "DeleteGame" | "Tier" | "EmailAlreadyInUse";
+        | "ConfirmGameInvite" | "WrongCredentials" | "NotConfirmed" | "Premium" | "DeleteGame" | "Tier" | "EmailAlreadyInUse" | "SpecialCharactersNotAllowed";
   functions?: Function[];
   setModal: () => void;
   style?: object;
@@ -127,6 +127,12 @@ const GenericMessageModal: React.FC<GenericMessageModalProps> = ({type, function
         message:{
           title: "E-mail já cadastrado",
           message: "O e-mail utilizado já foi cadastrado"
+        }
+      },
+      "SpecialCharactersNotAllowed": {
+        message:{
+          title: "Nome com caracteres especiais",
+          message: "Nome não pode possuir caracteres especiais. \n Tente novamente"
         }
       }
     };

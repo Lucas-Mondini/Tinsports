@@ -58,6 +58,10 @@ const AppRoutes: React.FC = () => {
         component={Home}
       />
       <App.Screen
+        name="UserMain"
+        component={Main}
+      />
+      <App.Screen
         name="GameInfo"
         component={GameInfo}
       />

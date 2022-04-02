@@ -35,6 +35,8 @@ const Register: React.FC = () =>
       type = "EmailAlreadyInUse";
     } else if (status == 401) {
       type = "PasswordsDontMatch";
+    } else if (status == 406) {
+      type = "SpecialCharactersNotAllowed";
     }
 
     setModal(

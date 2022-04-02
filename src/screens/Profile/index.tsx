@@ -89,7 +89,7 @@ const Profile: React.FC = () =>
 
   function goToFriendHome()
   {
-    navigation.push("Main", {id: params.id});
+    navigation.push("UserMain", {id: params.id});
   }
 
   async function resendCode()

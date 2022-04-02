@@ -12,7 +12,7 @@ export const Title = styled.Text`
 `;
 
 export const Footer = styled.View`
-  background-color: #f6f6f6;
+  background-color: #fff;
   height: 50px;
   width: 100%;
   flex-direction: row;
