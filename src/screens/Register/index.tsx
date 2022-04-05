@@ -10,7 +10,7 @@ import {ButtonView, Container, Input, Label, SignInButton, SignInButtonText} fro
 
 const Register: React.FC = () =>
 {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');

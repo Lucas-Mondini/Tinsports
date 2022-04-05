@@ -1,28 +1,17 @@
-export function formatMoney(money: string) {
-  let formatMoney = "";
-
-  switch (money.length) {
-    case 2:
-      formatMoney = money += ",";
-      break;
-    default:
-      formatMoney += money;
-  }
-
-  return formatMoney;
-}
-
+// Converts string type date to js date object
 export function stringToDate(date: string, hour: string): Date {
   const formatDate = date.split('/');
 
   return new Date(`${formatDate[2]}-${formatDate[1]}-${formatDate[0]}T${hour}`);
 }
 
+// Split string with specif delimiter
 export function splitText(text: string, delimiter: number): string {
   const formattedText = text.substr(0, delimiter).trim() + (text.length > delimiter ? "..." : "");
   return formattedText;
 }
 
+// Get first word of a string sentence
 export function getFirstName(name: string):string {
   const firstName = name.split(" ")[0];
   return firstName;
@@ -46,11 +35,9 @@ function clear(value: string, validChar: string) {
 // Formats number to monetary format
 export function formatMoneyRealTime(value: string) {
 
-  let vr = clear(value, "0123456789");
-
-  let size = vr.length;
-
-  let dec = 2;
+  const vr = clear(value, "0123456789"),
+        size = vr.length,
+        dec = 2;
 
   if (size <= dec) {
       value = vr;

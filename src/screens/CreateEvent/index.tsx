@@ -13,7 +13,7 @@ import {
 } from './styles';
 
 import { useAuth } from '../../Contexts/Auth';
-import { formatMoney, formatMoneyRealTime } from '../../utils/functions';
+import { formatMoneyRealTime } from '../../utils/functions';
 import { Game, Params } from '../../utils/types';
 import { useRequest } from '../../Contexts/Request';
 import Input from '../../Components/Input';
@@ -24,7 +24,7 @@ import Checkbox from '../../Components/Checkbox';
 
 const CreateEvent: React.FC = () =>
 {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const isFocused = useIsFocused();
 
   const params = useRoute().params as Params;
@@ -99,6 +99,7 @@ const CreateEvent: React.FC = () =>
         && (game.date && game.date.trim() !== '')
         && (game.hour && game.hour.trim() !== '')
         && ((paid && game.value && game.value.trim() !== '') || (!paid))
+        && (Number(game.value) <= 99 || game.value.indexOf(",") !== -1)
        )
         {
           setDisableButton(false);
@@ -224,7 +225,6 @@ const CreateEvent: React.FC = () =>
               value={game.value}
               numeric
               maxLength={10}
-              callback={() => {if (game.value) setGame({...game, value: formatMoneyRealTime(game.value)})}}
               setValue={value => setGame({...game, value: formatMoneyRealTime(value)})}
               />
             :

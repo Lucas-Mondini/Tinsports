@@ -17,7 +17,7 @@ const SearchFriend: React.FC = () =>
 {
   const {signOut, user} = useAuth();
   const {get} = useRequest();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   const [name, setName] = useState('');
   const [users, setUsers] = useState<User[]>();

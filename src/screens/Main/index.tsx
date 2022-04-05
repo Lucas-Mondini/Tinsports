@@ -33,7 +33,7 @@ const Main: React.FC = () => {
 
   const params = useRoute().params as Params;
   const isFocused = useIsFocused();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<any>(null);
@@ -97,7 +97,6 @@ const Main: React.FC = () => {
   }
 
   function handleNavigateToPremium() {
-
     return showModal("PremiumNotAvailable");
 
     if (!user?.confirmed) {
