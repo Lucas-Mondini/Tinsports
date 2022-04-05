@@ -13,7 +13,7 @@ import {
 } from './styles';
 
 import { useAuth } from '../../Contexts/Auth';
-import { formatMoney } from '../../utils/functions';
+import { formatMoney, formatMoneyRealTime } from '../../utils/functions';
 import { Game, Params } from '../../utils/types';
 import { useRequest } from '../../Contexts/Request';
 import Input from '../../Components/Input';
@@ -223,8 +223,9 @@ const CreateEvent: React.FC = () =>
               size={25}
               value={game.value}
               numeric
-              maxLength={5}
-              setValue={value => setGame({...game, value: formatMoney(value)})}
+              maxLength={10}
+              callback={() => {if (game.value) setGame({...game, value: formatMoneyRealTime(game.value)})}}
+              setValue={value => setGame({...game, value: formatMoneyRealTime(value)})}
               />
             :
             <View />
