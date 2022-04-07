@@ -56,7 +56,7 @@ const SearchFriend: React.FC = () =>
           icon="search"
           size={25}
           autoCapitalize="words"
-          setValue={text => setName(text.replace(/[^\w\s]/g, ""))}
+          setValue={text => setName(text.replace(/([&\/\\#^,+()$~%\.'":*?<>\[\]{}!¹@²³£¢¬_`\-=§+ªº´;°|])/g, ""))}
           style={{flex: 1}}
         />
       </SearchArea>
