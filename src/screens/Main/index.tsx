@@ -28,7 +28,7 @@ import {
 const goal = require('../../../assets/images/goal.png');
 
 const Main: React.FC = () => {
-  const {user, signOut, string} = useAuth();
+  const {user, signOut, checkLogin, string} = useAuth();
   const {get, destroy, post} = useRequest();
 
   const params = useRoute().params as Params;
@@ -45,6 +45,7 @@ const Main: React.FC = () => {
 
   async function getGames() {
     try{
+      await checkLogin();
       setDisableAddButton(true);
 
       const result = await get(`/games/home?_id=${params && params.id ? params.id : ""}&friendGames=${params ? "true" : ''}`, setLoading);
@@ -54,7 +55,7 @@ const Main: React.FC = () => {
         setFriendsGames(result.friendsGames);
       }
 
-      if (result.userGames.length < 5) {
+      if (result.userGames.length < 5 || user?.premium) {
         setDisableAddButton(false);
       }
 

@@ -23,16 +23,6 @@ export const Footer = styled.View`
   bottom: 0;
 `;
 
-export const ChangePasswordText = styled.Text`
-  font-family: "Poppins-Regular";
-  font-size: 24px;
-  line-height: 30px;
-  color: #686868;
-  text-align: center;
-  text-decoration: underline;
-  margin-top: 40px;
-`;
-
 export const ConfirmButton = styled.TouchableOpacity`
   border-radius: 20px;
   justify-content: center;

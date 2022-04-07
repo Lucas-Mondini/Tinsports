@@ -11,7 +11,6 @@ import {
   ButtonText,
   CancelButton,
   CancelText,
-  ChangePasswordText,
   ConfirmButton,
   Footer,
   ModalContainer,
@@ -50,7 +49,7 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
   {
     try {
       if (!isChangePass) {
-        await post(`/code`, setLoading, {email: user.email, code});
+        await post(`/code`, setLoading, {email: user?.email, code});
         await checkLogin();
         return setModal();
       } else {
@@ -107,7 +106,7 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
 
   useEffect(() => {
     if (visible) enableButton();
-  }, [visible, code, pass, confirmPass]);
+  }, [visible, code, pass, confirmPass, changePassword]);
 
   return (
     <DefaultModal loading={loading} setModal={setModal} visible={visible} animationType="slide">
@@ -130,27 +129,28 @@ const CodeConfirmationModal: React.FC<ModalProps> = ({visible, setModal, isChang
             autoCapitalize="words"
             setValue={setCode}
             numeric
-          /> : <>
-            <Input
-              style={{marginLeft: '3%', marginRight: '3%'}}
-              label="Nova senha"
-              value={pass}
-              icon="lock"
-              size={28}
-              secureTextEntry
-              setValue={setPass}
-            />
+          /> :
+            <View style={{backgroundColor: '#fff'}}>
+              <Input
+                style={{marginLeft: '3%', marginRight: '3%'}}
+                label="Nova senha"
+                value={pass}
+                icon="lock"
+                size={28}
+                secureTextEntry
+                setValue={setPass}
+              />
 
-            <Input
-              style={{marginLeft: '3%', marginRight: '3%'}}
-              label="Confirme sua senha"
-              value={confirmPass}
-              icon="unlock"
-              size={27}
-              secureTextEntry
-              setValue={setConfirmPass}
-            />
-          </>
+              <Input
+                style={{marginLeft: '3%', marginRight: '3%'}}
+                label="Confirme sua senha"
+                value={confirmPass}
+                icon="unlock"
+                size={27}
+                secureTextEntry
+                setValue={setConfirmPass}
+              />
+            </View>
           }
 
       </ModalContainer>

@@ -61,7 +61,7 @@ const Login: React.FC = () =>
   }
 
   function enableButton() {
-    if ((email && email.trim() !== '') && (pass && pass.trim() !== '') ||
+    if (!forgotPass && (email && email.trim() !== '') && (pass && pass.trim() !== '') ||
         forgotPass && (email && email.trim() !== '')) {
       setDisableButton(false);
     } else setDisableButton(true);
@@ -79,7 +79,7 @@ const Login: React.FC = () =>
 
   useEffect(() => {
     enableButton();
-  }, [email, pass]);
+  }, [email, pass, forgotPass]);
 
   if (loading) return <Loading />;
 
