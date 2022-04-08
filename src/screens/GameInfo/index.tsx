@@ -31,7 +31,7 @@ const photo = require('../../../assets/photos/photo.jpg');
 
 const GameInfo: React.FC = () => {
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const route = useRoute();
   const params = route.params as Params;
   const isFocused = useIsFocused();
@@ -141,7 +141,7 @@ const GameInfo: React.FC = () => {
             invitedUsers={gameList}
             setModal={handleModal}
             reloadFunction={getGameInfo}
-            isPaid={game.value}
+            isPaid={Boolean(game.value)}
           /> :
           <InviteUsersModal
             gameId={game._id}
@@ -171,10 +171,6 @@ const GameInfo: React.FC = () => {
 
         <BadgeContainer style={{ paddingTop: 25}}>
           <Badge text={game.hostName} icon="user" size={32}/>
-        </BadgeContainer>
-
-        <BadgeContainer>
-          <Badge text={game.hostEmail} icon="at" size={32}/>
         </BadgeContainer>
 
         <Description>{game.description}</Description>

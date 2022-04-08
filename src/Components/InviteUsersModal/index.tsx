@@ -44,8 +44,8 @@ const InviteUsersModal: React.FC<ModalProps> = ({visible, gameId, setModal, relo
       }
 
       setFriends([]);
-      setModal();
       reloadFunction();
+      setModal();
     } catch (err) {
       setModal();
     }

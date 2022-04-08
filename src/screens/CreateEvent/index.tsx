@@ -98,8 +98,7 @@ const CreateEvent: React.FC = () =>
         && (game.location && game.location.trim() !== '')
         && (game.date && game.date.trim() !== '')
         && (game.hour && game.hour.trim() !== '')
-        && ((paid && game.value && game.value.trim() !== '') || (!paid))
-        && (Number(game.value) <= 99 || game.value.indexOf(",") !== -1)
+        && ((paid && game.value && game.value.trim() !== '' && (Number(game.value) <= 99 || game.value.indexOf(",") !== -1)) || (!paid))
        )
         {
           setDisableButton(false);

@@ -80,6 +80,7 @@ const Register: React.FC = () =>
           placeholder="Digite seu email"
           placeholderTextColor="#b1b1b1"
           value={email}
+          autoCapitalize="none"
           onChangeText={setEmail}/>
 
         <Label>Senha</Label>
@@ -88,6 +89,7 @@ const Register: React.FC = () =>
           placeholderTextColor="#b1b1b1"
           value={pass}
           secureTextEntry={true}
+          autoCapitalize="none"
           onChangeText={setPass}/>
 
         <Label>Confirme sua senha</Label>
@@ -96,6 +98,7 @@ const Register: React.FC = () =>
           placeholderTextColor="#b1b1b1"
           value={confPass}
           secureTextEntry={true}
+          autoCapitalize="none"
           onChangeText={setConfPass}/>
 
         <ButtonView>

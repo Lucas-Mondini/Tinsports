@@ -93,6 +93,7 @@ const Login: React.FC = () =>
           placeholder="Digite seu email"
           placeholderTextColor="#b1b1b1"
           value={email}
+          autoCapitalize="none"
           onChangeText={setEmail}/>
 
         {!forgotPass && <><Label>Senha</Label>
@@ -101,6 +102,7 @@ const Login: React.FC = () =>
           placeholderTextColor="#b1b1b1"
           secureTextEntry
           value={pass}
+          autoCapitalize="none"
           onChangeText={setPass}/></>}
 
         <ForgotPassButton activeOpacity={0.6} onPress={() => setForgotPass(!forgotPass)}>

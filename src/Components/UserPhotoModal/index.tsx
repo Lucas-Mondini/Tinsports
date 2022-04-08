@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, Image, Modal } from 'react-native';
+import { Dimensions, Image, PermissionsAndroid } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../../Contexts/Auth';
@@ -12,8 +12,6 @@ import {
   ConfirmButton,
   Footer,
   ContentView,
-  ModalBackground,
-  ModalContent,
   PhotoView,
   PhotoButtonsView,
   SendPhotoButton
@@ -38,30 +36,56 @@ const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction
   const [disableButton, setDisableButton] = useState(true);
 
 
-  function takePhoto()
+  async function takePhoto()
   {
-    launchCamera({
-      mediaType: 'photo',
-      maxHeight: 800
-    }, (res) => {
-      if (res && res.assets && !res.didCancel) {
-        setDisableButton(false);
-        setPhoto({uri: res.assets[0].uri});
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+      {
+        title: "Acesos à câmera",
+        message:"Tinsports está solicitando acesso à sua câmera ",
+        buttonNeutral: "Perguntar depois",
+        buttonNegative: "Cancelar",
+        buttonPositive: "OK"
       }
-    });
+    );
+
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      launchCamera({
+        mediaType: 'photo',
+        maxHeight: 800
+      }, (res) => {
+        if (res && res.assets && !res.didCancel) {
+          setDisableButton(false);
+          setPhoto({uri: res.assets[0].uri});
+        }
+      });
+    }
   }
 
-  function pickPhoto()
+  async function pickPhoto()
   {
-    launchImageLibrary({
-      mediaType: 'photo',
-      maxHeight: 800
-    }, res => {
-      if (res && res.assets && !res.didCancel) {
-        setDisableButton(false);
-        setPhoto({uri: res.assets[0].uri});
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      {
+        title: "Acesos à galeria",
+        message:"Tinsports está solicitando acesso à sua galeria",
+        buttonNeutral: "Perguntar depois",
+        buttonNegative: "Cancelar",
+        buttonPositive: "OK"
       }
-    });
+    );
+
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      launchImageLibrary({
+        mediaType: 'photo',
+        maxHeight: 800
+      }, res => {
+        if (res && res.assets && !res.didCancel) {
+          setDisableButton(false);
+          setPhoto({uri: res.assets[0].uri});
+        }
+      });
+    }
   }
 
   async function sendImage()
@@ -105,12 +129,12 @@ const UserPhotoModal: React.FC<ModalProps> = ({visible, setModal, reloadFunction
         </PhotoView>
 
         <PhotoButtonsView>
-          <SendPhotoButton onPress={takePhoto}>
+          <SendPhotoButton onPress={async () => await takePhoto()}>
             <Icon name="camera" size={15} color="#fff" style={{marginRight: 5}}/>
             <ButtonText>Tirar foto</ButtonText>
           </SendPhotoButton>
 
-          <SendPhotoButton onPress={pickPhoto}>
+          <SendPhotoButton onPress={async () => await pickPhoto()}>
             <Icon name="photo" size={15} color="#fff" style={{marginRight: 5}}/>
             <ButtonText>Enviar foto</ButtonText>
           </SendPhotoButton>
