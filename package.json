@@ -1,6 +1,6 @@
 {
   "name": "tinsports",
-  "version": "1.1.2",
+  "version": "1.0.0ob",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
