@@ -60,10 +60,11 @@ const GameCard: React.FC<GameCardProps> = ({
   {
     switch(type) {
       case "User":
-        return [
-          {type: 'Delete', function: deleteGame},
-          {type: 'Edit', function: editGame},
-        ];
+        const functions = [{type: 'Delete', function: deleteGame}];
+
+        if (!finished) functions.push({type: 'Edit', function: editGame});
+
+        return functions;
       case "Friends":
         return [];
       case "Invites":

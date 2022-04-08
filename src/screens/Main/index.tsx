@@ -45,8 +45,10 @@ const Main: React.FC = () => {
 
   async function getGames() {
     try{
-      await checkLogin();
+      setLoading(true);
       setDisableAddButton(true);
+
+      await checkLogin();
 
       const result = await get(`/games/home?_id=${params && params.id ? params.id : ""}&friendGames=${params ? "true" : ''}`, setLoading);
 
@@ -200,7 +202,7 @@ const Main: React.FC = () => {
       setModal(<CodeConfirmationModal visible={true} setModal={() => setModal(null)}/>);
     } catch (error) {
       setModal(null);
-      navigation.reset({index: 0, routes: [{name: "Main"}]});
+      getGames();
     }
   }
 
@@ -216,7 +218,7 @@ const Main: React.FC = () => {
       setModal(null);
     } catch (error) {
       setModal(null);
-      navigation.reset({index: 0, routes: [{name: "Main"}]});
+      getGames();
     }
   }
 
@@ -227,7 +229,7 @@ const Main: React.FC = () => {
       setModal(null);
     } catch (error) {
       setModal(null);
-      navigation.reset({index: 0, routes: [{name: "Main"}]});
+      getGames();
     }
   }
 
@@ -238,7 +240,7 @@ const Main: React.FC = () => {
       setModal(null);
     } catch (error) {
       setModal(null);
-      navigation.reset({index: 0, routes: [{name: "Main"}]});
+      getGames();
     }
   }
 

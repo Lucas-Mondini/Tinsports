@@ -60,7 +60,7 @@ const CreateEvent: React.FC = () =>
       setDisableButton(true);
 
       if (params && params.id) {
-        await put(`/games/${params.id}`, setLoading, game);
+        await put(`/games`, setLoading, game);
       } else {
         await post(`/games`, setLoading, game);
       }
@@ -72,11 +72,17 @@ const CreateEvent: React.FC = () =>
       let type: any;
 
       switch (parseInt(err.message)) {
+        case 401:
+          type = "EventDateLowerThanActual";
+          break;
         case 403:
           type = "Premium";
           break;
-        case 401:
-          type = "EventDateLowerThanActual"
+        case 404:
+          type = "GameDoesNotExist";
+          break;
+        case 405:
+          type = "CantEditFinishedGame";
           break;
         default:
           type = "default"
@@ -143,7 +149,7 @@ const CreateEvent: React.FC = () =>
 
   useEffect(() => {
     if (isFocused) enableButton();
-  }, [game, paid, isFocused]);
+  }, [game, paid, isFocused, modal]);
 
   if (loading) return <Loading />
   return (

@@ -3,7 +3,8 @@ import MessageModal from '../MessageModal';
 
 type GenericMessageModalProps = {
   type: "IncorrectCode" | "PasswordsDontMatch" | "SendEvaluations" | "default" | "DeleteFriendInvite" | "DeleteFriend" | "DeleteGameInvite"
-        | "ConfirmGameInvite" | "WrongCredentials" | "NotConfirmed" | "Premium" | "DeleteGame" | "Tier" | "EmailAlreadyInUse" | "SpecialCharactersNotAllowed";
+        | "ConfirmGameInvite" | "WrongCredentials" | "NotConfirmed" | "Premium" | "DeleteGame" | "Tier" | "EmailAlreadyInUse" | "SpecialCharactersNotAllowed"
+        | "CantEditFinishedGame" | "GameDoesNotExist";
   functions?: Function[];
   setModal: () => void;
   style?: object;
@@ -106,7 +107,7 @@ const GenericMessageModal: React.FC<GenericMessageModalProps> = ({type, function
       "PremiumNotAvailable": {
         message:{
           title: "Premium ainda indisponível!",
-          message: "Nossa assinatura premiu estará disponível em breve 😁"}
+          message: "Nossa assinatura premium estará disponível em breve 😁"}
       },
       "DeleteGame": {
         message:{
@@ -133,6 +134,18 @@ const GenericMessageModal: React.FC<GenericMessageModalProps> = ({type, function
         message:{
           title: "Nome com caracteres especiais",
           message: "Nome não pode possuir caracteres especiais. \n Tente novamente"
+        }
+      },
+      "CantEditFinishedGame": {
+        message:{
+          title: "Não é possível editar",
+          message: "Só são permitidas edições em jogos que ainda não foram finalizados"
+        }
+      },
+      "GameDoesNotExist": {
+        message:{
+          title: "Jogo não existe",
+          message: "Jogo não encontrado. Talvez seu jogo já tenha sido finalizado"
         }
       }
     };
