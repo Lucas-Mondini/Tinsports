@@ -22,7 +22,8 @@ export const AddFriendButton = styled.TouchableOpacity`
   align-items: center;
   border-radius: 50px;
   position: absolute;
-  right: 20px;
+  margin-left: auto;
+  right: 12%;
   top: 50%;
 `;
 

@@ -36,6 +36,7 @@ const Input: React.FC<InputProps> = ({
                 autoCapitalize={autoCapitalize}
                 autoFocus={disabled}
                 editable={disabled}
+                style={{color: "#686868"}}
               />;
 
   let inputIcon = icon ? (
@@ -53,6 +54,7 @@ const Input: React.FC<InputProps> = ({
               maxLength={maxLength}
               onChangeText={setValue}
               autoCapitalize={autoCapitalize}
+              style={{color: "#686868"}}
             />;
   }
 
@@ -65,7 +67,7 @@ const Input: React.FC<InputProps> = ({
               maxLength={maxLength}
               onChangeText={setValue}
               numberOfLines={10}
-              style={{textAlignVertical: "top"}}
+              style={{textAlignVertical: "top", color: "#686868"}}
             />;
   } else if (numeric) {
     input = <InputText
@@ -75,6 +77,7 @@ const Input: React.FC<InputProps> = ({
               keyboardType="numeric"
               maxLength={maxLength}
               onChangeText={setValue}
+              style={{color: "#686868"}}
             />;
   }
 

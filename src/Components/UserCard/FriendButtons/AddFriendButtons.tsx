@@ -1,11 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Alert } from 'react-native';
 import { useAuth } from '../../../Contexts/Auth';
 import { useRequest } from '../../../Contexts/Request';
 import {
   AddFriendButton,
-  AddFriendButtonText
+  AddFriendButtonText,
+  ButtonsView
 } from './styles';
 
 interface AddFriendButtonsProps  {
@@ -17,7 +17,7 @@ const AddFriendButtons: React.FC<AddFriendButtonsProps> = ({_id, reloadFunction}
 {
   const { user, signOut } = useAuth();
   const {post} = useRequest();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   async function handleAddFriend()
   {
@@ -36,9 +36,11 @@ const AddFriendButtons: React.FC<AddFriendButtonsProps> = ({_id, reloadFunction}
   }
 
   return (
-    <AddFriendButton onPress={handleAddFriend}>
-      <AddFriendButtonText>Adicionar</AddFriendButtonText>
-    </AddFriendButton>
+    <ButtonsView>
+      <AddFriendButton onPress={handleAddFriend}>
+        <AddFriendButtonText>Adicionar</AddFriendButtonText>
+      </AddFriendButton>
+    </ButtonsView>
   );
 }
 

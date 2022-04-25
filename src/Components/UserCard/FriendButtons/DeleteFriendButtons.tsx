@@ -7,12 +7,11 @@ import {
 } from './styles';
 
 interface UserCardProps {
-  _id: string;
   callback?: () => void;
   disableButtons?: boolean;
 }
 
-const FriendButtons: React.FC<UserCardProps> = ({_id, disableButtons, callback}) =>
+const FriendButtons: React.FC<UserCardProps> = ({disableButtons, callback}) =>
 {
   if (disableButtons) return null;
 
