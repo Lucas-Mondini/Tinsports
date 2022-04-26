@@ -159,7 +159,7 @@ const Main: React.FC = () => {
                 : `Jogos de ${string}`;
 
         if (userGames && userGames.length > 0) {
-          component = mapGames(userGames, "User");
+          component = mapGames(userGames, !params?"User":"Friends");
         } else {
           const noContentText = !params
                                 ? "Você ainda não criou nenhum jogo"

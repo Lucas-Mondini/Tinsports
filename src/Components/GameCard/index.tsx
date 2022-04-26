@@ -26,7 +26,7 @@ const GameCard: React.FC<GameCardProps> = ({
   deleteGame, editGame, confirmInvite, cancelInvite
   }) =>
 {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const {signOut, user} = useAuth();
 
   const gameTitle = Dimensions.get('window').width < 480 ? splitText(title, 10) : splitText(title, 18);

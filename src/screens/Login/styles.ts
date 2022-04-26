@@ -18,6 +18,7 @@ export const Label = styled.Text`
 
 export const Input = styled.TextInput`
   width: 100%;
+  color: #686868;
   border: 2px solid #E6E6E6;
   border-radius: 8px;
   padding:10px 15px;
