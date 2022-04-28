@@ -47,7 +47,9 @@ const CreateEvent: React.FC = () =>
     if (params && params.id) {
       try {
         const gameData = await get(`/games/${params.id}`, setLoading);
-        setGame(gameData);
+        setGame({...gameData, value: formatMoneyRealTime(gameData.value)});
+        setPaid(Boolean(gameData.value));
+        
       } catch (err){}
     }
   }

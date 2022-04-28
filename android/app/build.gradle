@@ -136,8 +136,8 @@ android {
         applicationId "com.tinsports"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
-        versionName "1.0.2ob"
+        versionCode 6
+        versionName "1.0.3ob"
     }
     splits {
         abi {
